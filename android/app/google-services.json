@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "707797100512",
+    "project_id": "vsingrsv",
+    "storage_bucket": "vsingrsv.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:707797100512:android:17e531fab1d49eb0022d85",
+        "android_client_info": {
+          "package_name": "com.innotia.vsingrsv"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "707797100512-hemli289alo0n4inilqrldhl19he31gp.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC2m5iyClLw_de9Iz_Dy77sALzJPtvPeR4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "707797100512-hemli289alo0n4inilqrldhl19he31gp.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
