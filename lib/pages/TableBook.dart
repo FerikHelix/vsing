@@ -1,11 +1,16 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:vsing/pages/HomePage.dart';
 import 'package:vsing/pages/detail_table.dart';
 import 'package:vsing/util/table.dart';
 import '../style/color_constant.dart';
 
 class Table_Book extends StatefulWidget {
-  const Table_Book({super.key});
+  final name;
+  final pax;
+  final date;
+  const Table_Book(
+      {super.key, required this.name, required this.date, required this.pax});
 
   @override
   State<Table_Book> createState() => _Table_BookState();
@@ -25,7 +30,7 @@ class _Table_BookState extends State<Table_Book> {
     _update() async {
       await db
           .collection('table')
-          .doc('floor1')
+          .doc(lantai)
           .collection('lantai')
           .doc(no)
           .update({'status': 'Selected'});
@@ -34,19 +39,39 @@ class _Table_BookState extends State<Table_Book> {
     _updateselected() async {
       await db
           .collection('table')
-          .doc('floor1')
+          .doc(lantai)
           .collection('lantai')
           .doc(no)
           .update({'status': 'Avail'});
+    }
+
+    _savebook() async {
+      await db
+          .collection('user')
+          .doc(widget.name + widget.pax + widget.date)
+          .set({
+        'name': widget.name,
+        'pax': widget.pax,
+        'date': widget.date,
+        'table_no': no,
+        'floor': lantai,
+      });
+      await db
+          .collection('table')
+          .doc(lantai)
+          .collection('lantai')
+          .doc(no)
+          .update({'status': 'Book'});
     }
 
     return Scaffold(
       // button
       bottomNavigationBar: InkWell(
         onTap: () {
+          _savebook();
           Navigator.pushAndRemoveUntil(context,
               MaterialPageRoute(builder: (BuildContext context) {
-            return TableDetails();
+            return HomePage();
           }), (r) {
             return false;
           });
@@ -84,6 +109,7 @@ class _Table_BookState extends State<Table_Book> {
         padding: const EdgeInsets.only(left: 20, right: 20),
         child: Column(
           children: [
+            Text(widget.name + ',' + widget.date + ',' + widget.pax),
             // lantai
             Container(
               child: Row(
