@@ -5,11 +5,11 @@ import 'package:vsing/pages/detail_table.dart';
 import 'firebase_options.dart';
 
 Future<void> main() async {
-  runApp(MyApp());
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {

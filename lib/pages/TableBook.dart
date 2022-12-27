@@ -1,7 +1,10 @@
+import 'dart:ffi';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:vsing/pages/HomePage.dart';
 import 'package:vsing/pages/detail_table.dart';
+import 'package:vsing/util/detailbook.dart';
 import 'package:vsing/util/table.dart';
 import '../style/color_constant.dart';
 
@@ -9,8 +12,15 @@ class Table_Book extends StatefulWidget {
   final name;
   final pax;
   final date;
+  final time;
+  final phone;
   const Table_Book(
-      {super.key, required this.name, required this.date, required this.pax});
+      {super.key,
+      required this.name,
+      required this.date,
+      required this.time,
+      required this.phone,
+      required this.pax});
 
   @override
   State<Table_Book> createState() => _Table_BookState();
@@ -19,10 +29,11 @@ class Table_Book extends StatefulWidget {
 class _Table_BookState extends State<Table_Book> {
   bool select = false;
   var status = '';
+  var newstatus = '';
   var no = '';
   var lantai = 'Pilih Lantai';
 
-  List selectedTable = [];
+  var selectedtable;
   @override
   Widget build(BuildContext context) {
     final db = FirebaseFirestore.instance;
@@ -45,7 +56,34 @@ class _Table_BookState extends State<Table_Book> {
           .update({'status': 'Avail'});
     }
 
+    _getselected() async {
+      final result = await db
+          .collection('table')
+          .doc(lantai)
+          .collection('lantai')
+          .where('status', isEqualTo: newstatus)
+          .get();
+      selectedtable = result.docs.map((e) => e.data()).toList();
+
+      setState(() {
+        // print('===============================================');
+        // print(selectedtable);
+        // print('===============================================');
+      });
+    }
+
+    _getno() {
+      List numb = [];
+      for (var i = 0; i < selectedtable.length; i++) {
+        numb = selectedtable[i]['no'];
+      }
+      return numb;
+    }
+
     _savebook() async {
+      print("\n\n\n\n");
+      print(selectedtable);
+      print("\n\n\n\n");
       await db
           .collection('user')
           .doc(widget.name + widget.pax + widget.date)
@@ -53,8 +91,10 @@ class _Table_BookState extends State<Table_Book> {
         'name': widget.name,
         'pax': widget.pax,
         'date': widget.date,
-        'table_no': no,
-        'floor': lantai,
+        'table_no': FieldValue.arrayUnion(selectedtable),
+        "phone_number": widget.phone,
+        'floor': lantai == "Pilih Lantai" ? "" : lantai,
+        'time': widget.time,
       });
       await db
           .collection('table')
@@ -66,26 +106,28 @@ class _Table_BookState extends State<Table_Book> {
 
     return Scaffold(
       // button
-      bottomNavigationBar: InkWell(
-        onTap: () {
-          _savebook();
-          Navigator.pushAndRemoveUntil(context,
-              MaterialPageRoute(builder: (BuildContext context) {
-            return HomePage();
-          }), (r) {
-            return false;
-          });
-        },
-        child: Padding(
-          padding: const EdgeInsets.all(10.0),
-          child: Container(
-            width: MediaQuery.of(context).size.width,
-            height: 50,
-            decoration: BoxDecoration(
-                color: Color(primaryColor),
-                borderRadius: BorderRadius.circular(10)),
-            child: Center(
-              child: Text('Book'),
+
+      bottomNavigationBar: Padding(
+        padding: const EdgeInsets.only(left: 20, right: 20, bottom: 20),
+        child: Container(
+          width: MediaQuery.of(context).size.width,
+          height: 50,
+          child: ElevatedButton(
+            onPressed: () {
+              _savebook();
+              Navigator.pushAndRemoveUntil(context,
+                  MaterialPageRoute(builder: (BuildContext context) {
+                return HomePage();
+              }), (r) {
+                return false;
+              });
+            },
+            style: const ButtonStyle(
+              backgroundColor:
+                  MaterialStatePropertyAll<Color>(Color(primaryColor)),
+            ),
+            child: const Text(
+              "BOOK",
             ),
           ),
         ),
@@ -109,7 +151,6 @@ class _Table_BookState extends State<Table_Book> {
         padding: const EdgeInsets.only(left: 20, right: 20),
         child: Column(
           children: [
-            Text(widget.name + ',' + widget.date + ',' + widget.pax),
             // lantai
             Container(
               child: Row(
@@ -242,8 +283,9 @@ class _Table_BookState extends State<Table_Book> {
                               setState(() {
                                 no = data[index].data()['no'];
                                 status = data[index].data()['status'];
+                                newstatus = "Selected";
                               });
-
+                              _getselected();
                               if (status == 'Avail') {
                                 _update();
                               } else if (status == 'Selected') {
@@ -328,7 +370,66 @@ class _Table_BookState extends State<Table_Book> {
                 )
               ],
             ),
-            // status != 'Selected' ? Text('Book no : $no') : SizedBox()
+            Expanded(
+                child: Row(
+              children: [
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        widget.name,
+                        style: TextStyle(
+                            fontSize: 20, fontWeight: FontWeight.bold),
+                      ),
+                      Text(
+                        widget.phone,
+                        style: TextStyle(
+                          fontSize: 18,
+                        ),
+                      ),
+                      Text(
+                        'Pax : ${widget.pax}',
+                        style: TextStyle(
+                          fontSize: 18,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Container(
+                  width: 3,
+                  height: 50,
+                  color: Colors.black,
+                ),
+                Container(
+                  width: 180,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      Text(
+                        'Date & Time',
+                        style: TextStyle(
+                          fontSize: 18,
+                        ),
+                      ),
+                      Text(
+                        widget.date,
+                        style: TextStyle(
+                            fontSize: 20, fontWeight: FontWeight.bold),
+                      ),
+                      Text(
+                        widget.time,
+                        style: TextStyle(
+                            fontSize: 20, fontWeight: FontWeight.bold),
+                      ),
+                    ],
+                  ),
+                )
+              ],
+            ))
           ],
         ),
       ),

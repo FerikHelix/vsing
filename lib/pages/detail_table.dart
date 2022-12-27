@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:vsing/pages/TableBook.dart';
 import 'package:vsing/style/color_constant.dart';
+import 'package:intl/intl.dart';
 
 class TableDetails extends StatefulWidget {
   const TableDetails({super.key});
@@ -12,7 +14,10 @@ class TableDetails extends StatefulWidget {
 class _TableDetailsState extends State<TableDetails> {
   // input
   TextEditingController name = TextEditingController();
+  TextEditingController number = TextEditingController();
   int count = 0;
+  String datetime = "";
+  String time = "";
 
   @override
   Widget build(BuildContext context) {
@@ -26,12 +31,7 @@ class _TableDetailsState extends State<TableDetails> {
           icon: const Icon(Icons.arrow_back, color: Colors.black),
           onPressed: () {},
         ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.search, color: Colors.black),
-            onPressed: () {},
-          )
-        ],
+        //
       ),
       body: SingleChildScrollView(
         child: Center(
@@ -46,6 +46,8 @@ class _TableDetailsState extends State<TableDetails> {
                   fontWeight: FontWeight.w300,
                 ),
               ),
+
+              // input name
               const Padding(
                 padding: EdgeInsets.only(top: 20, bottom: 5),
                 child: Text(
@@ -64,6 +66,44 @@ class _TableDetailsState extends State<TableDetails> {
                   controller: name,
                   textAlign: TextAlign.center,
                   style: TextStyle(fontSize: 18),
+                  validator: (value) {
+                    if (value!.isEmpty) {
+                      return 'data kosong';
+                    }
+                    return null;
+                  },
+                  decoration: InputDecoration(
+                    filled: true,
+                    fillColor: Color.fromARGB(255, 238, 238, 238),
+                    border: OutlineInputBorder(
+                        borderSide:
+                            BorderSide(width: 0, style: BorderStyle.none),
+                        borderRadius: BorderRadius.circular(10)),
+                  ),
+                ),
+              ),
+
+              // phone number input
+              const Padding(
+                padding: EdgeInsets.only(top: 20, bottom: 5),
+                child: Text(
+                  "Phone Number",
+                  style: TextStyle(
+                    color: Color(primaryColor),
+                    fontSize: 20,
+                    fontWeight: FontWeight.w400,
+                  ),
+                ),
+              ),
+              Container(
+                width: 200,
+                height: 40,
+                child: TextFormField(
+                  controller: number,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(fontSize: 18),
+                  keyboardType: TextInputType.number,
+                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                   validator: (value) {
                     if (value!.isEmpty) {
                       return 'data kosong';
@@ -144,72 +184,79 @@ class _TableDetailsState extends State<TableDetails> {
                       ],
                     ),
                   ),
-                  // Column(
-                  //   children: [
-                  //     TextButton(
-                  //       onPressed: () {
-                  //         setState(() {
-                  //           count += 1;
-                  //         });
-                  //       },
-                  //       child: const Text(
-                  //         "+",
-                  //         style: TextStyle(
-                  //           color: Color(primaryColor),
-                  //           fontSize: 20,
-                  //         ),
-                  //       ),
-                  //     ),
-                  //     TextButton(
-                  //       onPressed: () {
-                  //         setState(() {
-                  //           if (count > 0) {
-                  //             count -= 1;
-                  //           } else {
-                  //             // do nothing
-                  //           }
-                  //         });
-                  //       },
-                  //       child: const Text(
-                  //         "-",
-                  //         style: TextStyle(
-                  //           color: Color(primaryColor),
-                  //           fontSize: 20,
-                  //         ),
-                  //       ),
-                  //     ),
-                  //   ],
-                  // )
                 ],
               ),
-              // const Padding(
-              //   padding: EdgeInsets.only(top: 20),
-              //   child: _table(),
-              // ),
-              const Padding(
-                padding: EdgeInsets.only(top: 20, bottom: 20),
-                child: _pickDate(),
+              Text(
+                datetime == "" ? "Choose Date & Time" : datetime + ' - ' + time,
+                style: TextStyle(
+                  color: Color(primaryColor),
+                  fontSize: 20,
+                ),
               ),
+
               Container(
-                width: 300,
-                height: 50,
+                width: 150,
+                // height: 100,
                 child: ElevatedButton(
-                  onPressed: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => Table_Book(
-                                  name: name.text,
-                                  date: '12-12-22',
-                                  pax: count.toString(),
-                                )));
-                  },
                   style: const ButtonStyle(
                     backgroundColor:
                         MaterialStatePropertyAll<Color>(Color(primaryColor)),
                   ),
-                  child: const Text(
-                    "CHOOSE TABLE",
+                  onPressed: () async {
+                    var datetimeRet = await showDatePicker(
+                        context: context,
+                        initialDate: DateTime.now(),
+                        firstDate: DateTime(1950),
+                        lastDate: DateTime(2100));
+                    var selectedTime = await showTimePicker(
+                      initialTime: TimeOfDay.now(),
+                      context: context,
+                    );
+                    String formattedMonth =
+                        DateFormat.MMM().format(datetimeRet!);
+                    setState(() {
+                      datetime =
+                          "${datetimeRet.day} $formattedMonth ${datetimeRet.year}";
+                      time = '${selectedTime!.hour}:${selectedTime.minute}';
+                    });
+                  },
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: const [
+                      Icon(Icons.date_range),
+                      Text(
+                        "Pick a date",
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              SizedBox(height: 20),
+              Padding(
+                padding: const EdgeInsets.only(left: 20, right: 20),
+                child: Container(
+                  width: MediaQuery.of(context).size.width,
+                  height: 50,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => Table_Book(
+                                    phone: number.text,
+                                    name: name.text,
+                                    date: datetime,
+                                    time: time,
+                                    pax: count.toString(),
+                                  )));
+                    },
+                    style: const ButtonStyle(
+                      backgroundColor:
+                          MaterialStatePropertyAll<Color>(Color(primaryColor)),
+                    ),
+                    child: const Text(
+                      "CHOOSE TABLE",
+                    ),
                   ),
                 ),
               ),
@@ -407,67 +454,6 @@ class __tableState extends State<_table> {
           ),
           child: const Text(
             "CHOOSE TABLE",
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-class _pickDate extends StatefulWidget {
-  const _pickDate({super.key});
-
-  @override
-  State<_pickDate> createState() => __pickDateState();
-}
-
-class __pickDateState extends State<_pickDate> {
-  String datetime = "";
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        const Text(
-          "Choose Date & Time",
-          style: TextStyle(
-            color: Color(primaryColor),
-            fontSize: 20,
-          ),
-        ),
-        Text(
-          datetime,
-          style: TextStyle(
-            color: Color(primaryColor),
-            fontSize: 20,
-          ),
-        ),
-        Container(
-          width: 150,
-          // height: 100,
-          child: ElevatedButton(
-            onPressed: () {
-              setState(() {
-                datetime = showDatePicker(
-                        context: context,
-                        initialDate: DateTime.now(),
-                        firstDate: DateTime(1950),
-                        lastDate: DateTime(2100))
-                    .toString();
-              });
-            },
-            style: const ButtonStyle(
-              backgroundColor:
-                  MaterialStatePropertyAll<Color>(Color(primaryColor)),
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: const [
-                Icon(Icons.date_range),
-                Text(
-                  "Pick a date",
-                ),
-              ],
-            ),
           ),
         ),
       ],
