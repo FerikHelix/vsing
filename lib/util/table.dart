@@ -16,19 +16,19 @@ class tableui extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var warna;
-    // if (cekstatus == "Selected") {
-    //   warna = Color.fromARGB(255, 221, 20, 124);
-    // } else if (cekstatus == "Book") {
-    //   warna = Color.fromARGB(255, 2, 161, 234);
-    // } else if (cekstatus == "Avail") {
-    //   warna = Colors.grey;
-
-    if (status == cekstatus && no == cekno) {
+    if (cekstatus == "Selected") {
       warna = Color.fromARGB(255, 221, 20, 124);
     } else if (cekstatus == "Book") {
       warna = Color.fromARGB(255, 2, 161, 234);
     } else if (cekstatus == "Avail") {
       warna = Colors.grey;
+
+      // if (status == cekstatus && no == cekno) {
+      //   warna = Color.fromARGB(255, 221, 20, 124);
+      // } else if (cekstatus == "Book") {
+      //   warna = Color.fromARGB(255, 2, 161, 234);
+      // } else if (cekstatus == "Avail") {
+      //   warna = Colors.grey;
     }
 
     return Container(

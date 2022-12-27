@@ -244,11 +244,11 @@ class _Table_BookState extends State<Table_Book> {
                                 status = data[index].data()['status'];
                               });
 
-                              // if (status == 'Avail') {
-                              //   _update();
-                              // } else if (status == 'Selected') {
-                              //   _updateselected();
-                              // } else if (status == 'Book') {}
+                              if (status == 'Avail') {
+                                _update();
+                              } else if (status == 'Selected') {
+                                _updateselected();
+                              } else if (status == 'Book') {}
                             },
                             child: tableui(
                               cekno: no,
