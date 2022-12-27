@@ -24,13 +24,3 @@ class MyApp extends StatelessWidget {
     );
   }
 }
-
-// class lewat extends StatelessWidget {
-//   const lewat({super.key});
-
-//   @override
-//   Widget build(BuildContext context) => ChangeNotifierProvider(
-//         create: (context) => GoogleSignInProvider(),
-//         child: cek(),
-//       );
-// }
