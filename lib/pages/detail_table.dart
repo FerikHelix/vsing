@@ -12,6 +12,7 @@ class TableDetails extends StatefulWidget {
 class _TableDetailsState extends State<TableDetails> {
   // input
   TextEditingController name = TextEditingController();
+  int count = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -85,7 +86,102 @@ class _TableDetailsState extends State<TableDetails> {
               //   padding: EdgeInsets.only(bottom: 40),
               //   child: _userName(),
               // ),
-              const _pax(),
+              Text(
+                "Pax",
+                style: TextStyle(
+                  color: Color(primaryColor),
+                  fontSize: 20,
+                ),
+              ),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    count.toString(),
+                    style: const TextStyle(
+                      color: Color(primaryColor),
+                      fontSize: 20,
+                    ),
+                  ),
+                  Container(
+                    height: 80,
+                    child: Stack(
+                      children: [
+                        // minus
+                        Positioned(
+                          top: 30,
+                          child: IconButton(
+                              onPressed: () {
+                                setState(() {
+                                  if (count > 0) {
+                                    count -= 1;
+                                  } else {
+                                    // do nothing
+                                  }
+                                });
+                              },
+                              icon: Icon(
+                                Icons.remove_circle,
+                                size: 30,
+                                color: Color(primaryColor),
+                              )),
+                        ),
+
+                        // pluss
+                        Positioned(
+                            child: IconButton(
+                                onPressed: () {
+                                  setState(() {
+                                    count += 1;
+                                  });
+                                },
+                                icon: Icon(
+                                  Icons.add_circle,
+                                  size: 30,
+                                  color: Color(primaryColor),
+                                ))),
+                      ],
+                    ),
+                  ),
+                  // Column(
+                  //   children: [
+                  //     TextButton(
+                  //       onPressed: () {
+                  //         setState(() {
+                  //           count += 1;
+                  //         });
+                  //       },
+                  //       child: const Text(
+                  //         "+",
+                  //         style: TextStyle(
+                  //           color: Color(primaryColor),
+                  //           fontSize: 20,
+                  //         ),
+                  //       ),
+                  //     ),
+                  //     TextButton(
+                  //       onPressed: () {
+                  //         setState(() {
+                  //           if (count > 0) {
+                  //             count -= 1;
+                  //           } else {
+                  //             // do nothing
+                  //           }
+                  //         });
+                  //       },
+                  //       child: const Text(
+                  //         "-",
+                  //         style: TextStyle(
+                  //           color: Color(primaryColor),
+                  //           fontSize: 20,
+                  //         ),
+                  //       ),
+                  //     ),
+                  //   ],
+                  // )
+                ],
+              ),
               // const Padding(
               //   padding: EdgeInsets.only(top: 20),
               //   child: _table(),
@@ -98,13 +194,22 @@ class _TableDetailsState extends State<TableDetails> {
                 width: 300,
                 height: 50,
                 child: ElevatedButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => Table_Book(
+                                  name: name.text,
+                                  date: '12-12-22',
+                                  pax: count.toString(),
+                                )));
+                  },
                   style: const ButtonStyle(
                     backgroundColor:
                         MaterialStatePropertyAll<Color>(Color(primaryColor)),
                   ),
                   child: const Text(
-                    "CONFIRM",
+                    "CHOOSE TABLE",
                   ),
                 ),
               ),
@@ -169,9 +274,9 @@ class _pax extends StatefulWidget {
 }
 
 class _paxState extends State<_pax> {
-  int count = 0;
   @override
   Widget build(BuildContext context) {
+    int count = 0;
     return Column(
       children: [
         const Text(
@@ -295,13 +400,7 @@ class __tableState extends State<_table> {
           ),
         ),
         ElevatedButton(
-          onPressed: () {
-            Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => Table_Book(),
-                ));
-          },
+          onPressed: () {},
           style: const ButtonStyle(
             backgroundColor:
                 MaterialStatePropertyAll<Color>(Color(primaryColor)),
