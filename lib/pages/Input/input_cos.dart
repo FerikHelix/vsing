@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:vsing/pages/TableBook.dart';
+import 'package:vsing/pages/Input/input_table.dart';
 import 'package:vsing/style/color_constant.dart';
 import 'package:intl/intl.dart';
 
@@ -21,8 +21,9 @@ class _TableDetailsState extends State<TableDetails> {
 
   // event
   var brtdy = "Brithday";
-  var aniv = "Aniversarry";
-  var othr = "Other";
+  var aniv = "Anniversary";
+  var comp = "Company";
+  var othr = "Bachelor Night";
 
   var onklik = '';
 
@@ -240,6 +241,13 @@ class _TableDetailsState extends State<TableDetails> {
                         lastDate: DateTime(2100));
                     var selectedTime = await showTimePicker(
                       initialTime: TimeOfDay.now(),
+                      builder: (context, child) {
+                        return MediaQuery(
+                          data: MediaQuery.of(context)
+                              .copyWith(alwaysUse24HourFormat: true),
+                          child: child!,
+                        );
+                      },
                       context: context,
                     );
                     String formattedMonth =
@@ -247,7 +255,8 @@ class _TableDetailsState extends State<TableDetails> {
                     setState(() {
                       datetime =
                           "${datetimeRet.day} $formattedMonth ${datetimeRet.year}";
-                      time = '${selectedTime!.hour}:${selectedTime.minute}';
+                      time =
+                          '${selectedTime!.hour}:${(selectedTime.minute == 0) ? "00" : selectedTime.minute}';
                     });
                   },
                   child: Row(
@@ -269,60 +278,144 @@ class _TableDetailsState extends State<TableDetails> {
                   )),
               SizedBox(height: 10),
               Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                // crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  ElevatedButton(
-                      onPressed: () {
-                        setState(() {
-                          onklik = brtdy;
-                          print(onklik);
-                        });
-                      },
-                      style: onklik == brtdy
-                          ? ButtonStyle(
-                              backgroundColor: MaterialStatePropertyAll<Color>(
-                                  Color(primaryColor)),
-                            )
-                          : ButtonStyle(
-                              backgroundColor: MaterialStatePropertyAll<Color>(
-                                  Color.fromARGB(255, 238, 238, 238)),
-                            ),
-                      child: Text(brtdy)),
-                  ElevatedButton(
-                      onPressed: () {
-                        setState(() {
-                          onklik = aniv;
-                          print(onklik);
-                        });
-                      },
-                      style: onklik == aniv
-                          ? ButtonStyle(
-                              backgroundColor: MaterialStatePropertyAll<Color>(
-                                  Color(primaryColor)),
-                            )
-                          : ButtonStyle(
-                              backgroundColor: MaterialStatePropertyAll<Color>(
-                                  Color.fromARGB(255, 87, 71, 164)),
-                            ),
-                      child: Text(aniv)),
-                  ElevatedButton(
-                      onPressed: () {
-                        setState(() {
-                          onklik = othr;
-                          print(onklik);
-                        });
-                      },
-                      style: onklik == othr
-                          ? ButtonStyle(
-                              backgroundColor: MaterialStatePropertyAll<Color>(
-                                  Color(primaryColor)),
-                            )
-                          : ButtonStyle(
-                              backgroundColor: MaterialStatePropertyAll<Color>(
-                                  Color.fromARGB(255, 87, 71, 164)),
-                            ),
-                      child: Text(othr))
+                  // brtdy
+                  SizedBox(
+                    width: 110,
+                    child: ElevatedButton(
+                        onPressed: () {
+                          setState(() {
+                            onklik = brtdy;
+                            print(onklik);
+                          });
+                        },
+                        style: onklik == brtdy
+                            ? ButtonStyle(
+                                backgroundColor:
+                                    MaterialStatePropertyAll<Color>(
+                                        Color(primaryColor)),
+                              )
+                            : ButtonStyle(
+                                backgroundColor:
+                                    MaterialStatePropertyAll<Color>(
+                                        Color.fromARGB(255, 210, 209, 209)),
+                              ),
+                        child: onklik == brtdy
+                            ? Text(
+                                brtdy,
+                                textAlign: TextAlign.center,
+                              )
+                            : Text(
+                                brtdy,
+                                textAlign: TextAlign.center,
+                                style: TextStyle(color: Color(0xFF494753)),
+                              )),
+                  ),
+                  // anniv
+                  SizedBox(
+                    width: 110,
+                    child: ElevatedButton(
+                        onPressed: () {
+                          setState(() {
+                            onklik = aniv;
+                            print(onklik);
+                          });
+                        },
+                        style: onklik == aniv
+                            ? ButtonStyle(
+                                backgroundColor:
+                                    MaterialStatePropertyAll<Color>(
+                                        Color(primaryColor)),
+                              )
+                            : ButtonStyle(
+                                backgroundColor:
+                                    MaterialStatePropertyAll<Color>(
+                                        Color.fromARGB(255, 210, 209, 209)),
+                              ),
+                        child: onklik == aniv
+                            ? Text(
+                                aniv,
+                                textAlign: TextAlign.center,
+                              )
+                            : Text(
+                                aniv,
+                                textAlign: TextAlign.center,
+                                style: TextStyle(color: Color(0xFF494753)),
+                              )),
+                  ),
+                ],
+              ),
+              SizedBox(height: 10),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                // crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  // company
+                  SizedBox(
+                    width: 110,
+                    child: ElevatedButton(
+                        onPressed: () {
+                          setState(() {
+                            onklik = comp;
+                            print(onklik);
+                          });
+                        },
+                        style: onklik == comp
+                            ? ButtonStyle(
+                                backgroundColor:
+                                    MaterialStatePropertyAll<Color>(
+                                        Color(primaryColor)),
+                              )
+                            : ButtonStyle(
+                                backgroundColor:
+                                    MaterialStatePropertyAll<Color>(
+                                        Color.fromARGB(255, 210, 209, 209)),
+                              ),
+                        child: onklik == comp
+                            ? Text(
+                                comp,
+                                textAlign: TextAlign.center,
+                              )
+                            : Text(
+                                comp,
+                                textAlign: TextAlign.center,
+                                style: TextStyle(color: Color(0xFF494753)),
+                              )),
+                  ),
+                  // bachelor
+                  SizedBox(
+                    width: 110,
+                    child: ElevatedButton(
+                        onPressed: () {
+                          setState(() {
+                            onklik = othr;
+                            print(onklik);
+                          });
+                        },
+                        style: onklik == othr
+                            ? ButtonStyle(
+                                backgroundColor:
+                                    MaterialStatePropertyAll<Color>(
+                                        Color(primaryColor)),
+                              )
+                            : ButtonStyle(
+                                backgroundColor:
+                                    MaterialStatePropertyAll<Color>(
+                                        Color.fromARGB(255, 210, 209, 209)),
+                              ),
+                        child: onklik == othr
+                            ? Text(
+                                othr,
+                                textAlign: TextAlign.center,
+                              )
+                            : Text(
+                                othr,
+                                textAlign: TextAlign.center,
+                                style: TextStyle(color: Color(0xFF494753)),
+                              )),
+                  ),
                 ],
               )
             ],

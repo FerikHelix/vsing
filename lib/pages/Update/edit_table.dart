@@ -3,32 +3,36 @@ import 'dart:ffi';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:vsing/pages/HomePage.dart';
-import 'package:vsing/pages/detail_table.dart';
-import 'package:vsing/util/detailbook.dart';
 import 'package:vsing/util/table.dart';
-import '../style/color_constant.dart';
+import '../../style/color_constant.dart';
 
-class Table_Book extends StatefulWidget {
+class Edit_Book extends StatefulWidget {
   final name;
   final pax;
   final date;
   final time;
   final phone;
   final event;
-  const Table_Book(
+  final id;
+  final no_table;
+  final floor;
+  const Edit_Book(
       {super.key,
+      required this.id,
       required this.name,
       required this.date,
       required this.time,
       required this.phone,
       required this.event,
+      required this.no_table,
+      required this.floor,
       required this.pax});
 
   @override
-  State<Table_Book> createState() => _Table_BookState();
+  State<Edit_Book> createState() => _Edit_BookState();
 }
 
-class _Table_BookState extends State<Table_Book> {
+class _Edit_BookState extends State<Edit_Book> {
   bool select = false;
   var status = '';
   var newstatus = '';
@@ -72,8 +76,16 @@ class _Table_BookState extends State<Table_Book> {
       });
     }
 
+    Future deleteData(String id) async {
+      try {
+        await FirebaseFirestore.instance.collection("user").doc(id).delete();
+      } catch (e) {
+        return false;
+      }
+    }
+
     List search = [widget.name, widget.phone, widget.date];
-    _savebook() async {
+    _updatebook() async {
       for (int x = 0; x <= selectedtable.length - 1; ++x) {
         unpackedArr.add(selectedtable[x]['no']);
       }
@@ -87,7 +99,7 @@ class _Table_BookState extends State<Table_Book> {
         'table_no': unpackedArr == ""
             ? "no choose table"
             : FieldValue.arrayUnion(unpackedArr),
-        // 'table_no': no,
+        'event': widget.event,
         "phone_number": widget.phone,
         'floor': lantai == "Pilih Lantai" ? "" : lantai,
         'time': widget.time,
@@ -101,15 +113,9 @@ class _Table_BookState extends State<Table_Book> {
             .doc(unpackedArr[x].toString())
             .update({'status': 'Book'});
       }
-      // await db
-      //     .collection('table')
-      //     .doc(lantai)
-      //     .collection('lantai')
-      //     .doc(unpackedArr.join(','))
-      //     .update({'status': 'Book'});
     }
 
-    _savebooknotable() async {
+    _updatebooknotable() async {
       await db
           .collection('user')
           .doc(widget.name + widget.pax + widget.date)
@@ -118,11 +124,11 @@ class _Table_BookState extends State<Table_Book> {
         'pax': widget.pax,
         'date': widget.date,
         'table_no': unpackedArr == ""
-            ? "no choose table"
+            ? widget.no_table
             : FieldValue.arrayUnion(unpackedArr),
-        // 'table_no': no,
+        'event': widget.event,
         "phone_number": widget.phone,
-        'floor': lantai == "Pilih Lantai" ? "" : lantai,
+        'floor': lantai == "Pilih Lantai" ? widget.floor : lantai,
         'time': widget.time,
         'search': FieldValue.arrayUnion(search)
       });
@@ -138,10 +144,12 @@ class _Table_BookState extends State<Table_Book> {
           height: 50,
           child: ElevatedButton(
             onPressed: () {
+              deleteData(widget.id);
+
               if (no == '' && status == '') {
-                _savebooknotable();
+                _updatebooknotable();
               } else {
-                _savebook();
+                _updatebook();
               }
               Navigator.pushAndRemoveUntil(context,
                   MaterialPageRoute(builder: (BuildContext context) {
@@ -168,7 +176,7 @@ class _Table_BookState extends State<Table_Book> {
           icon: Icon(Icons.arrow_back_rounded),
         ),
         title: Text(
-          'Select Table',
+          'Select Table ',
           style: TextStyle(
               fontSize: 25, fontWeight: FontWeight.bold, color: Colors.black),
         ),

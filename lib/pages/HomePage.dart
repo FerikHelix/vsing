@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:vsing/pages/detail_table.dart';
+import 'package:vsing/pages/Input/input_cos.dart';
 import 'package:vsing/util/detailbook.dart';
 
 class HomePage extends StatefulWidget {
@@ -13,8 +13,6 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   // database
   final db = FirebaseFirestore.instance;
-  var lantai = '';
-  var no;
 
 // Search func
   List searchResult = [];
@@ -135,6 +133,7 @@ class _HomePageState extends State<HomePage> {
                             itemCount: data.length,
                             itemBuilder: (context, index) {
                               return detail_book(
+                                  event: data[index].data()['event'],
                                   name: data[index].data()['name'],
                                   phone: data[index].data()['phone_number'],
                                   pax: data[index].data()['pax'],
@@ -155,6 +154,7 @@ class _HomePageState extends State<HomePage> {
                         itemCount: searchResult.length,
                         itemBuilder: (context, index) {
                           return detail_book(
+                              event: searchResult[index]['event'],
                               name: searchResult[index]['name'],
                               phone: searchResult[index]['phone_number'],
                               pax: searchResult[index]['pax'],

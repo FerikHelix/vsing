@@ -1,6 +1,8 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:vsing/pages/TableBook.dart';
+import 'package:vsing/pages/Update/edit_table.dart';
+import 'package:vsing/pages/Input/input_table.dart';
 import 'package:vsing/style/color_constant.dart';
 import 'package:intl/intl.dart';
 
@@ -12,6 +14,8 @@ class Edit_Cos extends StatefulWidget {
   final no_table;
   final time;
   final pax;
+  final event;
+
   const Edit_Cos({
     super.key,
     required this.name,
@@ -21,6 +25,7 @@ class Edit_Cos extends StatefulWidget {
     required this.no_table,
     required this.time,
     required this.pax,
+    required this.event,
   });
 
   @override
@@ -34,13 +39,40 @@ class _Edit_CosState extends State<Edit_Cos> {
   int count = 0;
   String datetime = "";
   String time = "";
+  var no = "";
 
   // event
   var brtdy = "Brithday";
-  var aniv = "Aniversarry";
-  var othr = "Other";
+  var aniv = "Anniversary";
+  var comp = "Company";
+  var othr = "Bachelor Night";
 
   var onklik = '';
+  //
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    onklik = widget.event;
+    var pax = int.parse(widget.pax);
+    assert(pax is int);
+
+    count = pax;
+    name.text = widget.name;
+    number.text = widget.phone;
+    // no = widget.no_table.toString();
+  }
+
+  _updatetable() async {
+    for (int x = 0; x <= widget.no_table.length - 1; ++x) {
+      await FirebaseFirestore.instance
+          .collection('table')
+          .doc(widget.floor)
+          .collection('lantai')
+          .doc(widget.no_table[x].toString())
+          .update({'status': 'Selected'});
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -52,16 +84,22 @@ class _Edit_CosState extends State<Edit_Cos> {
           height: 50,
           child: ElevatedButton(
             onPressed: () {
-              // Navigator.push(
-              //     context,
-              //     MaterialPageRoute(
-              //         builder: (context) => Table_Book(
-              //               phone: number.text,
-              //               name: name.text,
-              //               date: datetime,
-              //               time: time,
-              //               pax: count.toString(),
-              //             )));
+              _updatetable();
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => Edit_Book(
+                            floor: widget.floor,
+                            no_table: widget.no_table,
+                            id: widget.name + widget.pax + widget.date,
+                            event: onklik,
+                            phone:
+                                number.text == '' ? widget.phone : number.text,
+                            name: name.text == '' ? widget.name : name.text,
+                            date: datetime == '' ? widget.date : datetime,
+                            time: time == '' ? widget.time : time,
+                            pax: count.toString(),
+                          )));
             },
             style: const ButtonStyle(
               backgroundColor:
@@ -122,7 +160,7 @@ class _Edit_CosState extends State<Edit_Cos> {
                       return null;
                     },
                     decoration: InputDecoration(
-                      hintText: widget.name,
+                      // hintText: widget.name,
                       filled: true,
                       fillColor: Color.fromARGB(255, 238, 238, 238),
                       border: OutlineInputBorder(
@@ -164,7 +202,7 @@ class _Edit_CosState extends State<Edit_Cos> {
                       return null;
                     },
                     decoration: InputDecoration(
-                      hintText: widget.phone,
+                      // hintText: widget.phone,
                       filled: true,
                       fillColor: Color.fromARGB(255, 238, 238, 238),
                       border: OutlineInputBorder(
@@ -196,7 +234,6 @@ class _Edit_CosState extends State<Edit_Cos> {
                   IconButton(
                       onPressed: () {
                         setState(() {
-                          // count = widget.pax;
                           if (count > 0) {
                             count -= 1;
                           } else {
@@ -223,7 +260,6 @@ class _Edit_CosState extends State<Edit_Cos> {
                   IconButton(
                       onPressed: () {
                         setState(() {
-                          // count = widget.pax;
                           count += 1;
                         });
                       },
@@ -237,7 +273,7 @@ class _Edit_CosState extends State<Edit_Cos> {
               SizedBox(height: 20),
               Text(
                 datetime == ""
-                    ? widget.date + ' - ' + widget.time
+                    ? widget.date + " - " + widget.time
                     : datetime + ' - ' + time,
                 style: TextStyle(
                   color: Color(primaryColor),
@@ -261,6 +297,13 @@ class _Edit_CosState extends State<Edit_Cos> {
                         lastDate: DateTime(2100));
                     var selectedTime = await showTimePicker(
                       initialTime: TimeOfDay.now(),
+                      builder: (context, child) {
+                        return MediaQuery(
+                          data: MediaQuery.of(context)
+                              .copyWith(alwaysUse24HourFormat: true),
+                          child: child!,
+                        );
+                      },
                       context: context,
                     );
                     String formattedMonth =
@@ -268,7 +311,8 @@ class _Edit_CosState extends State<Edit_Cos> {
                     setState(() {
                       datetime =
                           "${datetimeRet.day} $formattedMonth ${datetimeRet.year}";
-                      time = '${selectedTime!.hour}:${selectedTime.minute}';
+                      time =
+                          '${selectedTime!.hour}:${(selectedTime.minute == 0) ? "00" : selectedTime.minute}';
                     });
                   },
                   child: Row(
@@ -290,60 +334,144 @@ class _Edit_CosState extends State<Edit_Cos> {
                   )),
               SizedBox(height: 10),
               Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                // crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  ElevatedButton(
-                      onPressed: () {
-                        setState(() {
-                          onklik = brtdy;
-                          print(onklik);
-                        });
-                      },
-                      style: onklik == brtdy
-                          ? ButtonStyle(
-                              backgroundColor: MaterialStatePropertyAll<Color>(
-                                  Color(primaryColor)),
-                            )
-                          : ButtonStyle(
-                              backgroundColor: MaterialStatePropertyAll<Color>(
-                                  Color.fromARGB(255, 87, 71, 164)),
-                            ),
-                      child: Text(brtdy)),
-                  ElevatedButton(
-                      onPressed: () {
-                        setState(() {
-                          onklik = aniv;
-                          print(onklik);
-                        });
-                      },
-                      style: onklik == aniv
-                          ? ButtonStyle(
-                              backgroundColor: MaterialStatePropertyAll<Color>(
-                                  Color(primaryColor)),
-                            )
-                          : ButtonStyle(
-                              backgroundColor: MaterialStatePropertyAll<Color>(
-                                  Color.fromARGB(255, 87, 71, 164)),
-                            ),
-                      child: Text(aniv)),
-                  ElevatedButton(
-                      onPressed: () {
-                        setState(() {
-                          onklik = othr;
-                          print(onklik);
-                        });
-                      },
-                      style: onklik == othr
-                          ? ButtonStyle(
-                              backgroundColor: MaterialStatePropertyAll<Color>(
-                                  Color(primaryColor)),
-                            )
-                          : ButtonStyle(
-                              backgroundColor: MaterialStatePropertyAll<Color>(
-                                  Color.fromARGB(255, 87, 71, 164)),
-                            ),
-                      child: Text(othr))
+                  // brtdy
+                  SizedBox(
+                    width: 110,
+                    child: ElevatedButton(
+                        onPressed: () {
+                          setState(() {
+                            onklik = brtdy;
+                            print(onklik);
+                          });
+                        },
+                        style: onklik == brtdy
+                            ? ButtonStyle(
+                                backgroundColor:
+                                    MaterialStatePropertyAll<Color>(
+                                        Color(primaryColor)),
+                              )
+                            : ButtonStyle(
+                                backgroundColor:
+                                    MaterialStatePropertyAll<Color>(
+                                        Color.fromARGB(255, 210, 209, 209)),
+                              ),
+                        child: onklik == brtdy
+                            ? Text(
+                                brtdy,
+                                textAlign: TextAlign.center,
+                              )
+                            : Text(
+                                brtdy,
+                                textAlign: TextAlign.center,
+                                style: TextStyle(color: Color(0xFF494753)),
+                              )),
+                  ),
+                  // anniv
+                  SizedBox(
+                    width: 110,
+                    child: ElevatedButton(
+                        onPressed: () {
+                          setState(() {
+                            onklik = aniv;
+                            print(onklik);
+                          });
+                        },
+                        style: onklik == aniv
+                            ? ButtonStyle(
+                                backgroundColor:
+                                    MaterialStatePropertyAll<Color>(
+                                        Color(primaryColor)),
+                              )
+                            : ButtonStyle(
+                                backgroundColor:
+                                    MaterialStatePropertyAll<Color>(
+                                        Color.fromARGB(255, 210, 209, 209)),
+                              ),
+                        child: onklik == aniv
+                            ? Text(
+                                aniv,
+                                textAlign: TextAlign.center,
+                              )
+                            : Text(
+                                aniv,
+                                textAlign: TextAlign.center,
+                                style: TextStyle(color: Color(0xFF494753)),
+                              )),
+                  ),
+                ],
+              ),
+              SizedBox(height: 10),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                // crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  // company
+                  SizedBox(
+                    width: 110,
+                    child: ElevatedButton(
+                        onPressed: () {
+                          setState(() {
+                            onklik = comp;
+                            print(onklik);
+                          });
+                        },
+                        style: onklik == comp
+                            ? ButtonStyle(
+                                backgroundColor:
+                                    MaterialStatePropertyAll<Color>(
+                                        Color(primaryColor)),
+                              )
+                            : ButtonStyle(
+                                backgroundColor:
+                                    MaterialStatePropertyAll<Color>(
+                                        Color.fromARGB(255, 210, 209, 209)),
+                              ),
+                        child: onklik == comp
+                            ? Text(
+                                comp,
+                                textAlign: TextAlign.center,
+                              )
+                            : Text(
+                                comp,
+                                textAlign: TextAlign.center,
+                                style: TextStyle(color: Color(0xFF494753)),
+                              )),
+                  ),
+                  // bachelor
+                  SizedBox(
+                    width: 110,
+                    child: ElevatedButton(
+                        onPressed: () {
+                          setState(() {
+                            onklik = othr;
+                            print(onklik);
+                          });
+                        },
+                        style: onklik == othr
+                            ? ButtonStyle(
+                                backgroundColor:
+                                    MaterialStatePropertyAll<Color>(
+                                        Color(primaryColor)),
+                              )
+                            : ButtonStyle(
+                                backgroundColor:
+                                    MaterialStatePropertyAll<Color>(
+                                        Color.fromARGB(255, 210, 209, 209)),
+                              ),
+                        child: onklik == othr
+                            ? Text(
+                                othr,
+                                textAlign: TextAlign.center,
+                              )
+                            : Text(
+                                othr,
+                                textAlign: TextAlign.center,
+                                style: TextStyle(color: Color(0xFF494753)),
+                              )),
+                  ),
                 ],
               )
             ],

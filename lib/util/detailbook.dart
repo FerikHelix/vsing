@@ -1,8 +1,7 @@
 import 'dart:convert';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:vsing/pages/edit_cos.dart';
+import 'package:vsing/pages/Update/edit_cos.dart';
 
 class detail_book extends StatelessWidget {
   final name;
@@ -11,7 +10,9 @@ class detail_book extends StatelessWidget {
   final date;
   final time;
   final no;
+
   final floor;
+  final event;
   const detail_book({
     super.key,
     required this.name,
@@ -20,6 +21,7 @@ class detail_book extends StatelessWidget {
     required this.date,
     required this.time,
     required this.no,
+    required this.event,
     required this.floor,
   });
 
@@ -77,7 +79,7 @@ class detail_book extends StatelessWidget {
                     style: TextStyle(fontSize: 12),
                   ),
                   Text(
-                    "Pax : $pax",
+                    "Pax : $pax - $event",
                     overflow: TextOverflow.ellipsis,
                     style: TextStyle(fontSize: 12),
                   ),
@@ -151,6 +153,7 @@ class detail_book extends StatelessWidget {
                                   context,
                                   MaterialPageRoute(
                                     builder: (context) => Edit_Cos(
+                                        event: event,
                                         name: name,
                                         phone: phone,
                                         date: date,

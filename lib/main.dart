@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:vsing/pages/HomePage.dart';
-import 'package:vsing/pages/detail_table.dart';
 import 'firebase_options.dart';
 
 Future<void> main() async {

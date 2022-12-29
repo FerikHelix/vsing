@@ -9,7 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:vsing/main.dart';
-import 'package:vsing/pages/detail_table.dart';
+import 'package:vsing/pages/Input/input_cos.dart';
 
 void main() {
   testWidgets('Counter increments smoke test', (WidgetTester tester) async {
