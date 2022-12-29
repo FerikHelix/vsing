@@ -14,12 +14,14 @@ class Table_Book extends StatefulWidget {
   final date;
   final time;
   final phone;
+  final event;
   const Table_Book(
       {super.key,
       required this.name,
       required this.date,
       required this.time,
       required this.phone,
+      required this.event,
       required this.pax});
 
   @override
@@ -417,6 +419,10 @@ class _Table_BookState extends State<Table_Book> {
                         widget.name,
                         style: TextStyle(
                             fontSize: 20, fontWeight: FontWeight.bold),
+                      ),
+                      Text(
+                        widget.event,
+                        style: TextStyle(fontSize: 20),
                       ),
                       Text(
                         widget.phone,

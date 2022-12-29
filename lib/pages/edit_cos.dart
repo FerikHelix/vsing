@@ -4,14 +4,30 @@ import 'package:vsing/pages/TableBook.dart';
 import 'package:vsing/style/color_constant.dart';
 import 'package:intl/intl.dart';
 
-class TableDetails extends StatefulWidget {
-  const TableDetails({super.key});
+class Edit_Cos extends StatefulWidget {
+  final name;
+  final phone;
+  final date;
+  final floor;
+  final no_table;
+  final time;
+  final pax;
+  const Edit_Cos({
+    super.key,
+    required this.name,
+    required this.phone,
+    required this.date,
+    required this.floor,
+    required this.no_table,
+    required this.time,
+    required this.pax,
+  });
 
   @override
-  State<TableDetails> createState() => _TableDetailsState();
+  State<Edit_Cos> createState() => _Edit_CosState();
 }
 
-class _TableDetailsState extends State<TableDetails> {
+class _Edit_CosState extends State<Edit_Cos> {
   // input
   TextEditingController name = TextEditingController();
   TextEditingController number = TextEditingController();
@@ -36,17 +52,16 @@ class _TableDetailsState extends State<TableDetails> {
           height: 50,
           child: ElevatedButton(
             onPressed: () {
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => Table_Book(
-                            event: onklik,
-                            phone: number.text,
-                            name: name.text,
-                            date: datetime,
-                            time: time,
-                            pax: count.toString(),
-                          )));
+              // Navigator.push(
+              //     context,
+              //     MaterialPageRoute(
+              //         builder: (context) => Table_Book(
+              //               phone: number.text,
+              //               name: name.text,
+              //               date: datetime,
+              //               time: time,
+              //               pax: count.toString(),
+              //             )));
             },
             style: const ButtonStyle(
               backgroundColor:
@@ -107,6 +122,7 @@ class _TableDetailsState extends State<TableDetails> {
                       return null;
                     },
                     decoration: InputDecoration(
+                      hintText: widget.name,
                       filled: true,
                       fillColor: Color.fromARGB(255, 238, 238, 238),
                       border: OutlineInputBorder(
@@ -148,6 +164,7 @@ class _TableDetailsState extends State<TableDetails> {
                       return null;
                     },
                     decoration: InputDecoration(
+                      hintText: widget.phone,
                       filled: true,
                       fillColor: Color.fromARGB(255, 238, 238, 238),
                       border: OutlineInputBorder(
@@ -179,6 +196,7 @@ class _TableDetailsState extends State<TableDetails> {
                   IconButton(
                       onPressed: () {
                         setState(() {
+                          // count = widget.pax;
                           if (count > 0) {
                             count -= 1;
                           } else {
@@ -205,6 +223,7 @@ class _TableDetailsState extends State<TableDetails> {
                   IconButton(
                       onPressed: () {
                         setState(() {
+                          // count = widget.pax;
                           count += 1;
                         });
                       },
@@ -217,7 +236,9 @@ class _TableDetailsState extends State<TableDetails> {
               ),
               SizedBox(height: 20),
               Text(
-                datetime == "" ? "Choose Date & Time" : datetime + ' - ' + time,
+                datetime == ""
+                    ? widget.date + ' - ' + widget.time
+                    : datetime + ' - ' + time,
                 style: TextStyle(
                   color: Color(primaryColor),
                   fontSize: 20,
@@ -286,7 +307,7 @@ class _TableDetailsState extends State<TableDetails> {
                             )
                           : ButtonStyle(
                               backgroundColor: MaterialStatePropertyAll<Color>(
-                                  Color.fromARGB(255, 238, 238, 238)),
+                                  Color.fromARGB(255, 87, 71, 164)),
                             ),
                       child: Text(brtdy)),
                   ElevatedButton(

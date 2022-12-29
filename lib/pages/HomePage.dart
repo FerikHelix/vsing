@@ -16,31 +16,6 @@ class _HomePageState extends State<HomePage> {
   var lantai = '';
   var no;
 
-  // function delete data
-  Future deleteData(String id) async {
-    try {
-      await FirebaseFirestore.instance.collection("user").doc(id).delete();
-      // await FirebaseFirestore.instance
-      //     .collection("table")
-      //     .doc(lantai)
-      //     .collection('lantai')
-      //     .doc(no)
-      //     .update({
-      //   'status': 'Avail',
-      // });
-      for (int x = 0; x <= no.length - 1; ++x) {
-        await db
-            .collection('table')
-            .doc(lantai)
-            .collection('lantai')
-            .doc(no[x].toString())
-            .update({'status': 'Avail'});
-      }
-    } catch (e) {
-      return false;
-    }
-  }
-
 // Search func
   List searchResult = [];
 
@@ -140,8 +115,8 @@ class _HomePageState extends State<HomePage> {
                   ? Container(
                       width: MediaQuery.of(context).size.width,
                       height: 530,
-                      child: FutureBuilder(
-                        future: db.collection('user').get(),
+                      child: StreamBuilder(
+                        stream: db.collection('user').snapshots(),
                         builder: (context, snapshot) {
                           if (snapshot.connectionState ==
                               ConnectionState.waiting) {
@@ -159,43 +134,14 @@ class _HomePageState extends State<HomePage> {
                           return ListView.builder(
                             itemCount: data.length,
                             itemBuilder: (context, index) {
-                              return Dismissible(
-                                key: Key(data[index].id.toString()),
-                                direction: DismissDirection.endToStart,
-                                onDismissed: (direction) {
-                                  deleteData(data[index].id);
-                                  lantai = data[index].data()['floor'];
-                                  no = data[index].data()['table_no'];
-                                },
-                                background: Container(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 20),
-                                  decoration: BoxDecoration(
-                                    color: Colors.black,
-                                    borderRadius: BorderRadius.circular(15),
-                                  ),
-                                  child: Row(
-                                    children: [
-                                      const Spacer(),
-                                      Icon(
-                                        Icons.delete,
-                                        color: Colors.white,
-                                      ),
-                                      const SizedBox(
-                                        width: 30,
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                child: detail_book(
-                                    name: data[index].data()['name'],
-                                    phone: data[index].data()['phone_number'],
-                                    pax: data[index].data()['pax'],
-                                    date: data[index].data()['date'],
-                                    time: data[index].data()['time'],
-                                    no: data[index].data()['table_no'],
-                                    floor: data[index].data()['floor']),
-                              );
+                              return detail_book(
+                                  name: data[index].data()['name'],
+                                  phone: data[index].data()['phone_number'],
+                                  pax: data[index].data()['pax'],
+                                  date: data[index].data()['date'],
+                                  time: data[index].data()['time'],
+                                  no: data[index].data()['table_no'],
+                                  floor: data[index].data()['floor']);
                             },
                           );
                         },
@@ -208,35 +154,14 @@ class _HomePageState extends State<HomePage> {
                       child: ListView.builder(
                         itemCount: searchResult.length,
                         itemBuilder: (context, index) {
-                          return Dismissible(
-                            key: Key(searchResult[index]['name'] +
-                                searchResult[index]['pax'] +
-                                searchResult[index]['date']),
-                            direction: DismissDirection.endToStart,
-                            onDismissed: (direction) {
-                              deleteData(searchResult[index]['name'] +
-                                  searchResult[index]['pax'] +
-                                  searchResult[index]['date']);
-                              lantai = searchResult[index]['floor'];
-                              no = searchResult[index]['table_no'];
-                              print(lantai + no);
-                            },
-                            background: Container(
-                                padding:
-                                    const EdgeInsets.symmetric(horizontal: 20),
-                                decoration: BoxDecoration(
-                                  color: Colors.black,
-                                  borderRadius: BorderRadius.circular(15),
-                                )),
-                            child: detail_book(
-                                name: searchResult[index]['name'],
-                                phone: searchResult[index]['phone_number'],
-                                pax: searchResult[index]['pax'],
-                                date: searchResult[index]['date'],
-                                time: searchResult[index]['time'],
-                                no: searchResult[index]['table_no'],
-                                floor: searchResult[index]['floor']),
-                          );
+                          return detail_book(
+                              name: searchResult[index]['name'],
+                              phone: searchResult[index]['phone_number'],
+                              pax: searchResult[index]['pax'],
+                              date: searchResult[index]['date'],
+                              time: searchResult[index]['time'],
+                              no: searchResult[index]['table_no'],
+                              floor: searchResult[index]['floor']);
                         },
                       ),
                     )
