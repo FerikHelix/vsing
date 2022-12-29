@@ -27,7 +27,7 @@ class detail_book extends StatelessWidget {
       padding: const EdgeInsets.only(left: 10, right: 10, bottom: 10),
       child: Container(
         width: MediaQuery.of(context).size.width,
-        height: 120,
+        height: 140,
         decoration: BoxDecoration(
             color: Colors.white, borderRadius: BorderRadius.circular(20)),
         child: Padding(
@@ -53,7 +53,8 @@ class detail_book extends StatelessWidget {
                     style: TextStyle(fontSize: 16),
                   ),
                   Text(
-                    "Floor : $no $floor",
+                    "Table : ${no.join(",")} $floor",
+                    // overflow: TextOverflow.ellipsis,
                     style: TextStyle(fontSize: 16),
                   ),
                 ],
@@ -75,6 +76,7 @@ class detail_book extends StatelessWidget {
                       "Date & Time",
                       style: TextStyle(fontSize: 16),
                     ),
+                    SizedBox(height: 10),
                     Text(
                       "$date",
                       style:

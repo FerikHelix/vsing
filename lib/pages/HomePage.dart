@@ -20,14 +20,22 @@ class _HomePageState extends State<HomePage> {
   Future deleteData(String id) async {
     try {
       await FirebaseFirestore.instance.collection("user").doc(id).delete();
-      await FirebaseFirestore.instance
-          .collection("table")
-          .doc(lantai)
-          .collection('lantai')
-          .doc(no)
-          .update({
-        'status': 'Avail',
-      });
+      // await FirebaseFirestore.instance
+      //     .collection("table")
+      //     .doc(lantai)
+      //     .collection('lantai')
+      //     .doc(no)
+      //     .update({
+      //   'status': 'Avail',
+      // });
+      for (int x = 0; x <= no.length - 1; ++x) {
+        await db
+            .collection('table')
+            .doc(lantai)
+            .collection('lantai')
+            .doc(no[x].toString())
+            .update({'status': 'Avail'});
+      }
     } catch (e) {
       return false;
     }
@@ -39,7 +47,7 @@ class _HomePageState extends State<HomePage> {
   void searchFromFirebase(String query) async {
     final result = await FirebaseFirestore.instance
         .collection('user')
-        .where('name', isEqualTo: query)
+        .where('search', arrayContains: query)
         .get();
 
     setState(() {
@@ -87,7 +95,8 @@ class _HomePageState extends State<HomePage> {
                 height: 200,
                 color: Colors.white,
                 child: Padding(
-                  padding: const EdgeInsets.only(left: 20, bottom: 10),
+                  padding:
+                      const EdgeInsets.only(left: 20, bottom: 10, right: 20),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.end,
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -101,16 +110,33 @@ class _HomePageState extends State<HomePage> {
                         style: TextStyle(
                             fontSize: 35, fontWeight: FontWeight.bold),
                       ),
-                      TextFormField(
-                        onChanged: (query) {
-                          searchFromFirebase(query);
-                        },
-                      )
+                      Container(
+                        width: MediaQuery.of(context).size.width,
+                        height: 40,
+                        child: TextFormField(
+                          style: TextStyle(fontSize: 18),
+                          onChanged: (query) {
+                            searchFromFirebase(query);
+                          },
+                          decoration: InputDecoration(
+                            suffixIcon: Icon(Icons.search),
+                            hintText: 'Search by name, date or phone number',
+                            hintStyle: TextStyle(fontSize: 15),
+                            filled: true,
+                            fillColor: Color.fromARGB(255, 238, 238, 238),
+                            border: OutlineInputBorder(
+                                borderSide: BorderSide(
+                                    width: 0, style: BorderStyle.none),
+                                borderRadius: BorderRadius.circular(10)),
+                          ),
+                        ),
+                      ),
                     ],
                   ),
                 ),
               ),
               searchResult.isEmpty
+                  // if no search
                   ? Container(
                       width: MediaQuery.of(context).size.width,
                       height: 530,
@@ -140,7 +166,6 @@ class _HomePageState extends State<HomePage> {
                                   deleteData(data[index].id);
                                   lantai = data[index].data()['floor'];
                                   no = data[index].data()['table_no'];
-                                  print(lantai + no);
                                 },
                                 background: Container(
                                   padding: const EdgeInsets.symmetric(
@@ -175,20 +200,43 @@ class _HomePageState extends State<HomePage> {
                           );
                         },
                       ))
+
+                  // if search
                   : Container(
                       width: MediaQuery.of(context).size.width,
                       height: 530,
                       child: ListView.builder(
                         itemCount: searchResult.length,
                         itemBuilder: (context, index) {
-                          return detail_book(
-                              name: searchResult[index]['name'],
-                              phone: searchResult[index]['phone_number'],
-                              pax: searchResult[index]['pax'],
-                              date: searchResult[index]['date'],
-                              time: searchResult[index]['time'],
-                              no: searchResult[index]['table_no'],
-                              floor: searchResult[index]['floor']);
+                          return Dismissible(
+                            key: Key(searchResult[index]['name'] +
+                                searchResult[index]['pax'] +
+                                searchResult[index]['date']),
+                            direction: DismissDirection.endToStart,
+                            onDismissed: (direction) {
+                              deleteData(searchResult[index]['name'] +
+                                  searchResult[index]['pax'] +
+                                  searchResult[index]['date']);
+                              lantai = searchResult[index]['floor'];
+                              no = searchResult[index]['table_no'];
+                              print(lantai + no);
+                            },
+                            background: Container(
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 20),
+                                decoration: BoxDecoration(
+                                  color: Colors.black,
+                                  borderRadius: BorderRadius.circular(15),
+                                )),
+                            child: detail_book(
+                                name: searchResult[index]['name'],
+                                phone: searchResult[index]['phone_number'],
+                                pax: searchResult[index]['pax'],
+                                date: searchResult[index]['date'],
+                                time: searchResult[index]['time'],
+                                no: searchResult[index]['table_no'],
+                                floor: searchResult[index]['floor']),
+                          );
                         },
                       ),
                     )

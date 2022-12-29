@@ -34,6 +34,7 @@ class _Table_BookState extends State<Table_Book> {
   var lantai = 'Pilih Lantai';
 
   var selectedtable;
+  var unpackedArr = [];
   @override
   Widget build(BuildContext context) {
     final db = FirebaseFirestore.instance;
@@ -63,27 +64,17 @@ class _Table_BookState extends State<Table_Book> {
           .collection('lantai')
           .where('status', isEqualTo: newstatus)
           .get();
-      selectedtable = result.docs.map((e) => e.data()).toList();
 
       setState(() {
-        // print('===============================================');
-        // print(selectedtable);
-        // print('===============================================');
+        selectedtable = result.docs.map((e) => e.data()).toList();
       });
     }
 
-    _getno() {
-      List numb = [];
-      for (var i = 0; i < selectedtable.length; i++) {
-        numb = selectedtable[i]['no'];
-      }
-      return numb;
-    }
-
+    List search = [widget.name, widget.phone, widget.date];
     _savebook() async {
-      print("\n\n\n\n");
-      print(selectedtable);
-      print("\n\n\n\n");
+      for (int x = 0; x <= selectedtable.length - 1; ++x) {
+        unpackedArr.add(selectedtable[x]['no']);
+      }
       await db
           .collection('user')
           .doc(widget.name + widget.pax + widget.date)
@@ -91,17 +82,48 @@ class _Table_BookState extends State<Table_Book> {
         'name': widget.name,
         'pax': widget.pax,
         'date': widget.date,
-        'table_no': FieldValue.arrayUnion(selectedtable),
+        'table_no': unpackedArr == ""
+            ? "no choose table"
+            : FieldValue.arrayUnion(unpackedArr),
+        // 'table_no': no,
         "phone_number": widget.phone,
         'floor': lantai == "Pilih Lantai" ? "" : lantai,
         'time': widget.time,
+        'search': FieldValue.arrayUnion(search)
       });
+      for (int x = 0; x <= unpackedArr.length - 1; ++x) {
+        await db
+            .collection('table')
+            .doc(lantai)
+            .collection('lantai')
+            .doc(unpackedArr[x].toString())
+            .update({'status': 'Book'});
+      }
+      // await db
+      //     .collection('table')
+      //     .doc(lantai)
+      //     .collection('lantai')
+      //     .doc(unpackedArr.join(','))
+      //     .update({'status': 'Book'});
+    }
+
+    _savebooknotable() async {
       await db
-          .collection('table')
-          .doc(lantai)
-          .collection('lantai')
-          .doc(no)
-          .update({'status': 'Book'});
+          .collection('user')
+          .doc(widget.name + widget.pax + widget.date)
+          .set({
+        'name': widget.name,
+        'pax': widget.pax,
+        'date': widget.date,
+        'table_no': unpackedArr == ""
+            ? "no choose table"
+            : FieldValue.arrayUnion(unpackedArr),
+        // 'table_no': no,
+        "phone_number": widget.phone,
+        'floor': lantai == "Pilih Lantai" ? "" : lantai,
+        'time': widget.time,
+        'search': FieldValue.arrayUnion(search)
+      });
     }
 
     return Scaffold(
@@ -114,7 +136,11 @@ class _Table_BookState extends State<Table_Book> {
           height: 50,
           child: ElevatedButton(
             onPressed: () {
-              _savebook();
+              if (no == '' && status == '') {
+                _savebooknotable();
+              } else {
+                _savebook();
+              }
               Navigator.pushAndRemoveUntil(context,
                   MaterialPageRoute(builder: (BuildContext context) {
                 return HomePage();
@@ -134,7 +160,9 @@ class _Table_BookState extends State<Table_Book> {
       ),
       appBar: AppBar(
         leading: IconButton(
-          onPressed: null,
+          onPressed: () {
+            Navigator.pop(context);
+          },
           icon: Icon(Icons.arrow_back_rounded),
         ),
         title: Text(
@@ -152,83 +180,81 @@ class _Table_BookState extends State<Table_Book> {
         child: Column(
           children: [
             // lantai
-            Container(
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    lantai,
-                    style: TextStyle(
-                      fontSize: 20,
-                    ),
-                  ),
-                  IconButton(
-                      onPressed: () {
-                        showModalBottomSheet(
-                          context: context,
-                          builder: (context) {
-                            return Container(
-                              height: 300,
-                              child: FutureBuilder(
-                                future: db.collection('table').get(),
-                                builder: (context, snapshot) {
-                                  if (snapshot.connectionState ==
-                                      ConnectionState.waiting) {
-                                    return Center(
-                                      child: CircularProgressIndicator(),
-                                    );
-                                  }
-                                  if (snapshot.hasError) {
-                                    return Center(
-                                      child: Text("eror"),
-                                    );
-                                  }
-                                  var data = snapshot.data!.docs;
-                                  return ListView.builder(
-                                    itemCount: data.length,
-                                    itemBuilder: (context, index) {
-                                      return InkWell(
-                                        onTap: () {
-                                          setState(() {
-                                            lantai =
-                                                data[index].data()['lantai'];
-                                          });
-                                        },
-                                        child: Padding(
-                                          padding: const EdgeInsets.all(8.0),
-                                          child: Container(
-                                            width: MediaQuery.of(context)
-                                                .size
-                                                .width,
-                                            height: 30,
-                                            decoration: BoxDecoration(
-                                                color: Colors.grey[300],
-                                                borderRadius:
-                                                    BorderRadius.circular(10)),
-                                            child: Center(
-                                              child: Text(
-                                                data[index].data()['lantai'],
-                                                style: TextStyle(
-                                                  fontSize: 20,
-                                                ),
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                      );
-                                    },
-                                  );
-                                },
-                              ),
+            InkWell(
+              onTap: () {
+                showModalBottomSheet(
+                  context: context,
+                  builder: (context) {
+                    return Container(
+                      height: 300,
+                      child: FutureBuilder(
+                        future: db.collection('table').get(),
+                        builder: (context, snapshot) {
+                          if (snapshot.connectionState ==
+                              ConnectionState.waiting) {
+                            return Center(
+                              child: CircularProgressIndicator(),
                             );
-                          },
-                        );
-                      },
-                      icon: Icon(
-                        Icons.arrow_drop_down_rounded,
-                        size: 30,
-                      ))
-                ],
+                          }
+                          if (snapshot.hasError) {
+                            return Center(
+                              child: Text("eror"),
+                            );
+                          }
+                          var data = snapshot.data!.docs;
+                          return ListView.builder(
+                            itemCount: data.length,
+                            itemBuilder: (context, index) {
+                              return InkWell(
+                                onTap: () {
+                                  setState(() {
+                                    lantai = data[index].data()['lantai'];
+                                  });
+                                },
+                                child: Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Container(
+                                    width: MediaQuery.of(context).size.width,
+                                    height: 30,
+                                    decoration: BoxDecoration(
+                                        color: Colors.grey[300],
+                                        borderRadius:
+                                            BorderRadius.circular(10)),
+                                    child: Center(
+                                      child: Text(
+                                        data[index].data()['lantai'],
+                                        style: TextStyle(
+                                          fontSize: 20,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              );
+                            },
+                          );
+                        },
+                      ),
+                    );
+                  },
+                );
+              },
+              child: Container(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      lantai,
+                      style: TextStyle(
+                        fontSize: 20,
+                      ),
+                    ),
+                    Icon(
+                      Icons.arrow_drop_down_rounded,
+                      size: 30,
+                    )
+                  ],
+                ),
               ),
             ),
 
@@ -249,6 +275,7 @@ class _Table_BookState extends State<Table_Book> {
             SizedBox(height: 30),
 
             // tablet
+
             Container(
               width: MediaQuery.of(context).size.width,
               height: 300,
@@ -273,9 +300,9 @@ class _Table_BookState extends State<Table_Book> {
                     return GridView.builder(
                         gridDelegate:
                             const SliverGridDelegateWithMaxCrossAxisExtent(
-                                maxCrossAxisExtent: 50,
-                                crossAxisSpacing: 6,
-                                mainAxisSpacing: 6),
+                                maxCrossAxisExtent: 60,
+                                crossAxisSpacing: 20,
+                                mainAxisSpacing: 10),
                         itemCount: data.length,
                         itemBuilder: (BuildContext ctx, index) {
                           return InkWell(
@@ -285,7 +312,15 @@ class _Table_BookState extends State<Table_Book> {
                                 status = data[index].data()['status'];
                                 newstatus = "Selected";
                               });
+                              if (no == 'T10') {
+                                no = "U10";
+                              } else if (no == 'T11') {
+                                no = "U11";
+                              } else if (no == 'T12') {
+                                no = "U12";
+                              }
                               _getselected();
+
                               if (status == 'Avail') {
                                 _update();
                               } else if (status == 'Selected') {
