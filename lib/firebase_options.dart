@@ -63,7 +63,8 @@ class DefaultFirebaseOptions {
     messagingSenderId: '707797100512',
     projectId: 'vsingrsv',
     storageBucket: 'vsingrsv.appspot.com',
-    iosClientId: '707797100512-fqenumn051srdent9lfahjcohus4hq4c.apps.googleusercontent.com',
+    iosClientId:
+        '707797100512-fqenumn051srdent9lfahjcohus4hq4c.apps.googleusercontent.com',
     iosBundleId: 'com.innotia.vsingrsv',
   );
 }
