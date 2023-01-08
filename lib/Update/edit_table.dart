@@ -1,10 +1,9 @@
-import 'dart:ffi';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:vsing/pages/HomePage.dart';
 import 'package:vsing/util/table.dart';
-import '../../style/color_constant.dart';
+import '../style/color_constant.dart';
 
 class Edit_Book extends StatefulWidget {
   final name;
@@ -13,18 +12,28 @@ class Edit_Book extends StatefulWidget {
   final time;
   final phone;
   final event;
+  final attendance;
   final id;
+  final datebefore;
   final no_table;
+  final remark;
   final floor;
+  final bookdata;
+  final paxdata;
   const Edit_Book(
       {super.key,
       required this.id,
+      required this.datebefore,
+      required this.remark,
+      required this.attendance,
       required this.name,
       required this.date,
       required this.time,
       required this.phone,
       required this.event,
       required this.no_table,
+      required this.bookdata,
+      required this.paxdata,
       required this.floor,
       required this.pax});
 
@@ -37,10 +46,12 @@ class _Edit_BookState extends State<Edit_Book> {
   var status = '';
   var newstatus = '';
   var no = '';
-  var lantai = 'Pilih Lantai';
+  var lantai = 'Choose Table Here';
+  var selection = "";
 
   var selectedtable;
   var unpackedArr = [];
+
   @override
   Widget build(BuildContext context) {
     final db = FirebaseFirestore.instance;
@@ -78,34 +89,116 @@ class _Edit_BookState extends State<Edit_Book> {
 
     Future deleteData(String id) async {
       try {
-        await FirebaseFirestore.instance.collection("user").doc(id).delete();
+        await FirebaseFirestore.instance
+            .collection("user")
+            .doc(widget.datebefore)
+            .collection('isi')
+            .doc(id)
+            .delete();
       } catch (e) {
         return false;
       }
     }
 
-    List search = [widget.name, widget.phone, widget.date];
-    _updatebook() async {
+    // List search = [widget.name, widget.phone, widget.date];
+    _searchByName() {
+      var data = [];
+      for (var i = 0; i < widget.name.length; i++) {
+        var potongan = widget.name.substring(0, i + 1);
+        data.add(potongan);
+      }
+      return data;
+    }
+
+    _searchByNumber() {
+      var data = [];
+      for (var i = 0; i < widget.phone.length; i++) {
+        var potongan = widget.phone.substring(0, i + 1);
+        data.add(potongan);
+      }
+      return data;
+    }
+
+    _searchByDate() {
+      var data = [];
+      for (var i = 0; i < widget.date.length; i++) {
+        var potongan = widget.date.substring(0, i + 1);
+        data.add(potongan);
+      }
+      return data;
+    }
+
+    // _updatebook() async {
+    //   for (int x = 0; x <= selectedtable.length - 1; ++x) {
+    //     unpackedArr.add(selectedtable[x]['no']);
+    //   }
+    //   await db
+    //       .collection('user')
+    //       .doc(widget.name + widget.pax + widget.date)
+    //       .set({
+    //     'name': widget.name,
+    //     'pax': widget.pax,
+    //     'date': widget.date,
+    //     'table_no': unpackedArr == null
+    //         ? FieldValue.arrayUnion(widget.no_table)
+    //         : FieldValue.arrayUnion(unpackedArr),
+    //     'event': widget.event,
+    //     "phone_number": widget.phone,
+    //     'floor': lantai == "Pilih Lantai" ? widget.floor : lantai,
+    //     'time': widget.time,
+    //     'search': FieldValue.arrayUnion(
+    //         [..._searchByDate(), ..._searchByName(), ..._searchByNumber()]),
+    //   });
+    //   for (int x = 0; x <= unpackedArr.length - 1; ++x) {
+    //     await db
+    //         .collection('table')
+    //         .doc(lantai)
+    //         .collection('lantai')
+    //         .doc(unpackedArr[x])
+    //         .update({'status': 'Book'});
+    //   }
+    // }
+
+    _savebook() async {
       for (int x = 0; x <= selectedtable.length - 1; ++x) {
-        unpackedArr.add(selectedtable[x]['no']);
+        if (selectedtable[x]['no']
+            .contains(RegExp(r'\b(?:T10|T11|T12|T13|T14|T15|T16|T17|T18)\b'))) {
+          unpackedArr.add(selectedtable[x]['no'].replaceAll('T', 'U'));
+        } else {
+          unpackedArr.add(selectedtable[x]['no']);
+        }
       }
       await db
           .collection('user')
-          .doc(widget.name + widget.pax + widget.date)
+          .doc(widget.date)
+          .collection('isi')
+          .doc(widget.name + widget.pax + widget.date + widget.phone)
           .set({
         'name': widget.name,
+        'remark': widget.remark,
         'pax': widget.pax,
         'date': widget.date,
         'table_no': unpackedArr == ""
-            ? "no choose table"
+            ? FieldValue.arrayUnion(widget.no_table)
+            // JUMP KE SINI
             : FieldValue.arrayUnion(unpackedArr),
         'event': widget.event,
         "phone_number": widget.phone,
-        'floor': lantai == "Pilih Lantai" ? "" : lantai,
+        'floor': lantai == "Choose Table Here" ? widget.floor : lantai,
         'time': widget.time,
-        'search': FieldValue.arrayUnion(search)
+        "attendance": widget.attendance,
+        'search': FieldValue.arrayUnion(
+            [..._searchByDate(), ..._searchByName(), ..._searchByNumber()]),
       });
+
       for (int x = 0; x <= unpackedArr.length - 1; ++x) {
+        // print("\n\n\n");
+        // print(unpackedArr[x]);
+        // print("\n\n\n");
+        if (selectedtable[x]['no']
+            .contains(RegExp(r'\b(?:T10|T11|T12|T13|T14|T15|T16|T17|T18)\b'))) {
+          unpackedArr.add(selectedtable[x]['no'].replaceAll('T', 'U'));
+        }
         await db
             .collection('table')
             .doc(lantai)
@@ -113,24 +206,76 @@ class _Edit_BookState extends State<Edit_Book> {
             .doc(unpackedArr[x].toString())
             .update({'status': 'Book'});
       }
+      // await db
+      //     .collection('table')
+      //     .doc(lantai)
+      //     .collection('lantai')
+      //     .doc(unpackedArr.join(','))
+      //     .update({'status': 'Book'});
     }
 
     _updatebooknotable() async {
       await db
           .collection('user')
-          .doc(widget.name + widget.pax + widget.date)
+          .doc(widget.date)
+          .collection('isi')
+          .doc(widget.name + widget.pax + widget.date + widget.phone)
           .set({
         'name': widget.name,
+        'remark': widget.remark,
         'pax': widget.pax,
         'date': widget.date,
-        'table_no': unpackedArr == ""
-            ? widget.no_table
-            : FieldValue.arrayUnion(unpackedArr),
+        'table_no': FieldValue.arrayUnion(widget.no_table),
         'event': widget.event,
         "phone_number": widget.phone,
-        'floor': lantai == "Pilih Lantai" ? widget.floor : lantai,
+        'floor': lantai == "Choose Table Here" ? widget.floor : lantai,
+        "attendance": widget.attendance,
         'time': widget.time,
-        'search': FieldValue.arrayUnion(search)
+        'search': FieldValue.arrayUnion(
+            [..._searchByDate(), ..._searchByName(), ..._searchByNumber()]),
+      });
+      for (int x = 0; x <= widget.no_table.length - 1; ++x) {
+        await db
+            .collection('table')
+            .doc(widget.floor)
+            .collection('lantai')
+            .doc(widget.no_table[x].toString())
+            .update({'status': 'Book'});
+      }
+    }
+
+    // log activity
+    String Idmonth = '';
+    String year = '';
+    String month = '';
+    String finalDate = '';
+
+    //
+    _addlog() async {
+      setState(() {
+        DateFormat bulan = DateFormat('MM');
+        Idmonth = bulan.format(DateTime.now());
+
+        DateFormat tahun = DateFormat('yyyy');
+        year = tahun.format(DateTime.now());
+
+        DateFormat bulanini = DateFormat('dd MMM yyyy');
+        month = bulanini.format(DateTime.now());
+
+        DateFormat bulanok = DateFormat('HH:mm');
+        finalDate = bulanok.format(DateTime.now());
+      });
+      await db
+          .collection('History')
+          .doc(year)
+          .collection('month')
+          .doc(Idmonth)
+          .collection('bulan')
+          .doc('report_${month + finalDate}')
+          .set({
+        "bulan": month,
+        "time": finalDate.toString(),
+        "Log_Msg": "update data ${widget.name} by Admin"
       });
     }
 
@@ -148,9 +293,12 @@ class _Edit_BookState extends State<Edit_Book> {
 
               if (no == '' && status == '') {
                 _updatebooknotable();
+                _addlog();
               } else {
-                _updatebook();
+                _savebook();
+                _addlog();
               }
+
               Navigator.pushAndRemoveUntil(context,
                   MaterialPageRoute(builder: (BuildContext context) {
                 return HomePage();
@@ -176,7 +324,7 @@ class _Edit_BookState extends State<Edit_Book> {
           icon: Icon(Icons.arrow_back_rounded),
         ),
         title: Text(
-          'Select Table ',
+          'Select Table $selection',
           style: TextStyle(
               fontSize: 25, fontWeight: FontWeight.bold, color: Colors.black),
         ),
@@ -328,6 +476,18 @@ class _Edit_BookState extends State<Edit_Book> {
                                 no = "U11";
                               } else if (no == 'T12') {
                                 no = "U12";
+                              } else if (no == 'T13') {
+                                no = "U13";
+                              } else if (no == 'T14') {
+                                no = "U14";
+                              } else if (no == 'T15') {
+                                no = "U15";
+                              } else if (no == 'T16') {
+                                no = "U16";
+                              } else if (no == 'T17') {
+                                no = "U17";
+                              } else if (no == 'T18') {
+                                no = "U18";
                               }
                               _getselected();
 

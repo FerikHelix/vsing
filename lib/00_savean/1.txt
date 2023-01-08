@@ -1,0 +1,153 @@
+ searchResult == ''
+                ? Container(
+                    width: MediaQuery.of(context).size.width,
+                    height: 550,
+                    child: ListView.builder(
+                      itemCount: searchResult.length,
+                      itemBuilder: (context, index) {
+                        return InkWell(
+                          onTap: () {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => Edit_Cos(
+                                    bookdata: bookdata,
+                                    paxdata: paxdata,
+                                    id: searchResult[index].data()['name'] +
+                                        searchResult[index].data()['pax'] +
+                                        searchResult[index].data()['date'] +
+                                        searchResult[index]
+                                            .data()['phone_number'],
+                                    attendance: searchResult[index]
+                                        .data()['attendance'],
+                                    remark:
+                                        searchResult[index].data()['remark'],
+                                    event: searchResult[index].data()['event'],
+                                    name: searchResult[index].data()['name'],
+                                    phone: searchResult[index]
+                                        .data()['phone_number'],
+                                    date: searchResult[index].data()['date'],
+                                    floor: searchResult[index].data()['floor'],
+                                    no_table:
+                                        searchResult[index].data()['table_no'],
+                                    time: searchResult[index].data()['time'],
+                                    pax: searchResult[index].data()['pax'],
+                                  ),
+                                ));
+                          },
+                          child: detail_book(
+                              bookdata: bookdata,
+                              paxdata: paxdata,
+                              attendance:
+                                  searchResult[index].data()['attendance'],
+                              remark: searchResult[index]['remark'],
+                              event: searchResult[index]['event'],
+                              name: searchResult[index]['name'],
+                              phone: searchResult[index]['phone_number'],
+                              pax: searchResult[index]['pax'],
+                              date: searchResult[index]['date'],
+                              time: searchResult[index]['time'],
+                              no: searchResult[index]['table_no'],
+                              floor: searchResult[index]['floor']),
+                        );
+                      },
+                    ),
+                  )
+                : Container(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.only(left: 20, top: 10),
+                          child: Text(
+                            datetime,
+                            style: TextStyle(
+                                fontSize: 25, fontWeight: FontWeight.bold),
+                          ),
+                        ),
+                        Container(
+                            width: MediaQuery.of(context).size.width,
+                            height: 550,
+                            child: StreamBuilder(
+                              stream: db
+                                  .collection('user')
+                                  .doc(datetime)
+                                  .collection('isi')
+                                  .snapshots(),
+                              builder: (context, snapshot) {
+                                if (snapshot.connectionState ==
+                                    ConnectionState.waiting) {
+                                  return Center(
+                                    child: CircularProgressIndicator(),
+                                  );
+                                }
+                                if (snapshot.hasError) {
+                                  return Center(
+                                    child: Text("eror"),
+                                  );
+                                }
+                                var data = snapshot.data!.docs;
+
+                                return ListView.builder(
+                                  itemCount: data.length,
+                                  itemBuilder: (context, index) {
+                                    return InkWell(
+                                      onTap: () {
+                                        Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (context) => Edit_Cos(
+                                                bookdata: bookdata,
+                                                paxdata: paxdata,
+                                                id: data[index].data()['name'] +
+                                                    data[index].data()['pax'] +
+                                                    data[index].data()['date'] +
+                                                    data[index]
+                                                        .data()['phone_number'],
+                                                attendance: data[index]
+                                                    .data()['attendance'],
+                                                remark: data[index]
+                                                    .data()['remark'],
+                                                event:
+                                                    data[index].data()['event'],
+                                                name:
+                                                    data[index].data()['name'],
+                                                phone: data[index]
+                                                    .data()['phone_number'],
+                                                date:
+                                                    data[index].data()['date'],
+                                                floor:
+                                                    data[index].data()['floor'],
+                                                no_table: data[index]
+                                                    .data()['table_no'],
+                                                time:
+                                                    data[index].data()['time'],
+                                                pax: data[index].data()['pax'],
+                                              ),
+                                            ));
+                                      },
+                                      child: detail_book(
+                                          paxdata: paxdata,
+                                          bookdata: bookdata,
+                                          attendance:
+                                              data[index].data()['attendance'],
+                                          remark: data[index].data()['remark'],
+                                          event: data[index].data()['event'],
+                                          name: data[index].data()['name'],
+                                          phone: data[index]
+                                              .data()['phone_number'],
+                                          pax: data[index].data()['pax'],
+                                          date: data[index].data()['date'],
+                                          time: data[index].data()['time'],
+                                          no: data[index].data()['table_no'],
+                                          floor: data[index].data()['floor']),
+                                    );
+                                  },
+                                );
+                              },
+                            )),
+
+                        //
+                      ],
+                    ),
+                  ),

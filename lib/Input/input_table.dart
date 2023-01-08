@@ -1,9 +1,12 @@
-import 'dart:ffi';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:m_toast/m_toast.dart';
+import 'package:vsing/main.dart';
 import 'package:vsing/pages/HomePage.dart';
 import 'package:vsing/util/table.dart';
-import '../../style/color_constant.dart';
+import '../style/color_constant.dart';
+import '../pages/spalsh.dart';
 
 class Table_Book extends StatefulWidget {
   final name;
@@ -12,6 +15,9 @@ class Table_Book extends StatefulWidget {
   final time;
   final phone;
   final event;
+  final remark;
+  final bookdata;
+  final paxdata;
 
   const Table_Book(
       {super.key,
@@ -20,6 +26,9 @@ class Table_Book extends StatefulWidget {
       required this.time,
       required this.phone,
       required this.event,
+      required this.remark,
+      required this.bookdata,
+      required this.paxdata,
       required this.pax});
 
   @override
@@ -31,15 +40,44 @@ class _Table_BookState extends State<Table_Book> {
   var status = '';
   var newstatus = '';
   var no = '';
-  var lantai = 'Pilih Lantai';
+  var lantai = 'Choose Table Here';
 
   var selectedtable;
   var unpackedArr = [];
   @override
   Widget build(BuildContext context) {
     final db = FirebaseFirestore.instance;
+    _searchByName() {
+      var data = [];
+      for (var i = 0; i < widget.name.length; i++) {
+        var potongan = widget.name.substring(0, i + 1);
+        data.add(potongan);
+      }
+      return data;
+    }
+
+    _searchByNumber() {
+      var data = [];
+      for (var i = 0; i < widget.phone.length; i++) {
+        var potongan = widget.phone.substring(0, i + 1);
+        data.add(potongan);
+      }
+      return data;
+    }
+
+    _searchByDate() {
+      var data = [];
+      for (var i = 0; i < widget.date.length; i++) {
+        var potongan = widget.date.substring(0, i + 1);
+        data.add(potongan);
+      }
+      return data;
+    }
 
     _update() async {
+      if (no.contains(RegExp(r'\b(?:T10|T11|T12|T13|T14|T15|T16|T17|T18)\b'))) {
+        no = no.replaceAll('T', 'U');
+      }
       await db
           .collection('table')
           .doc(lantai)
@@ -49,6 +87,9 @@ class _Table_BookState extends State<Table_Book> {
     }
 
     _updateselected() async {
+      if (no.contains(RegExp(r'\b(?:T10|T11|T12|T13|T14|T15|T16|T17|T18)\b'))) {
+        no = no.replaceAll('T', 'U');
+      }
       await db
           .collection('table')
           .doc(lantai)
@@ -70,28 +111,101 @@ class _Table_BookState extends State<Table_Book> {
       });
     }
 
-    List search = [widget.name, widget.phone, widget.date];
+    // change value book and pax
+    _bookpax() async {
+      var book = int.parse(widget.bookdata) + 1;
+      var pax = int.parse(widget.paxdata) + int.parse(widget.pax);
+      await FirebaseFirestore.instance
+          .collection('book&pax')
+          .doc('book')
+          .update({'book': book});
+      await FirebaseFirestore.instance
+          .collection('book&pax')
+          .doc('pax')
+          .update({'pax': pax});
+    }
+
+    // log activity
+    String Idmonth = '';
+    String year = '';
+    String month = '';
+    String finalDate = '';
+
+    //
+    _addlog() async {
+      setState(() {
+        DateFormat bulan = DateFormat('MM');
+        Idmonth = bulan.format(DateTime.now());
+
+        DateFormat tahun = DateFormat('yyyy');
+        year = tahun.format(DateTime.now());
+
+        DateFormat bulanini = DateFormat('dd MMM yyyy');
+        month = bulanini.format(DateTime.now());
+
+        DateFormat bulanok = DateFormat('HH:mm');
+        finalDate = bulanok.format(DateTime.now());
+      });
+      await db
+          .collection('History')
+          .doc(year)
+          .collection('month')
+          .doc(Idmonth)
+          .collection('bulan')
+          .doc('report_${month + finalDate}')
+          .set({
+        "bulan": month,
+        "time": finalDate.toString(),
+        "Log_Msg":
+            "new booking for ${widget.name}_${widget.phone} in table ${no}. Input By Admin"
+      });
+    }
+
+    // for save the book
     _savebook() async {
       for (int x = 0; x <= selectedtable.length - 1; ++x) {
-        unpackedArr.add(selectedtable[x]['no']);
+        if (selectedtable[x]['no']
+            .contains(RegExp(r'\b(?:T10|T11|T12|T13|T14|T15|T16|T17|T18)\b'))) {
+          unpackedArr.add(selectedtable[x]['no'].replaceAll('T', 'U'));
+        } else {
+          unpackedArr.add(selectedtable[x]['no']);
+        }
       }
+      await db.collection('user').doc(widget.date).set({'date': widget.date});
       await db
           .collection('user')
-          .doc(widget.name + widget.pax + widget.date)
+          .doc(widget.date)
+          .collection('isi')
+          .doc(widget.name + widget.pax + widget.date + widget.phone)
           .set({
         'name': widget.name,
         'pax': widget.pax,
+        'remark': widget.remark,
         'date': widget.date,
         'table_no': unpackedArr == ""
-            ? "no choose table"
+            ? ""
+            // JUMP KE SINI
             : FieldValue.arrayUnion(unpackedArr),
         'event': widget.event,
         "phone_number": widget.phone,
-        'floor': lantai == "Pilih Lantai" ? "" : lantai,
+        'floor': lantai == "Choose Table Here" ? "" : lantai,
         'time': widget.time,
-        'search': FieldValue.arrayUnion(search)
+        "attendance": 'Absent',
+        'search': FieldValue.arrayUnion(
+            [..._searchByDate(), ..._searchByName(), ..._searchByNumber()]),
       });
+
       for (int x = 0; x <= unpackedArr.length - 1; ++x) {
+        if (selectedtable[x]['no']
+            .contains(RegExp(r'\b(?:U10|U11|U12|U13|U14|U15|U16|U17|U18)\b'))) {
+          // print("\n\n\n");
+          // print(unpackedArr[x]['no']);
+          // print(selectedtable[x]['no']);
+          // // print("Now data len : $unpackedArr/");
+          // // print("Now x value : $x");
+          // print("\n\n\n");
+          unpackedArr.add(selectedtable[x]['no'].replaceAll('U', 'T'));
+        }
         await db
             .collection('table')
             .doc(lantai)
@@ -104,25 +218,30 @@ class _Table_BookState extends State<Table_Book> {
       //     .doc(lantai)
       //     .collection('lantai')
       //     .doc(unpackedArr.join(','))
-      //     .update({'status': 'Book'});
+      //     .update({'status': 'Book'});
     }
 
     _savebooknotable() async {
+      await db.collection('user').doc(widget.date).set({'date': widget.date});
+
       await db
           .collection('user')
-          .doc(widget.name + widget.pax + widget.date)
+          .doc(widget.date)
+          .collection('isi')
+          .doc(widget.name + widget.pax + widget.date + widget.phone)
           .set({
         'name': widget.name,
         'pax': widget.pax,
+        'remark': widget.remark,
         'date': widget.date,
-        'table_no': unpackedArr == ""
-            ? "no choose table"
-            : FieldValue.arrayUnion(unpackedArr),
+        'table_no': unpackedArr == "" ? "" : FieldValue.arrayUnion(unpackedArr),
         'event': widget.event,
         "phone_number": widget.phone,
-        'floor': lantai == "Pilih Lantai" ? "" : lantai,
+        'floor': lantai == "Choose Table Here" ? "" : lantai,
+        "attendance": 'Absent',
         'time': widget.time,
-        'search': FieldValue.arrayUnion(search)
+        'search': FieldValue.arrayUnion(
+            [..._searchByDate(), ..._searchByName(), ..._searchByNumber()]),
       });
     }
 
@@ -136,17 +255,25 @@ class _Table_BookState extends State<Table_Book> {
           height: 50,
           child: ElevatedButton(
             onPressed: () {
-              if (no == '' && status == '') {
-                _savebooknotable();
+              if (no == '') {
+                // _savebooknotable();
+                ShowMToast toast = ShowMToast();
+                toast.errorToast(context,
+                    message: "Please choose table",
+                    backgroundColor: Color.fromARGB(255, 239, 238, 238),
+                    alignment: Alignment.center,
+                    duration: 1500);
               } else if (no != '' && status != '') {
+                _addlog();
+                _bookpax();
                 _savebook();
+                Navigator.pushAndRemoveUntil(context,
+                    MaterialPageRoute(builder: (BuildContext context) {
+                  return splash();
+                }), (r) {
+                  return false;
+                });
               }
-              Navigator.pushAndRemoveUntil(context,
-                  MaterialPageRoute(builder: (BuildContext context) {
-                return HomePage();
-              }), (r) {
-                return false;
-              });
             },
             style: const ButtonStyle(
               backgroundColor:
@@ -318,7 +445,20 @@ class _Table_BookState extends State<Table_Book> {
                                 no = "U11";
                               } else if (no == 'T12') {
                                 no = "U12";
+                              } else if (no == 'T13') {
+                                no = "U13";
+                              } else if (no == 'T14') {
+                                no = "U14";
+                              } else if (no == 'T15') {
+                                no = "U15";
+                              } else if (no == 'T16') {
+                                no = "U16";
+                              } else if (no == 'T17') {
+                                no = "U17";
+                              } else if (no == 'T18') {
+                                no = "U18";
                               }
+                              print(no);
                               _getselected();
 
                               if (status == 'Avail') {
@@ -428,12 +568,14 @@ class _Table_BookState extends State<Table_Book> {
                           fontSize: 18,
                         ),
                       ),
-                      Text(
-                        'Pax : ${widget.pax}',
-                        style: TextStyle(
-                          fontSize: 18,
-                        ),
-                      ),
+                      widget.pax != '0'
+                          ? Text(
+                              'Pax : ${widget.pax}',
+                              style: TextStyle(
+                                fontSize: 18,
+                              ),
+                            )
+                          : SizedBox(),
                     ],
                   ),
                 ),
@@ -448,12 +590,14 @@ class _Table_BookState extends State<Table_Book> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
-                      Text(
-                        'Date & Time',
-                        style: TextStyle(
-                          fontSize: 18,
-                        ),
-                      ),
+                      widget.pax == ''
+                          ? Text(
+                              'Date & Time',
+                              style: TextStyle(
+                                fontSize: 18,
+                              ),
+                            )
+                          : SizedBox(),
                       Text(
                         widget.date,
                         style: TextStyle(
