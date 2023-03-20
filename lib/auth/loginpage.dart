@@ -1,8 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:m_toast/m_toast.dart';
-import 'package:vsing/style/color_constant.dart';
-import '../pages/HomePage.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:ndialog/ndialog.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -20,8 +19,68 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
+  _loginauth() async {
+    try {
+      final credential = await FirebaseAuth.instance.signInWithEmailAndPassword(
+          email: _email.text.trim(), password: _pass.text.trim());
+    } on FirebaseAuthException catch (e) {
+      if (e.code == 'user-not-found') {
+        NAlertDialog(
+          dialogStyle: DialogStyle(titleDivider: true),
+          title: Text(
+            "wrong-email",
+            textAlign: TextAlign.center,
+            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+          ),
+          content: Text("No user found for that email.",
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 15,
+              )),
+          actions: <Widget>[
+            TextButton(
+                child: Text("Okay",
+                    style: TextStyle(
+                        fontSize: 15, color: Color.fromARGB(255, 192, 34, 23))),
+                onPressed: () {
+                  Navigator.pop(context);
+                }),
+          ],
+        ).show(context);
+        print('No user found for that email.');
+      } else if (e.code == 'wrong-password') {
+        NAlertDialog(
+          dialogStyle: DialogStyle(titleDivider: true),
+          title: Text(
+            "wrong-password",
+            textAlign: TextAlign.center,
+            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+          ),
+          content: Text("Wrong password provided for that user.",
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 15,
+              )),
+          actions: <Widget>[
+            TextButton(
+                child: Text("Okay",
+                    style: TextStyle(
+                        fontSize: 15, color: Color.fromARGB(255, 192, 34, 23))),
+                onPressed: () {
+                  Navigator.pop(context);
+                }),
+          ],
+        ).show(context);
+        print('Wrong password provided for that user.');
+      }
+    }
+  }
+
   TextEditingController _email = TextEditingController();
   TextEditingController _pass = TextEditingController();
+
+  bool obscure = true;
+  var obsicon = Icon(Icons.visibility_off);
 
   @override
   void dispose() {
@@ -34,159 +93,189 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      resizeToAvoidBottomInset: false,
-      bottomNavigationBar: Padding(
-        padding: const EdgeInsets.only(left: 20, right: 20, bottom: 20),
-        child: Container(
-          width: MediaQuery.of(context).size.width,
-          height: 50,
-          child: ElevatedButton(
-            onPressed: _login,
-            style: const ButtonStyle(
-              backgroundColor: MaterialStatePropertyAll<Color>(
-                Color.fromARGB(255, 121, 104, 229),
+      // resizeToAvoidBottomInset: false,
+      backgroundColor: Color.fromARGB(255, 56, 43, 83),
+      body: SingleChildScrollView(
+        physics: BouncingScrollPhysics(),
+        child: Column(
+          children: [
+            Container(
+              height: 480.w,
+              child: Center(
+                child: Container(
+                  width: MediaQuery.of(context).size.width,
+                  decoration: BoxDecoration(
+                    // borderRadius: BorderRadius.only(
+                    //     bottomLeft: Radius.circular(20),
+                    //     bottomRight: Radius.circular(20)),
+                    color: Color.fromARGB(255, 56, 43, 83),
+                    // boxShadow: [
+                    //   BoxShadow(
+                    //     color: Color.fromARGB(57, 5, 5, 5).withOpacity(0.5),
+                    //     spreadRadius: 5,
+                    //     blurRadius: 7,
+                    //     offset: Offset(0, 3), // changes position of shadow
+                    //   ),
+                    // ],
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.only(left: 25, right: 25),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        RotationTransition(
+                          turns: new AlwaysStoppedAnimation(-5 / 360),
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(20.r),
+                            child: Image.asset(
+                              'lib/assets/favicon.png',
+                              width: 180.w,
+                            ),
+                          ),
+                        ),
+                        // SizedBox(height: 30),
+                        Text(
+                          "Reservation",
+                          style: TextStyle(
+                              fontSize: 30.sp,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white),
+                        ),
+                      ],
+                    ),
+                  ),
+                  // child: Padding(
+                  //   padding: const EdgeInsets.all(50.0),
+                  //   child: Image.asset('lib/assets/favicon.png'),
+                  // ),
+                ),
               ),
             ),
-            child: const Text(
-              "LOGIN",
-            ),
-          ),
-        ),
-      ),
-      body: Column(
-        children: [
-          Expanded(
-            child: Center(
-              child: Container(
-                width: MediaQuery.of(context).size.width,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.only(
-                      bottomLeft: Radius.circular(20),
-                      bottomRight: Radius.circular(20)),
-                  color: Color.fromARGB(255, 54, 51, 140),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Color.fromARGB(57, 5, 5, 5).withOpacity(0.5),
-                      spreadRadius: 5,
-                      blurRadius: 7,
-                      offset: Offset(0, 3), // changes position of shadow
+
+            // Text(
+            //   "Login",
+            //   style: TextStyle(
+            //     color: Colors.black,
+            //     fontSize: 30,
+            //     fontWeight: FontWeight.bold,
+            //   ),
+            // ),
+            Container(
+              width: MediaQuery.of(context).size.width,
+              height: 450.h,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(20.r),
+                    topRight: Radius.circular(20.r)),
+                color: Colors.white,
+              ),
+              child: Padding(
+                padding: const EdgeInsets.only(left: 20, right: 20, top: 20),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Padding(
+                      padding: EdgeInsets.only(bottom: 5),
+                      child: Text(
+                        "Email",
+                        style: TextStyle(
+                          color: Colors.black,
+                          fontSize: 30.sp,
+                          fontWeight: FontWeight.w400,
+                        ),
+                      ),
+                    ),
+                    Container(
+                      width: MediaQuery.of(context).size.width * 1,
+                      height: 80.h,
+                      child: TextFormField(
+                        controller: _email,
+                        textAlign: TextAlign.center,
+                        style: TextStyle(fontSize: 25.sp),
+                        decoration: InputDecoration(
+                          filled: true,
+                          fillColor: Color.fromARGB(255, 238, 238, 238),
+                          border: OutlineInputBorder(
+                              borderSide:
+                                  BorderSide(width: 0, style: BorderStyle.none),
+                              borderRadius: BorderRadius.circular(10.r)),
+                        ),
+                      ),
+                    ),
+                    Padding(
+                      padding: EdgeInsets.only(top: 10, bottom: 5),
+                      child: Text(
+                        "Password",
+                        style: TextStyle(
+                          color: Colors.black,
+                          fontSize: 30.sp,
+                          fontWeight: FontWeight.w400,
+                        ),
+                      ),
+                    ),
+                    Container(
+                      width: MediaQuery.of(context).size.width * 1,
+                      height: 80.h,
+                      child: TextFormField(
+                        controller: _pass,
+                        obscureText: obscure,
+                        textAlign: TextAlign.center,
+                        style: TextStyle(fontSize: 25.sp),
+                        decoration: InputDecoration(
+                          suffixIcon: IconButton(
+                            onPressed: () {
+                              if (obscure == true) {
+                                setState(() {
+                                  obscure = false;
+                                  obsicon = Icon(Icons.visibility_off);
+                                });
+                              } else if (obscure == false) {
+                                setState(() {
+                                  obscure = true;
+                                  obsicon = Icon(Icons.visibility);
+                                });
+                              }
+                            },
+                            icon: obsicon,
+                          ),
+                          filled: true,
+                          fillColor: Color.fromARGB(255, 238, 238, 238),
+                          border: OutlineInputBorder(
+                              borderSide:
+                                  BorderSide(width: 0, style: BorderStyle.none),
+                              borderRadius: BorderRadius.circular(10.r)),
+                        ),
+                      ),
+                    ),
+                    Spacer(),
+                    Padding(
+                      padding: const EdgeInsets.only(
+                        left: 20,
+                        right: 20,
+                        bottom: 20,
+                      ),
+                      child: Container(
+                        width: MediaQuery.of(context).size.width,
+                        height: 60.h,
+                        child: ElevatedButton(
+                          onPressed: _loginauth,
+                          style: const ButtonStyle(
+                            backgroundColor: MaterialStatePropertyAll<Color>(
+                              Color.fromARGB(255, 56, 43, 83),
+                            ),
+                          ),
+                          child: const Text(
+                            "LOGIN",
+                          ),
+                        ),
+                      ),
                     ),
                   ],
                 ),
-                child: Padding(
-                  padding: const EdgeInsets.only(left: 25, right: 25),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      ClipRRect(
-                        borderRadius: BorderRadius.circular(20),
-                        child: Image.asset(
-                          'lib/assets/favicon.png',
-                          width: 100,
-                        ),
-                      ),
-                      SizedBox(height: 10),
-                      Text(
-                        "V Sing Ipoh Soho",
-                        style: TextStyle(fontSize: 23, color: Colors.white),
-                      ),
-                      Text(
-                        "Reservation",
-                        style: TextStyle(
-                            fontSize: 35,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white),
-                      ),
-                    ],
-                  ),
-                ),
-                // child: Padding(
-                //   padding: const EdgeInsets.all(50.0),
-                //   child: Image.asset('lib/assets/favicon.png'),
-                // ),
               ),
             ),
-          ),
-          SizedBox(height: 20),
-          Text(
-            "Login",
-            style: TextStyle(
-              color: Colors.black,
-              fontSize: 30,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          Container(
-            width: MediaQuery.of(context).size.width,
-            height: 350,
-            child: Padding(
-              padding: const EdgeInsets.only(left: 20, right: 20),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Padding(
-                    padding: EdgeInsets.only(top: 30, bottom: 5),
-                    child: Text(
-                      "Email",
-                      style: TextStyle(
-                        color: Colors.black,
-                        fontSize: 20,
-                        fontWeight: FontWeight.w400,
-                      ),
-                    ),
-                  ),
-                  Container(
-                    width: MediaQuery.of(context).size.width * 1,
-                    height: 50,
-                    child: TextFormField(
-                      controller: _email,
-                      textAlign: TextAlign.center,
-                      style: TextStyle(fontSize: 18),
-                      decoration: InputDecoration(
-                        filled: true,
-                        fillColor: Color.fromARGB(255, 238, 238, 238),
-                        border: OutlineInputBorder(
-                            borderSide:
-                                BorderSide(width: 0, style: BorderStyle.none),
-                            borderRadius: BorderRadius.circular(5)),
-                      ),
-                    ),
-                  ),
-                  Padding(
-                    padding: EdgeInsets.only(top: 20, bottom: 5),
-                    child: Text(
-                      "Password",
-                      style: TextStyle(
-                        color: Colors.black,
-                        fontSize: 20,
-                        fontWeight: FontWeight.w400,
-                      ),
-                    ),
-                  ),
-                  Container(
-                    width: MediaQuery.of(context).size.width * 1,
-                    height: 50,
-                    child: TextFormField(
-                      controller: _pass,
-                      obscureText: true,
-                      textAlign: TextAlign.center,
-                      style: TextStyle(fontSize: 18),
-                      decoration: InputDecoration(
-                        filled: true,
-                        fillColor: Color.fromARGB(255, 238, 238, 238),
-                        border: OutlineInputBorder(
-                            borderSide:
-                                BorderSide(width: 0, style: BorderStyle.none),
-                            borderRadius: BorderRadius.circular(5)),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

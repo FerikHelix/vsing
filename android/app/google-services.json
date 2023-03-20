@@ -1,34 +1,185 @@
 {
   "project_info": {
-    "project_number": "707797100512",
-    "project_id": "vsingrsv",
-    "storage_bucket": "vsingrsv.appspot.com"
+    "project_number": "593046029438",
+    "project_id": "vsing-database",
+    "storage_bucket": "vsing-database.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:707797100512:android:17e531fab1d49eb0022d85",
+        "mobilesdk_app_id": "1:593046029438:android:fbade147226438f3a4c42f",
         "android_client_info": {
-          "package_name": "com.innotia.vsingrsv"
+          "package_name": "In.rsv.op"
         }
       },
       "oauth_client": [
         {
-          "client_id": "707797100512-hemli289alo0n4inilqrldhl19he31gp.apps.googleusercontent.com",
+          "client_id": "593046029438-4irbm4bs60jnt0er25vsj109ada4q3co.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyC2m5iyClLw_de9Iz_Dy77sALzJPtvPeR4"
+          "current_key": "AIzaSyCx51IAXd9_gtaDK7Y9tcQLJamRSm9eJTo"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "707797100512-hemli289alo0n4inilqrldhl19he31gp.apps.googleusercontent.com",
+              "client_id": "593046029438-4irbm4bs60jnt0er25vsj109ada4q3co.apps.googleusercontent.com",
               "client_type": 3
+            },
+            {
+              "client_id": "593046029438-1dmvshpta80hhfjo8lsaj82pgf39lg6f.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.rewriteMembershipVsing"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:593046029438:android:d280eb5e09f59bf7a4c42f",
+        "android_client_info": {
+          "package_name": "com.innotia.membershipvsing"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "593046029438-4irbm4bs60jnt0er25vsj109ada4q3co.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCx51IAXd9_gtaDK7Y9tcQLJamRSm9eJTo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "593046029438-4irbm4bs60jnt0er25vsj109ada4q3co.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "593046029438-1dmvshpta80hhfjo8lsaj82pgf39lg6f.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.rewriteMembershipVsing"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:593046029438:android:11d3128f90506e8aa4c42f",
+        "android_client_info": {
+          "package_name": "com.innotia.vsingmembership"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "593046029438-4irbm4bs60jnt0er25vsj109ada4q3co.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCx51IAXd9_gtaDK7Y9tcQLJamRSm9eJTo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "593046029438-4irbm4bs60jnt0er25vsj109ada4q3co.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "593046029438-1dmvshpta80hhfjo8lsaj82pgf39lg6f.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.rewriteMembershipVsing"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:593046029438:android:fdd7ee62bdd4de17a4c42f",
+        "android_client_info": {
+          "package_name": "com.innotia.vsingrsv"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "593046029438-4irbm4bs60jnt0er25vsj109ada4q3co.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCx51IAXd9_gtaDK7Y9tcQLJamRSm9eJTo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "593046029438-4irbm4bs60jnt0er25vsj109ada4q3co.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "593046029438-1dmvshpta80hhfjo8lsaj82pgf39lg6f.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.rewriteMembershipVsing"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:593046029438:android:00de368283c28bc7a4c42f",
+        "android_client_info": {
+          "package_name": "in.membership.op"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "593046029438-4irbm4bs60jnt0er25vsj109ada4q3co.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCx51IAXd9_gtaDK7Y9tcQLJamRSm9eJTo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "593046029438-4irbm4bs60jnt0er25vsj109ada4q3co.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "593046029438-1dmvshpta80hhfjo8lsaj82pgf39lg6f.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.rewriteMembershipVsing"
+              }
             }
           ]
         }

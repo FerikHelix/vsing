@@ -1,9 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
-import 'package:vsing/pages/HomePage.dart';
+import 'package:ndialog/ndialog.dart';
+import 'package:vsing/pages/spalsh.dart';
 import 'package:vsing/util/table.dart';
-import '../style/color_constant.dart';
 
 class Edit_Book extends StatefulWidget {
   final name;
@@ -14,93 +16,156 @@ class Edit_Book extends StatefulWidget {
   final event;
   final attendance;
   final id;
-  final datebefore;
+  final idmonthbfr;
   final no_table;
   final remark;
   final floor;
   final bookdata;
   final paxdata;
-  const Edit_Book(
-      {super.key,
-      required this.id,
-      required this.datebefore,
-      required this.remark,
-      required this.attendance,
-      required this.name,
-      required this.date,
-      required this.time,
-      required this.phone,
-      required this.event,
-      required this.no_table,
-      required this.bookdata,
-      required this.paxdata,
-      required this.floor,
-      required this.pax});
+  final paxbfr;
+  final day;
+  final week;
+
+  final todayear;
+  final todayearbfr;
+  final idmonth;
+  final bookmonth;
+  final paxmonth;
+  const Edit_Book({
+    super.key,
+    required this.id,
+    required this.idmonthbfr,
+    required this.week,
+    required this.remark,
+    required this.attendance,
+    required this.name,
+    required this.date,
+    required this.time,
+    required this.phone,
+    required this.event,
+    required this.no_table,
+    required this.day,
+    required this.bookdata,
+    required this.paxdata,
+    required this.floor,
+    required this.pax,
+    required this.paxbfr,
+    required this.todayear,
+    required this.todayearbfr,
+    required this.idmonth,
+    required this.bookmonth,
+    required this.paxmonth,
+  });
 
   @override
   State<Edit_Book> createState() => _Edit_BookState();
 }
 
 class _Edit_BookState extends State<Edit_Book> {
+  var user = FirebaseAuth.instance.currentUser;
+
   bool select = false;
   var status = '';
   var newstatus = '';
   var no = '';
   var lantai = 'Choose Table Here';
-  var selection = "";
+  var selection = "", idreport;
 
   var selectedtable;
   var unpackedArr = [];
+  List chooseTable = [], selectedIndex = [], tableFix = [];
+
+  _cekdata() async {
+    final data = await FirebaseFirestore.instance
+        .collection('Vsing-rsv')
+        .doc(widget.todayear)
+        .collection('user-list')
+        .where('date', isEqualTo: widget.date)
+        .get();
+    var id = data.docs.map((e) => e.id).toList();
+    for (var i = 0; i < id.length; i++) {
+      setState(() {
+        idreport = id[i];
+      });
+    }
+  }
+
+  _tableEdit() {
+    for (int x = 0; x < widget.no_table.length; ++x) {
+      if (widget.no_table[x]
+          .contains(RegExp(r'\b(?:U10|U11|U12|U13|U14|U15|U16|U17|U18)\b'))) {
+        tableFix.add(widget.no_table[x].replaceAll('U', 'T'));
+        // print(tableFix);
+      } else {
+        tableFix.add(widget.no_table[x]);
+        // print(tableFix);
+      }
+    }
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+//     _tableEdit();
+
+//     chooseTable = tableFix;
+//     selectedIndex = tableFix;
+// //
+//     print(chooseTable);
+//     print(selectedIndex);
+
+    _cekdata();
+  }
 
   @override
   Widget build(BuildContext context) {
     final db = FirebaseFirestore.instance;
 
-    _update() async {
-      await db
-          .collection('table')
-          .doc(lantai)
-          .collection('lantai')
-          .doc(no)
-          .update({'status': 'Selected'});
-    }
+    // _update() async {
+    //   await db
+    //       .collection('Vsing-rsv')
+    //       .doc(widget.todayear)
+    //       .collection('Reservation')
+    //       .doc(widget.date)
+    //       .collection('table')
+    //       .doc(lantai)
+    //       .collection('lantai')
+    //       .doc(no)
+    //       .update({'status': 'Selected'});
+    // }
 
-    _updateselected() async {
-      await db
-          .collection('table')
-          .doc(lantai)
-          .collection('lantai')
-          .doc(no)
-          .update({'status': 'Avail'});
-    }
+    // _updateselected() async {
+    //   await db
+    //       .collection('Vsing-rsv')
+    //       .doc(widget.todayear)
+    //       .collection('Reservation')
+    //       .doc(widget.date)
+    //       .collection('table')
+    //       .doc(lantai)
+    //       .collection('lantai')
+    //       .doc(no)
+    //       .update({'status': 'Avail'});
+    // }
 
-    _getselected() async {
-      final result = await db
-          .collection('table')
-          .doc(lantai)
-          .collection('lantai')
-          .where('status', isEqualTo: newstatus)
-          .get();
+    // _getselected() async {
+    //   final result = await db
+    //       .collection('Vsing-rsv')
+    //       .doc(widget.todayear)
+    //       .collection('Reservation')
+    //       .doc(widget.date)
+    //       .collection('table')
+    //       .doc(lantai)
+    //       .collection('lantai')
+    //       .where('status', isEqualTo: newstatus)
+    //       .get();
 
-      setState(() {
-        selectedtable = result.docs.map((e) => e.data()).toList();
-      });
-    }
+    //   setState(() {
+    //     selectedtable = result.docs.map((e) => e.data()).toList();
+    //   });
+    // }
 
-    Future deleteData(String id) async {
-      try {
-        await FirebaseFirestore.instance
-            .collection("user")
-            .doc(widget.datebefore)
-            .collection('isi')
-            .doc(id)
-            .delete();
-      } catch (e) {
-        return false;
-      }
-    }
-
-    // List search = [widget.name, widget.phone, widget.date];
+    // // List search = [widget.name, widget.phone, widget.date];
     _searchByName() {
       var data = [];
       for (var i = 0; i < widget.name.length; i++) {
@@ -128,56 +193,30 @@ class _Edit_BookState extends State<Edit_Book> {
       return data;
     }
 
-    // _updatebook() async {
-    //   for (int x = 0; x <= selectedtable.length - 1; ++x) {
-    //     unpackedArr.add(selectedtable[x]['no']);
-    //   }
-    //   await db
-    //       .collection('user')
-    //       .doc(widget.name + widget.pax + widget.date)
-    //       .set({
-    //     'name': widget.name,
-    //     'pax': widget.pax,
-    //     'date': widget.date,
-    //     'table_no': unpackedArr == null
-    //         ? FieldValue.arrayUnion(widget.no_table)
-    //         : FieldValue.arrayUnion(unpackedArr),
-    //     'event': widget.event,
-    //     "phone_number": widget.phone,
-    //     'floor': lantai == "Pilih Lantai" ? widget.floor : lantai,
-    //     'time': widget.time,
-    //     'search': FieldValue.arrayUnion(
-    //         [..._searchByDate(), ..._searchByName(), ..._searchByNumber()]),
-    //   });
-    //   for (int x = 0; x <= unpackedArr.length - 1; ++x) {
-    //     await db
-    //         .collection('table')
-    //         .doc(lantai)
-    //         .collection('lantai')
-    //         .doc(unpackedArr[x])
-    //         .update({'status': 'Book'});
-    //   }
-    // }
-
     _savebook() async {
-      for (int x = 0; x <= selectedtable.length - 1; ++x) {
-        if (selectedtable[x]['no']
+      for (int x = 0; x < chooseTable.length; ++x) {
+        if (chooseTable[x]
             .contains(RegExp(r'\b(?:T10|T11|T12|T13|T14|T15|T16|T17|T18)\b'))) {
-          unpackedArr.add(selectedtable[x]['no'].replaceAll('T', 'U'));
+          unpackedArr.add(chooseTable[x].replaceAll('T', 'U'));
         } else {
-          unpackedArr.add(selectedtable[x]['no']);
+          unpackedArr.add(chooseTable[x]);
         }
       }
       await db
-          .collection('user')
+          .collection('Vsing-rsv')
+          .doc(widget.todayear)
+          .collection('Reservation')
           .doc(widget.date)
-          .collection('isi')
+          .collection('user')
           .doc(widget.name + widget.pax + widget.date + widget.phone)
           .set({
         'name': widget.name,
         'remark': widget.remark,
         'pax': widget.pax,
         'date': widget.date,
+        'dateday': '${widget.day}',
+        'week': widget.week,
+        'datefull': '${widget.date.toString()} ${widget.day}',
         'table_no': unpackedArr == ""
             ? FieldValue.arrayUnion(widget.no_table)
             // JUMP KE SINI
@@ -190,67 +229,81 @@ class _Edit_BookState extends State<Edit_Book> {
         'search': FieldValue.arrayUnion(
             [..._searchByDate(), ..._searchByName(), ..._searchByNumber()]),
       });
-
-      for (int x = 0; x <= unpackedArr.length - 1; ++x) {
-        // print("\n\n\n");
-        // print(unpackedArr[x]);
-        // print("\n\n\n");
-        if (selectedtable[x]['no']
-            .contains(RegExp(r'\b(?:T10|T11|T12|T13|T14|T15|T16|T17|T18)\b'))) {
-          unpackedArr.add(selectedtable[x]['no'].replaceAll('T', 'U'));
-        }
+      for (var i = 0; i < unpackedArr.length; i++) {
         await db
+            .collection('Vsing-rsv')
+            .doc(widget.todayear)
+            .collection('Reservation')
+            .doc(widget.date)
             .collection('table')
             .doc(lantai)
             .collection('lantai')
-            .doc(unpackedArr[x].toString())
+            .doc(unpackedArr[i].toString())
             .update({'status': 'Book'});
       }
-      // await db
-      //     .collection('table')
-      //     .doc(lantai)
-      //     .collection('lantai')
-      //     .doc(unpackedArr.join(','))
-      //     .update({'status': 'Book'});
     }
 
-    _updatebooknotable() async {
-      await db
-          .collection('user')
+    // await db
+    //     .collection('table')
+    //     .doc(lantai)
+    //     .collection('lantai')
+    //     .doc(unpackedArr.join(','))
+    //     .update({'status': 'Book'});
+
+    var hasilpax;
+    var hasilpaxmonth;
+    _removebookpax() async {
+      hasilpax = widget.paxdata - int.parse(widget.paxbfr);
+      hasilpaxmonth = widget.paxmonth - int.parse(widget.paxbfr);
+
+      // month
+      await FirebaseFirestore.instance
+          .collection('Vsing-rsv')
+          .doc(widget.todayearbfr)
+          .collection('Book-Pax')
+          .doc(widget.idmonthbfr)
+          .update({'pax': hasilpaxmonth});
+      // day
+      await FirebaseFirestore.instance
+          .collection('Vsing-rsv')
+          .doc(widget.todayearbfr)
+          .collection('Reservation')
           .doc(widget.date)
-          .collection('isi')
-          .doc(widget.name + widget.pax + widget.date + widget.phone)
-          .set({
-        'name': widget.name,
-        'remark': widget.remark,
-        'pax': widget.pax,
-        'date': widget.date,
-        'table_no': FieldValue.arrayUnion(widget.no_table),
-        'event': widget.event,
-        "phone_number": widget.phone,
-        'floor': lantai == "Choose Table Here" ? widget.floor : lantai,
-        "attendance": widget.attendance,
-        'time': widget.time,
-        'search': FieldValue.arrayUnion(
-            [..._searchByDate(), ..._searchByName(), ..._searchByNumber()]),
-      });
-      for (int x = 0; x <= widget.no_table.length - 1; ++x) {
-        await db
-            .collection('table')
-            .doc(widget.floor)
-            .collection('lantai')
-            .doc(widget.no_table[x].toString())
-            .update({'status': 'Book'});
-      }
+          .update({'pax': hasilpax});
+    }
+
+    _addbookpax() async {
+      var paxnew = hasilpax + int.parse(widget.pax);
+      var pmonthnew = hasilpaxmonth + int.parse(widget.pax);
+
+      // month
+      await FirebaseFirestore.instance
+          .collection('Vsing-rsv')
+          .doc(widget.todayear)
+          .collection('Book-Pax')
+          .doc(widget.idmonth)
+          .update({'pax': pmonthnew});
+      // day
+      await FirebaseFirestore.instance
+          .collection('Vsing-rsv')
+          .doc(widget.todayear)
+          .collection('Reservation')
+          .doc(widget.date)
+          .update({'pax': paxnew});
     }
 
     // log activity
     String Idmonth = '';
     String year = '';
     String month = '';
-    String finalDate = '';
+    String finalDate = '', monthname = '';
 
     //
+    var user = FirebaseAuth.instance.currentUser;
+    String removeMail(String userMail) {
+      return userMail.replaceAll('@mail.com', '');
+    }
+
     _addlog() async {
       setState(() {
         DateFormat bulan = DateFormat('MM');
@@ -262,21 +315,41 @@ class _Edit_BookState extends State<Edit_Book> {
         DateFormat bulanini = DateFormat('dd MMM yyyy');
         month = bulanini.format(DateTime.now());
 
+        DateFormat bulanin = DateFormat('MMMM');
+        monthname = bulanin.format(DateTime.now());
+
         DateFormat bulanok = DateFormat('HH:mm');
         finalDate = bulanok.format(DateTime.now());
       });
       await db
+          .collection('Vsing-rsv')
+          .doc(widget.todayear)
           .collection('History')
-          .doc(year)
-          .collection('month')
-          .doc(Idmonth)
-          .collection('bulan')
           .doc('report_${month + finalDate}')
           .set({
+        "id": '$monthname $year',
         "bulan": month,
         "time": finalDate.toString(),
-        "Log_Msg": "update data ${widget.name} by Admin"
+        "Log_Msg": "update data ${widget.name} by ${removeMail(user!.email!)}"
       });
+    }
+
+    _del() async {
+      await FirebaseFirestore.instance
+          .collection('Vsing-rsv')
+          .doc(widget.todayearbfr)
+          .collection('Reservation')
+          .doc(widget.date)
+          .collection('user')
+          .doc(widget.id)
+          .delete();
+
+      await FirebaseFirestore.instance
+          .collection('Vsing-rsv')
+          .doc(widget.todayear)
+          .collection('user-list')
+          .doc(idreport)
+          .delete();
     }
 
     return Scaffold(
@@ -286,29 +359,25 @@ class _Edit_BookState extends State<Edit_Book> {
         padding: const EdgeInsets.only(left: 20, right: 20, bottom: 20),
         child: Container(
           width: MediaQuery.of(context).size.width,
-          height: 50,
+          height: 60.h,
           child: ElevatedButton(
             onPressed: () {
-              deleteData(widget.id);
-
-              if (no == '' && status == '') {
-                _updatebooknotable();
-                _addlog();
-              } else {
-                _savebook();
-                _addlog();
-              }
-
+              _del();
+              _removebookpax();
+              _addbookpax();
+              // _updateTablefinal();
+              _savebook();
+              _addlog();
               Navigator.pushAndRemoveUntil(context,
                   MaterialPageRoute(builder: (BuildContext context) {
-                return HomePage();
+                return splash();
               }), (r) {
                 return false;
               });
             },
             style: const ButtonStyle(
-              backgroundColor:
-                  MaterialStatePropertyAll<Color>(Color(primaryColor)),
+              backgroundColor: MaterialStatePropertyAll<Color>(
+                  Color.fromARGB(255, 54, 51, 140)),
             ),
             child: const Text(
               "BOOK",
@@ -321,18 +390,23 @@ class _Edit_BookState extends State<Edit_Book> {
           onPressed: () {
             Navigator.pop(context);
           },
-          icon: Icon(Icons.arrow_back_rounded),
+          icon: Icon(
+            Icons.arrow_back_rounded,
+            color: Colors.black,
+          ),
         ),
         title: Text(
           'Select Table $selection',
           style: TextStyle(
-              fontSize: 25, fontWeight: FontWeight.bold, color: Colors.black),
+              fontSize: 35.sp,
+              fontWeight: FontWeight.bold,
+              color: Colors.black),
         ),
         centerTitle: true,
         elevation: 0,
-        backgroundColor: Colors.white,
+        backgroundColor: Color.fromARGB(232, 232, 231, 231),
       ),
-      backgroundColor: Colors.white,
+      backgroundColor: Color.fromARGB(232, 250, 250, 250),
       body: Padding(
         padding: const EdgeInsets.only(left: 20, right: 20),
         child: Column(
@@ -344,9 +418,15 @@ class _Edit_BookState extends State<Edit_Book> {
                   context: context,
                   builder: (context) {
                     return Container(
-                      height: 300,
+                      height: 300.h,
                       child: FutureBuilder(
-                        future: db.collection('table').get(),
+                        future: db
+                            .collection('Vsing-rsv')
+                            .doc(widget.todayear)
+                            .collection('Reservation')
+                            .doc(widget.date)
+                            .collection('table')
+                            .get(),
                         builder: (context, snapshot) {
                           if (snapshot.connectionState ==
                               ConnectionState.waiting) {
@@ -373,16 +453,17 @@ class _Edit_BookState extends State<Edit_Book> {
                                   padding: const EdgeInsets.all(8.0),
                                   child: Container(
                                     width: MediaQuery.of(context).size.width,
-                                    height: 30,
+                                    height: 40.h,
                                     decoration: BoxDecoration(
-                                        color: Colors.grey[300],
+                                        color:
+                                            Color.fromARGB(255, 235, 235, 235),
                                         borderRadius:
-                                            BorderRadius.circular(10)),
+                                            BorderRadius.circular(10.r)),
                                     child: Center(
                                       child: Text(
                                         data[index].data()['lantai'],
                                         style: TextStyle(
-                                          fontSize: 20,
+                                          fontSize: 25.sp,
                                         ),
                                       ),
                                     ),
@@ -404,12 +485,12 @@ class _Edit_BookState extends State<Edit_Book> {
                     Text(
                       lantai,
                       style: TextStyle(
-                        fontSize: 20,
+                        fontSize: 24.sp,
                       ),
                     ),
                     Icon(
                       Icons.arrow_drop_down_rounded,
-                      size: 30,
+                      size: 50.w,
                     )
                   ],
                 ),
@@ -419,26 +500,31 @@ class _Edit_BookState extends State<Edit_Book> {
             // stage
             Container(
               width: MediaQuery.of(context).size.width * 1,
-              height: 50,
+              height: 50.h,
               decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(10),
-                  color: Colors.grey[300]),
+                  color: Color.fromARGB(255, 255, 255, 255)),
               child: Center(
                 child: Text(
                   'STAGE',
-                  style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
+                  style:
+                      TextStyle(fontSize: 30.sp, fontWeight: FontWeight.bold),
                 ),
               ),
             ),
-            SizedBox(height: 30),
+            SizedBox(height: 20.h),
 
             // tablet
 
             Container(
               width: MediaQuery.of(context).size.width,
-              height: 300,
+              height: 400.h,
               child: FutureBuilder(
                   future: db
+                      .collection('Vsing-rsv')
+                      .doc(widget.todayear)
+                      .collection('Reservation')
+                      .doc(widget.date)
                       .collection('table')
                       .doc(lantai)
                       .collection('lantai')
@@ -464,46 +550,58 @@ class _Edit_BookState extends State<Edit_Book> {
                         itemCount: data.length,
                         itemBuilder: (BuildContext ctx, index) {
                           return InkWell(
-                            onTap: () {
-                              setState(() {
-                                no = data[index].data()['no'];
-                                status = data[index].data()['status'];
-                                newstatus = "Selected";
-                              });
-                              if (no == 'T10') {
-                                no = "U10";
-                              } else if (no == 'T11') {
-                                no = "U11";
-                              } else if (no == 'T12') {
-                                no = "U12";
-                              } else if (no == 'T13') {
-                                no = "U13";
-                              } else if (no == 'T14') {
-                                no = "U14";
-                              } else if (no == 'T15') {
-                                no = "U15";
-                              } else if (no == 'T16') {
-                                no = "U16";
-                              } else if (no == 'T17') {
-                                no = "U17";
-                              } else if (no == 'T18') {
-                                no = "U18";
-                              }
-                              _getselected();
+                              onTap: (data[index].data()['status'] == 'Avail')
+                                  ? () {
+                                      if (no == 'T10') {
+                                        no = "U10";
+                                      } else if (no == 'T11') {
+                                        no = "U11";
+                                      } else if (no == 'T12') {
+                                        no = "U12";
+                                      } else if (no == 'T13') {
+                                        no = "U13";
+                                      } else if (no == 'T14') {
+                                        no = "U14";
+                                      } else if (no == 'T15') {
+                                        no = "U15";
+                                      } else if (no == 'T16') {
+                                        no = "U16";
+                                      } else if (no == 'T17') {
+                                        no = "U17";
+                                      } else if (no == 'T18') {
+                                        no = "U18";
+                                      }
+                                      setState(() {
+                                        if (selectedIndex.contains(index) &&
+                                            chooseTable.contains(
+                                                data[index].data()['no'])) {
+                                          selectedIndex.remove(index);
+                                          chooseTable
+                                              .remove(data[index].data()['no']);
 
-                              if (status == 'Avail') {
-                                _update();
-                              } else if (status == 'Selected') {
-                                _updateselected();
-                              } else if (status == 'Book') {}
-                            },
-                            child: tableui(
-                              cekno: no,
-                              no: data[index].data()['no'],
-                              status: status,
-                              cekstatus: data[index].data()['status'],
-                            ),
-                          );
+                                          print(chooseTable);
+                                        } else {
+                                          chooseTable
+                                              .add(data[index].data()['no']);
+                                          selectedIndex.add(index);
+                                          print(chooseTable);
+                                        }
+                                      });
+                                      // _getselected();
+
+                                      // if (status == 'Avail') {
+                                      //   _update();
+                                      // } else if (status == 'Selected') {
+                                      //   _updateselected();
+                                      // } else if (status == 'Book') {}
+                                    }
+                                  : () {
+                                      null;
+                                    },
+                              child: tableui(
+                                  label: data[index].data()['no'],
+                                  ceklabel: chooseTable,
+                                  warna: data[index].data()['status']));
                         });
                   }),
             ),
@@ -518,17 +616,17 @@ class _Edit_BookState extends State<Edit_Book> {
                   child: Row(
                     children: [
                       Container(
-                        width: 10,
-                        height: 10,
+                        width: 15.w,
+                        height: 14.h,
                         decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(50),
+                            borderRadius: BorderRadius.circular(50.r),
                             color: Colors.grey),
                       ),
-                      SizedBox(width: 10),
+                      SizedBox(width: 10.w),
                       Text(
                         'Available',
                         style: TextStyle(
-                            fontSize: 18, fontWeight: FontWeight.bold),
+                            fontSize: 20.sp, fontWeight: FontWeight.bold),
                       ),
                     ],
                   ),
@@ -538,17 +636,17 @@ class _Edit_BookState extends State<Edit_Book> {
                   child: Row(
                     children: [
                       Container(
-                        width: 10,
-                        height: 10,
+                        width: 15.w,
+                        height: 14.h,
                         decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(50),
+                            borderRadius: BorderRadius.circular(50.r),
                             color: Color.fromARGB(255, 221, 20, 124)),
                       ),
-                      SizedBox(width: 10),
+                      SizedBox(width: 10.w),
                       Text(
                         'Selected',
                         style: TextStyle(
-                            fontSize: 18, fontWeight: FontWeight.bold),
+                            fontSize: 20.w, fontWeight: FontWeight.bold),
                       ),
                     ],
                   ),
@@ -558,17 +656,17 @@ class _Edit_BookState extends State<Edit_Book> {
                   child: Row(
                     children: [
                       Container(
-                        width: 10,
-                        height: 10,
+                        width: 15.w,
+                        height: 14.h,
                         decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(50),
+                            borderRadius: BorderRadius.circular(50.r),
                             color: Color.fromARGB(255, 2, 161, 234)),
                       ),
-                      SizedBox(width: 10),
+                      SizedBox(width: 10.w),
                       Text(
-                        'Reserved',
+                        'Booked',
                         style: TextStyle(
-                            fontSize: 18, fontWeight: FontWeight.bold),
+                            fontSize: 20.sp, fontWeight: FontWeight.bold),
                       ),
                     ],
                   ),
@@ -586,34 +684,34 @@ class _Edit_BookState extends State<Edit_Book> {
                       Text(
                         widget.name,
                         style: TextStyle(
-                            fontSize: 20, fontWeight: FontWeight.bold),
+                            fontSize: 25.sp, fontWeight: FontWeight.bold),
                       ),
                       Text(
                         widget.event,
-                        style: TextStyle(fontSize: 20),
+                        style: TextStyle(fontSize: 25.sp),
                       ),
                       Text(
                         widget.phone,
                         style: TextStyle(
-                          fontSize: 18,
+                          fontSize: 25.sp,
                         ),
                       ),
                       Text(
                         'Pax : ${widget.pax}',
                         style: TextStyle(
-                          fontSize: 18,
+                          fontSize: 25.sp,
                         ),
                       ),
                     ],
                   ),
                 ),
                 Container(
-                  width: 3,
-                  height: 50,
+                  width: 3.w,
+                  height: 60.h,
                   color: Colors.black,
                 ),
                 Container(
-                  width: 180,
+                  width: 250.w,
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.end,
@@ -621,18 +719,18 @@ class _Edit_BookState extends State<Edit_Book> {
                       Text(
                         'Date & Time',
                         style: TextStyle(
-                          fontSize: 18,
+                          fontSize: 20.sp,
                         ),
                       ),
                       Text(
                         widget.date,
                         style: TextStyle(
-                            fontSize: 20, fontWeight: FontWeight.bold),
+                            fontSize: 20.sp, fontWeight: FontWeight.bold),
                       ),
                       Text(
                         widget.time,
                         style: TextStyle(
-                            fontSize: 20, fontWeight: FontWeight.bold),
+                            fontSize: 20.sp, fontWeight: FontWeight.bold),
                       ),
                     ],
                   ),

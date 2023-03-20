@@ -1,43 +1,50 @@
 import 'package:flutter/material.dart';
 
-class tableui extends StatelessWidget {
-  final status;
-  final cekstatus;
-  final no;
-  final cekno;
+class tableui extends StatefulWidget {
+  final warna;
+  final String label;
+  final List ceklabel;
+
   const tableui({
     super.key,
-    required this.status,
-    required this.cekstatus,
-    required this.no,
-    required this.cekno,
+    required this.label,
+    required this.ceklabel,
+    required this.warna,
   });
 
   @override
-  Widget build(BuildContext context) {
-    var warna;
-    if (cekstatus == "Selected") {
-      warna = Color.fromARGB(255, 221, 20, 124);
-    } else if (cekstatus == "Book") {
-      warna = Color.fromARGB(255, 2, 161, 234);
-    } else if (cekstatus == "Avail") {
-      warna = Colors.grey;
+  State<tableui> createState() => _tableuiState();
+}
 
-      // if (status == cekstatus && no == cekno) {
-      //   warna = Color.fromARGB(255, 221, 20, 124);
-      // } else if (cekstatus == "Book") {
-      //   warna = Color.fromARGB(255, 2, 161, 234);
-      // } else if (cekstatus == "Avail") {
-      //   warna = Colors.grey;
+class _tableuiState extends State<tableui> {
+  @override
+  Widget build(BuildContext context) {
+    var color;
+    // var warna;
+    if (widget.warna == 'Avail') {
+      color = Colors.grey;
+      for (var i = 0; i < widget.ceklabel.length; i++) {
+        if (widget.ceklabel[i] == widget.label) {
+          color = Color.fromARGB(255, 221, 20, 124);
+        } else if (widget.ceklabel[i] == widget.label) {
+          color = Colors.grey;
+        }
+      }
+    } else if (widget.warna != 'Avail') {
+      color = Color.fromARGB(255, 2, 161, 234);
     }
+    //   // if (status == cekstatus && no == cekno) {
+    //   //   warna = Color.fromARGB(255, 221, 20, 124);
+    //   // } else if (cekstatus == "Book") {
+    //   //   warna = Color.fromARGB(255, 2, 161, 234);
+    //   // } else if (cekstatus == "Avail") {
+    //   //   warna = Colors.grey;
+    // }
 
     return Container(
         alignment: Alignment.center,
         decoration: BoxDecoration(
-            //color: lokasi == notable Filter Color.fromARGB(255, 231, 8, 93),
-            // color: warna,
-            color: warna,
-            borderRadius: BorderRadius.circular(15)),
-        child: Text(no));
+            color: color, borderRadius: BorderRadius.circular(15)),
+        child: Text(widget.label));
   }
 }
