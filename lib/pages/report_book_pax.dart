@@ -63,8 +63,8 @@ class _report_BookPaxState extends State<report_BookPax> {
     // wed
     final dataq = await FirebaseFirestore.instance
         .collection('Vsing-rsv')
-        .doc(todayear)
-        .collection('Book-Pax')
+        .doc('reservation')
+        .collection('book-pax')
         .doc(idmonth)
         .collection('Report_Weeks')
         .doc('week_1')
@@ -76,8 +76,8 @@ class _report_BookPaxState extends State<report_BookPax> {
     // sun
     final datas = await FirebaseFirestore.instance
         .collection('Vsing-rsv')
-        .doc(todayear)
-        .collection('Book-Pax')
+        .doc('reservation')
+        .collection('book-pax')
         .doc(idmonth)
         .collection('Report_Weeks')
         .doc('week_1')
@@ -89,8 +89,8 @@ class _report_BookPaxState extends State<report_BookPax> {
     // mon
     final datam = await FirebaseFirestore.instance
         .collection('Vsing-rsv')
-        .doc(todayear)
-        .collection('Book-Pax')
+        .doc('reservation')
+        .collection('book-pax')
         .doc(idmonth)
         .collection('Report_Weeks')
         .doc('week_1')
@@ -102,8 +102,8 @@ class _report_BookPaxState extends State<report_BookPax> {
     // tue
     final datat = await FirebaseFirestore.instance
         .collection('Vsing-rsv')
-        .doc(todayear)
-        .collection('Book-Pax')
+        .doc('reservation')
+        .collection('book-pax')
         .doc(idmonth)
         .collection('Report_Weeks')
         .doc('week_1')
@@ -115,8 +115,8 @@ class _report_BookPaxState extends State<report_BookPax> {
     // thu
     final datah = await FirebaseFirestore.instance
         .collection('Vsing-rsv')
-        .doc(todayear)
-        .collection('Book-Pax')
+        .doc('reservation')
+        .collection('book-pax')
         .doc(idmonth)
         .collection('Report_Weeks')
         .doc('week_1')
@@ -128,8 +128,8 @@ class _report_BookPaxState extends State<report_BookPax> {
     // fri
     final dataf = await FirebaseFirestore.instance
         .collection('Vsing-rsv')
-        .doc(todayear)
-        .collection('Book-Pax')
+        .doc('reservation')
+        .collection('book-pax')
         .doc(idmonth)
         .collection('Report_Weeks')
         .doc('week_1')
@@ -141,8 +141,8 @@ class _report_BookPaxState extends State<report_BookPax> {
     // sat
     final datasa = await FirebaseFirestore.instance
         .collection('Vsing-rsv')
-        .doc(todayear)
-        .collection('Book-Pax')
+        .doc('reservation')
+        .collection('book-pax')
         .doc(idmonth)
         .collection('Report_Weeks')
         .doc('week_1')
@@ -155,8 +155,8 @@ class _report_BookPaxState extends State<report_BookPax> {
     // total
     final total = await FirebaseFirestore.instance
         .collection('Vsing-rsv')
-        .doc(todayear)
-        .collection('Book-Pax')
+        .doc('reservation')
+        .collection('book-pax')
         .doc(idmonth)
         .collection('Report_Weeks')
         .doc('week_1')
@@ -220,8 +220,8 @@ class _report_BookPaxState extends State<report_BookPax> {
     // wed
     final dataq = await FirebaseFirestore.instance
         .collection('Vsing-rsv')
-        .doc(todayear)
-        .collection('Book-Pax')
+        .doc('reservation')
+        .collection('book-pax')
         .doc(idmonth)
         .collection('Report_Weeks')
         .doc('week_2')
@@ -233,8 +233,8 @@ class _report_BookPaxState extends State<report_BookPax> {
     // sun
     final datas = await FirebaseFirestore.instance
         .collection('Vsing-rsv')
-        .doc(todayear)
-        .collection('Book-Pax')
+        .doc('reservation')
+        .collection('book-pax')
         .doc(idmonth)
         .collection('Report_Weeks')
         .doc('week_2')
@@ -246,8 +246,8 @@ class _report_BookPaxState extends State<report_BookPax> {
     // mon
     final datam = await FirebaseFirestore.instance
         .collection('Vsing-rsv')
-        .doc(todayear)
-        .collection('Book-Pax')
+        .doc('reservation')
+        .collection('book-pax')
         .doc(idmonth)
         .collection('Report_Weeks')
         .doc('week_2')
@@ -259,8 +259,8 @@ class _report_BookPaxState extends State<report_BookPax> {
     // tue
     final datat = await FirebaseFirestore.instance
         .collection('Vsing-rsv')
-        .doc(todayear)
-        .collection('Book-Pax')
+        .doc('reservation')
+        .collection('book-pax')
         .doc(idmonth)
         .collection('Report_Weeks')
         .doc('week_2')
@@ -272,8 +272,8 @@ class _report_BookPaxState extends State<report_BookPax> {
     // thu
     final datah = await FirebaseFirestore.instance
         .collection('Vsing-rsv')
-        .doc(todayear)
-        .collection('Book-Pax')
+        .doc('reservation')
+        .collection('book-pax')
         .doc(idmonth)
         .collection('Report_Weeks')
         .doc('week_2')
@@ -285,8 +285,8 @@ class _report_BookPaxState extends State<report_BookPax> {
     // fri
     final dataf = await FirebaseFirestore.instance
         .collection('Vsing-rsv')
-        .doc(todayear)
-        .collection('Book-Pax')
+        .doc('reservation')
+        .collection('book-pax')
         .doc(idmonth)
         .collection('Report_Weeks')
         .doc('week_2')
@@ -298,8 +298,8 @@ class _report_BookPaxState extends State<report_BookPax> {
     // sat
     final datasa = await FirebaseFirestore.instance
         .collection('Vsing-rsv')
-        .doc(todayear)
-        .collection('Book-Pax')
+        .doc('reservation')
+        .collection('book-pax')
         .doc(idmonth)
         .collection('Report_Weeks')
         .doc('week_2')
@@ -312,8 +312,8 @@ class _report_BookPaxState extends State<report_BookPax> {
     // total
     final total = await FirebaseFirestore.instance
         .collection('Vsing-rsv')
-        .doc(todayear)
-        .collection('Book-Pax')
+        .doc('reservation')
+        .collection('book-pax')
         .doc(idmonth)
         .collection('Report_Weeks')
         .doc('week_2')
@@ -377,8 +377,8 @@ class _report_BookPaxState extends State<report_BookPax> {
     // wed
     final dataq = await FirebaseFirestore.instance
         .collection('Vsing-rsv')
-        .doc(todayear)
-        .collection('Book-Pax')
+        .doc('reservation')
+        .collection('book-pax')
         .doc(idmonth)
         .collection('Report_Weeks')
         .doc('week_3')
@@ -390,8 +390,8 @@ class _report_BookPaxState extends State<report_BookPax> {
     // sun
     final datas = await FirebaseFirestore.instance
         .collection('Vsing-rsv')
-        .doc(todayear)
-        .collection('Book-Pax')
+        .doc('reservation')
+        .collection('book-pax')
         .doc(idmonth)
         .collection('Report_Weeks')
         .doc('week_3')
@@ -403,8 +403,8 @@ class _report_BookPaxState extends State<report_BookPax> {
     // mon
     final datam = await FirebaseFirestore.instance
         .collection('Vsing-rsv')
-        .doc(todayear)
-        .collection('Book-Pax')
+        .doc('reservation')
+        .collection('book-pax')
         .doc(idmonth)
         .collection('Report_Weeks')
         .doc('week_3')
@@ -416,8 +416,8 @@ class _report_BookPaxState extends State<report_BookPax> {
     // tue
     final datat = await FirebaseFirestore.instance
         .collection('Vsing-rsv')
-        .doc(todayear)
-        .collection('Book-Pax')
+        .doc('reservation')
+        .collection('book-pax')
         .doc(idmonth)
         .collection('Report_Weeks')
         .doc('week_3')
@@ -429,8 +429,8 @@ class _report_BookPaxState extends State<report_BookPax> {
     // thu
     final datah = await FirebaseFirestore.instance
         .collection('Vsing-rsv')
-        .doc(todayear)
-        .collection('Book-Pax')
+        .doc('reservation')
+        .collection('book-pax')
         .doc(idmonth)
         .collection('Report_Weeks')
         .doc('week_3')
@@ -442,8 +442,8 @@ class _report_BookPaxState extends State<report_BookPax> {
     // fri
     final dataf = await FirebaseFirestore.instance
         .collection('Vsing-rsv')
-        .doc(todayear)
-        .collection('Book-Pax')
+        .doc('reservation')
+        .collection('book-pax')
         .doc(idmonth)
         .collection('Report_Weeks')
         .doc('week_3')
@@ -455,8 +455,8 @@ class _report_BookPaxState extends State<report_BookPax> {
     // sat
     final datasa = await FirebaseFirestore.instance
         .collection('Vsing-rsv')
-        .doc(todayear)
-        .collection('Book-Pax')
+        .doc('reservation')
+        .collection('book-pax')
         .doc(idmonth)
         .collection('Report_Weeks')
         .doc('week_3')
@@ -469,8 +469,8 @@ class _report_BookPaxState extends State<report_BookPax> {
     // total
     final total = await FirebaseFirestore.instance
         .collection('Vsing-rsv')
-        .doc(todayear)
-        .collection('Book-Pax')
+        .doc('reservation')
+        .collection('book-pax')
         .doc(idmonth)
         .collection('Report_Weeks')
         .doc('week_3')
@@ -534,8 +534,8 @@ class _report_BookPaxState extends State<report_BookPax> {
     // wed
     final dataq = await FirebaseFirestore.instance
         .collection('Vsing-rsv')
-        .doc(todayear)
-        .collection('Book-Pax')
+        .doc('reservation')
+        .collection('book-pax')
         .doc(idmonth)
         .collection('Report_Weeks')
         .doc('week_4')
@@ -547,8 +547,8 @@ class _report_BookPaxState extends State<report_BookPax> {
     // sun
     final datas = await FirebaseFirestore.instance
         .collection('Vsing-rsv')
-        .doc(todayear)
-        .collection('Book-Pax')
+        .doc('reservation')
+        .collection('book-pax')
         .doc(idmonth)
         .collection('Report_Weeks')
         .doc('week_4')
@@ -560,8 +560,8 @@ class _report_BookPaxState extends State<report_BookPax> {
     // mon
     final datam = await FirebaseFirestore.instance
         .collection('Vsing-rsv')
-        .doc(todayear)
-        .collection('Book-Pax')
+        .doc('reservation')
+        .collection('book-pax')
         .doc(idmonth)
         .collection('Report_Weeks')
         .doc('week_4')
@@ -573,8 +573,8 @@ class _report_BookPaxState extends State<report_BookPax> {
     // tue
     final datat = await FirebaseFirestore.instance
         .collection('Vsing-rsv')
-        .doc(todayear)
-        .collection('Book-Pax')
+        .doc('reservation')
+        .collection('book-pax')
         .doc(idmonth)
         .collection('Report_Weeks')
         .doc('week_4')
@@ -586,8 +586,8 @@ class _report_BookPaxState extends State<report_BookPax> {
     // thu
     final datah = await FirebaseFirestore.instance
         .collection('Vsing-rsv')
-        .doc(todayear)
-        .collection('Book-Pax')
+        .doc('reservation')
+        .collection('book-pax')
         .doc(idmonth)
         .collection('Report_Weeks')
         .doc('week_4')
@@ -599,8 +599,8 @@ class _report_BookPaxState extends State<report_BookPax> {
     // fri
     final dataf = await FirebaseFirestore.instance
         .collection('Vsing-rsv')
-        .doc(todayear)
-        .collection('Book-Pax')
+        .doc('reservation')
+        .collection('book-pax')
         .doc(idmonth)
         .collection('Report_Weeks')
         .doc('week_4')
@@ -612,8 +612,8 @@ class _report_BookPaxState extends State<report_BookPax> {
     // sat
     final datasa = await FirebaseFirestore.instance
         .collection('Vsing-rsv')
-        .doc(todayear)
-        .collection('Book-Pax')
+        .doc('reservation')
+        .collection('book-pax')
         .doc(idmonth)
         .collection('Report_Weeks')
         .doc('week_4')
@@ -626,8 +626,8 @@ class _report_BookPaxState extends State<report_BookPax> {
     // total
     final total = await FirebaseFirestore.instance
         .collection('Vsing-rsv')
-        .doc(todayear)
-        .collection('Book-Pax')
+        .doc('reservation')
+        .collection('book-pax')
         .doc(idmonth)
         .collection('Report_Weeks')
         .doc('week_4')
@@ -691,8 +691,8 @@ class _report_BookPaxState extends State<report_BookPax> {
     // wed
     final dataq = await FirebaseFirestore.instance
         .collection('Vsing-rsv')
-        .doc(todayear)
-        .collection('Book-Pax')
+        .doc('reservation')
+        .collection('book-pax')
         .doc(idmonth)
         .collection('Report_Weeks')
         .doc('week_5')
@@ -704,8 +704,8 @@ class _report_BookPaxState extends State<report_BookPax> {
     // sun
     final datas = await FirebaseFirestore.instance
         .collection('Vsing-rsv')
-        .doc(todayear)
-        .collection('Book-Pax')
+        .doc('reservation')
+        .collection('book-pax')
         .doc(idmonth)
         .collection('Report_Weeks')
         .doc('week_5')
@@ -717,8 +717,8 @@ class _report_BookPaxState extends State<report_BookPax> {
     // mon
     final datam = await FirebaseFirestore.instance
         .collection('Vsing-rsv')
-        .doc(todayear)
-        .collection('Book-Pax')
+        .doc('reservation')
+        .collection('book-pax')
         .doc(idmonth)
         .collection('Report_Weeks')
         .doc('week_5')
@@ -730,8 +730,8 @@ class _report_BookPaxState extends State<report_BookPax> {
     // tue
     final datat = await FirebaseFirestore.instance
         .collection('Vsing-rsv')
-        .doc(todayear)
-        .collection('Book-Pax')
+        .doc('reservation')
+        .collection('book-pax')
         .doc(idmonth)
         .collection('Report_Weeks')
         .doc('week_5')
@@ -743,8 +743,8 @@ class _report_BookPaxState extends State<report_BookPax> {
     // thu
     final datah = await FirebaseFirestore.instance
         .collection('Vsing-rsv')
-        .doc(todayear)
-        .collection('Book-Pax')
+        .doc('reservation')
+        .collection('book-pax')
         .doc(idmonth)
         .collection('Report_Weeks')
         .doc('week_5')
@@ -756,8 +756,8 @@ class _report_BookPaxState extends State<report_BookPax> {
     // fri
     final dataf = await FirebaseFirestore.instance
         .collection('Vsing-rsv')
-        .doc(todayear)
-        .collection('Book-Pax')
+        .doc('reservation')
+        .collection('book-pax')
         .doc(idmonth)
         .collection('Report_Weeks')
         .doc('week_5')
@@ -769,8 +769,8 @@ class _report_BookPaxState extends State<report_BookPax> {
     // sat
     final datasa = await FirebaseFirestore.instance
         .collection('Vsing-rsv')
-        .doc(todayear)
-        .collection('Book-Pax')
+        .doc('reservation')
+        .collection('book-pax')
         .doc(idmonth)
         .collection('Report_Weeks')
         .doc('week_5')
@@ -783,8 +783,8 @@ class _report_BookPaxState extends State<report_BookPax> {
     // total
     final total = await FirebaseFirestore.instance
         .collection('Vsing-rsv')
-        .doc(todayear)
-        .collection('Book-Pax')
+        .doc('reservation')
+        .collection('book-pax')
         .doc(idmonth)
         .collection('Report_Weeks')
         .doc('week_5')

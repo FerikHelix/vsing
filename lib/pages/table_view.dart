@@ -4,8 +4,6 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
 
-import '../util/table.dart';
-
 class Table_View extends StatefulWidget {
   const Table_View({super.key});
 
@@ -14,17 +12,66 @@ class Table_View extends StatefulWidget {
 }
 
 class _Table_ViewState extends State<Table_View> {
-  var tahunnow = '', monthidname = '', datenow = '', lantaiSelect = '';
-  List lantai = ['floor1', 'floor2'];
+  var tahunnow = '', monthidname = '', datenow = '', lantaiSelect = 'floor1';
+  var unpackedArr;
+  List lantai = [], userData = [], tableUser = [], userLantai = [];
 
-  // List lantai = ['floor1', 'floor2'];
+  _cekDatas() async {
+    userLantai.clear();
+    // table
+    final table = await FirebaseFirestore.instance
+        .collection('Vsing-rsv')
+        .doc('reservation')
+        .collection('table_master')
+        .get();
+
+    lantai = table.docs.map((e) => e.data()['lantai']).toList();
+    print(lantai);
+    // user
+    final user = await FirebaseFirestore.instance
+        .collection('Vsing-rsv')
+        .doc('reservation')
+        .collection('user_data')
+        .where('date', isEqualTo: datenow)
+        .get();
+    userData = user.docs.map((e) => e.data()).toList();
+    // print(userData);
+    for (var i = 0; i < userData.length; i++) {
+      setState(() {
+        userLantai.addAll(userData[i]['table_no']);
+        print(userData[i]['table_no']);
+
+        // if (userData[i]['table_no']
+        //     .contains(RegExp(r'\b(?:U10|U11|U12|U13|U14|U15|U16|U17|U18)\b'))) {
+        //   unpackedArr.add(userData[i]['table_no'].replaceAll('U', 'T'));
+        //   print(unpackedArr);
+        // } else {
+        //   unpackedArr.add(userData[i]['table_no']);
+        //   print(unpackedArr);
+        // }
+      });
+    }
+  }
+
+  var status;
+  // _getWarna(String idno) async {
+  //   for (var i = 0; i < userLantai.length; i++) {
+  //     if (userLantai[i] == idno) {
+  //       status = 'Book';
+  //       // print(userLantai[i]);
+  //     } else {
+  //       status = 'Avail';
+  //     }
+  //   }
+
+  //   // print(status);
+  // }
 
   @override
   void initState() {
+    _cekDatas();
     super.initState();
-    var now = DateTime.now();
-    DateFormat bsk5 = DateFormat('d MMM yyyy');
-    datenow = bsk5.format(now);
+    datenow = DateFormat('d MMM yyyy').format(DateTime.now());
     tahunnow = DateTime.now().year.toString();
   }
 
@@ -42,7 +89,7 @@ class _Table_ViewState extends State<Table_View> {
           ),
         ),
         title: Text(
-          'Table ',
+          'Slot',
           style: TextStyle(
               fontSize: 35.sp,
               fontWeight: FontWeight.bold,
@@ -62,74 +109,70 @@ class _Table_ViewState extends State<Table_View> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Column(
-                    children: [
-                      Text(datenow),
-                      Container(
-                        height: 3.h,
-                        width: 80.w,
-                        color: Colors.black,
-                      )
-                    ],
-                  ),
-                  IconButton(
-                      onPressed: () async {
-                        var datetimeRet = await showDatePicker(
-                          context: context,
-                          initialDate: DateTime.now(),
-                          firstDate: DateTime(1950),
-                          lastDate: DateTime(2100),
-                          builder: (context, child) {
-                            return Theme(
-                              data: Theme.of(context).copyWith(
-                                colorScheme: ColorScheme.light(
+                  GestureDetector(
+                    onTap: () async {
+                      var datetimeRet = await showDatePicker(
+                        context: context,
+                        initialDate: DateTime.now(),
+                        firstDate: DateTime(1950),
+                        lastDate: DateTime(2100),
+                        builder: (context, child) {
+                          return Theme(
+                            data: Theme.of(context).copyWith(
+                              colorScheme: ColorScheme.light(
+                                primary: Color.fromARGB(
+                                    255, 85, 71, 117), // <-- SEE HERE
+                                onPrimary: Color.fromARGB(
+                                    255, 255, 255, 255), // <-- SEE HERE
+                                onSurface: Color.fromARGB(
+                                    255, 85, 71, 117), // <-- SEE HERE
+                              ),
+                              textButtonTheme: TextButtonThemeData(
+                                style: TextButton.styleFrom(
                                   primary: Color.fromARGB(
-                                      255, 85, 71, 117), // <-- SEE HERE
-                                  onPrimary: Color.fromARGB(
-                                      255, 255, 255, 255), // <-- SEE HERE
-                                  onSurface: Color.fromARGB(
-                                      255, 85, 71, 117), // <-- SEE HERE
-                                ),
-                                textButtonTheme: TextButtonThemeData(
-                                  style: TextButton.styleFrom(
-                                    primary: Color.fromARGB(
-                                        255, 85, 71, 117), // button text color
-                                  ),
+                                      255, 85, 71, 117), // button text color
                                 ),
                               ),
-                              child: child!,
-                            );
-                          },
-                        );
+                            ),
+                            child: child!,
+                          );
+                        },
+                      );
 
-                        initializeDateFormatting('id');
+                      initializeDateFormatting('id');
 
-                        String formattedDate =
-                            DateFormat.yMMMd('id').format(datetimeRet!);
+                      String formattedDate =
+                          DateFormat.yMMMd('id').format(datetimeRet!);
 
-                        setState(() {
-                          datenow = formattedDate.toString();
-                          tahunnow = datetimeRet.year.toString();
-                        });
-                      },
-                      icon: Icon(
-                        Icons.calendar_month,
-                        size: 30,
-                      )),
-
-                  // lantaii
-                  Column(
-                    children: [
-                      Text(lantaiSelect),
-                      Container(
-                        height: 3.h,
-                        width: 80.w,
-                        color: Colors.black,
-                      )
-                    ],
+                      setState(() {
+                        datenow = formattedDate.toString();
+                        tahunnow = datetimeRet.year.toString();
+                        _cekDatas();
+                      });
+                    },
+                    child: Row(
+                      children: [
+                        Column(
+                          children: [
+                            Text(datenow),
+                            Container(
+                              height: 3.h,
+                              width: 80.w,
+                              color: Colors.black,
+                            )
+                          ],
+                        ),
+                        Icon(
+                          Icons.calendar_month,
+                          size: 30,
+                        ),
+                      ],
+                    ),
                   ),
-                  IconButton(
-                    onPressed: () async {
+                  // lantaii
+
+                  GestureDetector(
+                    onTap: () {
                       showModalBottomSheet(
                         context: context,
                         builder: (context) {
@@ -173,14 +216,29 @@ class _Table_ViewState extends State<Table_View> {
                         },
                       );
                     },
-                    icon: Icon(
-                      Icons.arrow_drop_down_rounded,
-                      color: Colors.black,
-                      size: 45.w,
+                    child: Row(
+                      children: [
+                        Column(
+                          children: [
+                            Text(lantaiSelect),
+                            Container(
+                              height: 3.h,
+                              width: 80.w,
+                              color: Colors.black,
+                            )
+                          ],
+                        ),
+                        Icon(
+                          Icons.arrow_drop_down_rounded,
+                          color: Colors.black,
+                          size: 45.w,
+                        ),
+                      ],
                     ),
                   ),
                 ],
               ),
+
               // info
 
               // available
@@ -216,7 +274,7 @@ class _Table_ViewState extends State<Table_View> {
                           height: 15.h,
                           decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(50),
-                              color: Color.fromARGB(255, 2, 161, 234)),
+                              color: Color.fromARGB(255, 221, 20, 124)),
                         ),
                         SizedBox(width: 10),
                         Text(
@@ -260,12 +318,8 @@ class _Table_ViewState extends State<Table_View> {
                             .snapshots()
                         : FirebaseFirestore.instance
                             .collection('Vsing-rsv')
-                            .doc(tahunnow)
-                            // .collection('month')
-                            // .doc(monthid)
-                            .collection('Reservation')
-                            .doc(datenow)
-                            .collection('table')
+                            .doc('reservation')
+                            .collection('table_master')
                             .doc(lantaiSelect)
                             .collection('lantai')
                             .snapshots(),
@@ -281,6 +335,7 @@ class _Table_ViewState extends State<Table_View> {
                         );
                       }
                       var data = snapshot.data!.docs;
+
                       return GridView.builder(
                           physics: NeverScrollableScrollPhysics(),
                           gridDelegate:
@@ -290,10 +345,22 @@ class _Table_ViewState extends State<Table_View> {
                                   mainAxisSpacing: 10),
                           itemCount: data.length,
                           itemBuilder: (BuildContext ctx, index) {
-                            return tableui(
-                                label: data[index].data()['no'],
-                                ceklabel: [],
-                                warna: data[index].data()['status']);
+                            var colorbg;
+                            colorbg = Colors.grey;
+                            for (var i = 0; i < userLantai.length; ++i) {
+                              if (data[index].data()['no'] == userLantai[i]) {
+                                colorbg = Color.fromARGB(255, 221, 20, 124);
+                                break;
+                              } else {
+                                colorbg = Colors.grey;
+                              }
+                            }
+                            return Container(
+                                alignment: Alignment.center,
+                                decoration: BoxDecoration(
+                                    color: colorbg,
+                                    borderRadius: BorderRadius.circular(15)),
+                                child: Text(data[index].data()['no']));
                           });
                     }),
               )

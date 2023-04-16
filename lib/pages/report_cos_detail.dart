@@ -13,6 +13,13 @@ class Cos_detail extends StatefulWidget {
 
 class _Cos_detailState extends State<Cos_detail> {
   @override
+  void initState() {
+    // TODO: implement initState
+    print(widget.name);
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -84,6 +91,7 @@ class _Cos_detailState extends State<Cos_detail> {
                   var data = snapshot.data!.docs;
 
                   return ListView.builder(
+                    physics: BouncingScrollPhysics(),
                     itemCount: data.length,
                     itemBuilder: (context, index) {
                       return Card_history(

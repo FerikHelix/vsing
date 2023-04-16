@@ -1,0 +1,482 @@
+_addbookpaxweek() async {
+    var mnth = DateFormat('MMM').format(DateTime.now());
+    var numonth;
+
+    if (mnth == 'Jan') {
+      numonth = '01';
+    } else if (mnth == 'Feb') {
+      numonth = '02';
+    } else if (mnth == 'Mar') {
+      numonth = '03';
+    } else if (mnth == 'Apr') {
+      numonth = '03';
+    } else if (mnth == 'Mei') {
+      numonth = '05';
+    } else if (mnth == 'Jun') {
+      numonth = '06';
+    } else if (mnth == 'Jul') {
+      numonth = '07';
+    } else if (mnth == 'Agu') {
+      numonth = '08';
+    } else if (mnth == 'Sep') {
+      numonth = '09';
+    } else if (mnth == 'Okt') {
+      numonth = '10';
+    } else if (mnth == 'Nov') {
+      numonth = '11';
+    } else if (mnth == 'Des') {
+      numonth = '12';
+    }
+
+    print(numonth);
+
+    // week_1
+    await FirebaseFirestore.instance
+        .collection('Vsing-rsv')
+        .doc('reservation')
+        .collection('book-pax')
+        .doc(numonth)
+        .collection('Report_Weeks')
+        .doc('week_1')
+        .set({'week': 'week_1'});
+    await FirebaseFirestore.instance
+        .collection('Vsing-rsv')
+        .doc('reservation')
+        .collection('book-pax')
+        .doc(numonth)
+        .collection('Report_Weeks')
+        .doc('week_1')
+        .collection('reports')
+        .doc('sun')
+        .set({'book_datas': 0, 'pax_datas': 0, 'day': 'sun'});
+    await FirebaseFirestore.instance
+        .collection('Vsing-rsv')
+        .doc('reservation')
+        .collection('book-pax')
+        .doc(numonth)
+        .collection('Report_Weeks')
+        .doc('week_1')
+        .collection('reports')
+        .doc('mon')
+        .set({'book_datas': 0, 'pax_datas': 0, 'day': 'mon'});
+    await FirebaseFirestore.instance
+        .collection('Vsing-rsv')
+        .doc('reservation')
+        .collection('book-pax')
+        .doc(numonth)
+        .collection('Report_Weeks')
+        .doc('week_1')
+        .collection('reports')
+        .doc('tue')
+        .set({'book_datas': 0, 'pax_datas': 0, 'day': 'tue'});
+    await FirebaseFirestore.instance
+        .collection('Vsing-rsv')
+        .doc('reservation')
+        .collection('book-pax')
+        .doc(numonth)
+        .collection('Report_Weeks')
+        .doc('week_1')
+        .collection('reports')
+        .doc('wed')
+        .set({'book_datas': 0, 'pax_datas': 0, 'day': 'wed'});
+    await FirebaseFirestore.instance
+        .collection('Vsing-rsv')
+        .doc('reservation')
+        .collection('book-pax')
+        .doc(numonth)
+        .collection('Report_Weeks')
+        .doc('week_1')
+        .collection('reports')
+        .doc('thu')
+        .set({'book_datas': 0, 'pax_datas': 0, 'day': 'thu'});
+    await FirebaseFirestore.instance
+        .collection('Vsing-rsv')
+        .doc('reservation')
+        .collection('book-pax')
+        .doc(numonth)
+        .collection('Report_Weeks')
+        .doc('week_1')
+        .collection('reports')
+        .doc('fri')
+        .set({'book_datas': 0, 'pax_datas': 0, 'day': 'fri'});
+    await FirebaseFirestore.instance
+        .collection('Vsing-rsv')
+        .doc('reservation')
+        .collection('book-pax')
+        .doc(numonth)
+        .collection('Report_Weeks')
+        .doc('week_1')
+        .collection('reports')
+        .doc('sat')
+        .set({'book_datas': 0, 'pax_datas': 0, 'day': 'sat'});
+    await FirebaseFirestore.instance
+        .collection('Vsing-rsv')
+        .doc('reservation')
+        .collection('book-pax')
+        .doc(numonth)
+        .collection('Report_Weeks')
+        .doc('week_1')
+        .collection('reports')
+        .doc('total')
+        .set({'book_total': 0, 'pax_total': 0, 'day': 'total'});
+
+    // week_2
+    await FirebaseFirestore.instance
+        .collection('Vsing-rsv')
+        .doc('reservation')
+        .collection('book-pax')
+        .doc(numonth)
+        .collection('Report_Weeks')
+        .doc('week_2')
+        .set({'week': 'week_2'});
+    await FirebaseFirestore.instance
+        .collection('Vsing-rsv')
+        .doc('reservation')
+        .collection('book-pax')
+        .doc(numonth)
+        .collection('Report_Weeks')
+        .doc('week_2')
+        .collection('reports')
+        .doc('sun')
+        .set({'book_datas': 0, 'pax_datas': 0, 'day': 'sun'});
+    await FirebaseFirestore.instance
+        .collection('Vsing-rsv')
+        .doc('reservation')
+        .collection('book-pax')
+        .doc(numonth)
+        .collection('Report_Weeks')
+        .doc('week_2')
+        .collection('reports')
+        .doc('mon')
+        .set({'book_datas': 0, 'pax_datas': 0, 'day': 'mon'});
+    await FirebaseFirestore.instance
+        .collection('Vsing-rsv')
+        .doc('reservation')
+        .collection('book-pax')
+        .doc(numonth)
+        .collection('Report_Weeks')
+        .doc('week_2')
+        .collection('reports')
+        .doc('tue')
+        .set({'book_datas': 0, 'pax_datas': 0, 'day': 'tue'});
+    await FirebaseFirestore.instance
+        .collection('Vsing-rsv')
+        .doc('reservation')
+        .collection('book-pax')
+        .doc(numonth)
+        .collection('Report_Weeks')
+        .doc('week_2')
+        .collection('reports')
+        .doc('wed')
+        .set({'book_datas': 0, 'pax_datas': 0, 'day': 'wed'});
+    await FirebaseFirestore.instance
+        .collection('Vsing-rsv')
+        .doc('reservation')
+        .collection('book-pax')
+        .doc(numonth)
+        .collection('Report_Weeks')
+        .doc('week_2')
+        .collection('reports')
+        .doc('thu')
+        .set({'book_datas': 0, 'pax_datas': 0, 'day': 'thu'});
+    await FirebaseFirestore.instance
+        .collection('Vsing-rsv')
+        .doc('reservation')
+        .collection('book-pax')
+        .doc(numonth)
+        .collection('Report_Weeks')
+        .doc('week_2')
+        .collection('reports')
+        .doc('fri')
+        .set({'book_datas': 0, 'pax_datas': 0, 'day': 'fri'});
+    await FirebaseFirestore.instance
+        .collection('Vsing-rsv')
+        .doc('reservation')
+        .collection('book-pax')
+        .doc(numonth)
+        .collection('Report_Weeks')
+        .doc('week_2')
+        .collection('reports')
+        .doc('sat')
+        .set({'book_datas': 0, 'pax_datas': 0, 'day': 'sat'});
+    await FirebaseFirestore.instance
+        .collection('Vsing-rsv')
+        .doc('reservation')
+        .collection('book-pax')
+        .doc(numonth)
+        .collection('Report_Weeks')
+        .doc('week_2')
+        .collection('reports')
+        .doc('total')
+        .set({'book_total': 0, 'pax_total': 0, 'day': 'total'});
+
+    // week_3
+    await FirebaseFirestore.instance
+        .collection('Vsing-rsv')
+        .doc('reservation')
+        .collection('book-pax')
+        .doc(numonth)
+        .collection('Report_Weeks')
+        .doc('week_3')
+        .set({'week': 'week_3'});
+    await FirebaseFirestore.instance
+        .collection('Vsing-rsv')
+        .doc('reservation')
+        .collection('book-pax')
+        .doc(numonth)
+        .collection('Report_Weeks')
+        .doc('week_3')
+        .collection('reports')
+        .doc('sun')
+        .set({'book_datas': 0, 'pax_datas': 0, 'day': 'sun'});
+    await FirebaseFirestore.instance
+        .collection('Vsing-rsv')
+        .doc('reservation')
+        .collection('book-pax')
+        .doc(numonth)
+        .collection('Report_Weeks')
+        .doc('week_3')
+        .collection('reports')
+        .doc('mon')
+        .set({'book_datas': 0, 'pax_datas': 0, 'day': 'mon'});
+    await FirebaseFirestore.instance
+        .collection('Vsing-rsv')
+        .doc('reservation')
+        .collection('book-pax')
+        .doc(numonth)
+        .collection('Report_Weeks')
+        .doc('week_3')
+        .collection('reports')
+        .doc('tue')
+        .set({'book_datas': 0, 'pax_datas': 0, 'day': 'tue'});
+    await FirebaseFirestore.instance
+        .collection('Vsing-rsv')
+        .doc('reservation')
+        .collection('book-pax')
+        .doc(numonth)
+        .collection('Report_Weeks')
+        .doc('week_3')
+        .collection('reports')
+        .doc('wed')
+        .set({'book_datas': 0, 'pax_datas': 0, 'day': 'wed'});
+    await FirebaseFirestore.instance
+        .collection('Vsing-rsv')
+        .doc('reservation')
+        .collection('book-pax')
+        .doc(numonth)
+        .collection('Report_Weeks')
+        .doc('week_3')
+        .collection('reports')
+        .doc('thu')
+        .set({'book_datas': 0, 'pax_datas': 0, 'day': 'thu'});
+    await FirebaseFirestore.instance
+        .collection('Vsing-rsv')
+        .doc('reservation')
+        .collection('book-pax')
+        .doc(numonth)
+        .collection('Report_Weeks')
+        .doc('week_3')
+        .collection('reports')
+        .doc('fri')
+        .set({'book_datas': 0, 'pax_datas': 0, 'day': 'fri'});
+    await FirebaseFirestore.instance
+        .collection('Vsing-rsv')
+        .doc('reservation')
+        .collection('book-pax')
+        .doc(numonth)
+        .collection('Report_Weeks')
+        .doc('week_3')
+        .collection('reports')
+        .doc('sat')
+        .set({'book_datas': 0, 'pax_datas': 0, 'day': 'sat'});
+    await FirebaseFirestore.instance
+        .collection('Vsing-rsv')
+        .doc('reservation')
+        .collection('book-pax')
+        .doc(numonth)
+        .collection('Report_Weeks')
+        .doc('week_3')
+        .collection('reports')
+        .doc('total')
+        .set({'book_total': 0, 'pax_total': 0, 'day': 'total'});
+
+    // week_4
+    await FirebaseFirestore.instance
+        .collection('Vsing-rsv')
+        .doc('reservation')
+        .collection('book-pax')
+        .doc(numonth)
+        .collection('Report_Weeks')
+        .doc('week_4')
+        .set({'week': 'week_4'});
+    await FirebaseFirestore.instance
+        .collection('Vsing-rsv')
+        .doc('reservation')
+        .collection('book-pax')
+        .doc(numonth)
+        .collection('Report_Weeks')
+        .doc('week_4')
+        .collection('reports')
+        .doc('sun')
+        .set({'book_datas': 0, 'pax_datas': 0, 'day': 'sun'});
+    await FirebaseFirestore.instance
+        .collection('Vsing-rsv')
+        .doc('reservation')
+        .collection('book-pax')
+        .doc(numonth)
+        .collection('Report_Weeks')
+        .doc('week_4')
+        .collection('reports')
+        .doc('mon')
+        .set({'book_datas': 0, 'pax_datas': 0, 'day': 'mon'});
+    await FirebaseFirestore.instance
+        .collection('Vsing-rsv')
+        .doc('reservation')
+        .collection('book-pax')
+        .doc(numonth)
+        .collection('Report_Weeks')
+        .doc('week_4')
+        .collection('reports')
+        .doc('tue')
+        .set({'book_datas': 0, 'pax_datas': 0, 'day': 'tue'});
+    await FirebaseFirestore.instance
+        .collection('Vsing-rsv')
+        .doc('reservation')
+        .collection('book-pax')
+        .doc(numonth)
+        .collection('Report_Weeks')
+        .doc('week_4')
+        .collection('reports')
+        .doc('wed')
+        .set({'book_datas': 0, 'pax_datas': 0, 'day': 'wed'});
+    await FirebaseFirestore.instance
+        .collection('Vsing-rsv')
+        .doc('reservation')
+        .collection('book-pax')
+        .doc(numonth)
+        .collection('Report_Weeks')
+        .doc('week_4')
+        .collection('reports')
+        .doc('thu')
+        .set({'book_datas': 0, 'pax_datas': 0, 'day': 'thu'});
+    await FirebaseFirestore.instance
+        .collection('Vsing-rsv')
+        .doc('reservation')
+        .collection('book-pax')
+        .doc(numonth)
+        .collection('Report_Weeks')
+        .doc('week_4')
+        .collection('reports')
+        .doc('fri')
+        .set({'book_datas': 0, 'pax_datas': 0, 'day': 'fri'});
+    await FirebaseFirestore.instance
+        .collection('Vsing-rsv')
+        .doc('reservation')
+        .collection('book-pax')
+        .doc(numonth)
+        .collection('Report_Weeks')
+        .doc('week_4')
+        .collection('reports')
+        .doc('sat')
+        .set({'book_datas': 0, 'pax_datas': 0, 'day': 'sat'});
+    await FirebaseFirestore.instance
+        .collection('Vsing-rsv')
+        .doc('reservation')
+        .collection('book-pax')
+        .doc(numonth)
+        .collection('Report_Weeks')
+        .doc('week_4')
+        .collection('reports')
+        .doc('total')
+        .set({'book_total': 0, 'pax_total': 0, 'day': 'total'});
+
+    // week_5
+    await FirebaseFirestore.instance
+        .collection('Vsing-rsv')
+        .doc('reservation')
+        .collection('book-pax')
+        .doc(numonth)
+        .collection('Report_Weeks')
+        .doc('week_5')
+        .set({'week': 'week_5'});
+    await FirebaseFirestore.instance
+        .collection('Vsing-rsv')
+        .doc('reservation')
+        .collection('book-pax')
+        .doc(numonth)
+        .collection('Report_Weeks')
+        .doc('week_5')
+        .collection('reports')
+        .doc('sun')
+        .set({'book_datas': 0, 'pax_datas': 0, 'day': 'sun'});
+    await FirebaseFirestore.instance
+        .collection('Vsing-rsv')
+        .doc('reservation')
+        .collection('book-pax')
+        .doc(numonth)
+        .collection('Report_Weeks')
+        .doc('week_5')
+        .collection('reports')
+        .doc('mon')
+        .set({'book_datas': 0, 'pax_datas': 0, 'day': 'mon'});
+    await FirebaseFirestore.instance
+        .collection('Vsing-rsv')
+        .doc('reservation')
+        .collection('book-pax')
+        .doc(numonth)
+        .collection('Report_Weeks')
+        .doc('week_5')
+        .collection('reports')
+        .doc('tue')
+        .set({'book_datas': 0, 'pax_datas': 0, 'day': 'tue'});
+    await FirebaseFirestore.instance
+        .collection('Vsing-rsv')
+        .doc('reservation')
+        .collection('book-pax')
+        .doc(numonth)
+        .collection('Report_Weeks')
+        .doc('week_5')
+        .collection('reports')
+        .doc('wed')
+        .set({'book_datas': 0, 'pax_datas': 0, 'day': 'wed'});
+    await FirebaseFirestore.instance
+        .collection('Vsing-rsv')
+        .doc('reservation')
+        .collection('book-pax')
+        .doc(numonth)
+        .collection('Report_Weeks')
+        .doc('week_5')
+        .collection('reports')
+        .doc('thu')
+        .set({'book_datas': 0, 'pax_datas': 0, 'day': 'thu'});
+    await FirebaseFirestore.instance
+        .collection('Vsing-rsv')
+        .doc('reservation')
+        .collection('book-pax')
+        .doc(numonth)
+        .collection('Report_Weeks')
+        .doc('week_5')
+        .collection('reports')
+        .doc('fri')
+        .set({'book_datas': 0, 'pax_datas': 0, 'day': 'fri'});
+    await FirebaseFirestore.instance
+        .collection('Vsing-rsv')
+        .doc('reservation')
+        .collection('book-pax')
+        .doc(numonth)
+        .collection('Report_Weeks')
+        .doc('week_5')
+        .collection('reports')
+        .doc('sat')
+        .set({'book_datas': 0, 'pax_datas': 0, 'day': 'sat'});
+    await FirebaseFirestore.instance
+        .collection('Vsing-rsv')
+        .doc('reservation')
+        .collection('book-pax')
+        .doc(numonth)
+        .collection('Report_Weeks')
+        .doc('week_5')
+        .collection('reports')
+        .doc('total')
+        .set({'book_total': 0, 'pax_total': 0, 'day': 'total'});
+  }

@@ -1,3 +1,6 @@
+import 'dart:async';
+import 'dart:math';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -22,8 +25,7 @@ class Edit_Cos extends StatefulWidget {
   final remark;
   final attendance;
   final event;
-  final bookdata;
-  final paxdata;
+  final monthdata;
   final id;
   final fulldate;
   final dateday;
@@ -32,10 +34,15 @@ class Edit_Cos extends StatefulWidget {
   final idmonth;
   final bookmonth;
   final paxmonth;
+  final promo;
+  final detailPromo;
 
   const Edit_Cos({
     super.key,
     required this.name,
+    required this.promo,
+    required this.detailPromo,
+    required this.monthdata,
     required this.week,
     required this.fulldate,
     required this.dateday,
@@ -49,8 +56,6 @@ class Edit_Cos extends StatefulWidget {
     required this.pax,
     required this.attendance,
     required this.event,
-    required this.bookdata,
-    required this.paxdata,
     required this.todayear,
     required this.idmonth,
     required this.bookmonth,
@@ -73,45 +78,28 @@ class _Edit_CosState extends State<Edit_Cos> {
   String datetime = "";
   String time = "";
   var no = "";
-  var attend = "";
-  var colorbtn;
-  var colortxt;
-  var monthid;
-  var yeartoday;
+  var attend = "", monthFinal;
+  var colorbtn, colortxt, monthid, yeartoday;
   var Dayname, weekOfMonth, day, idreport;
+  var paxday = 0, paxtotal = 0;
 
   // event
-  var brtdy = "Brithday";
-  var aniv = "Anniversary";
-  var comp = "Company";
-  var othr = "Bachelor Night";
+  var brtdy = "Birthday",
+      aniv = "Anniversary",
+      comp = "Company",
+      othr = "Bachelor Night";
 
   var onklik = '';
+  // log activity
+  String Idmonth = '', year = '', month = '', finalDate = '', monthname = '';
   //
-  _cekdata() async {
-    final data = await FirebaseFirestore.instance
-        .collection('Vsing-rsv')
-        .doc(widget.todayear)
-        .collection('user-list')
-        .where('date', isEqualTo: widget.date)
-        .get();
-    var id = data.docs.map((e) => e.id).toList();
-    for (var i = 0; i < id.length; i++) {
-      setState(() {
-        idreport = id[i];
-      });
-    }
-  }
 
   @override
   void initState() {
     super.initState();
-    _cekdata();
-    print(widget.no_table);
     onklik = widget.event;
     var pax = int.parse(widget.pax);
     assert(pax is int);
-
     count = pax;
     name.text = widget.name;
     number.text = widget.phone;
@@ -123,6 +111,23 @@ class _Edit_CosState extends State<Edit_Cos> {
     monthid = widget.idmonth;
     Dayname = widget.dateday;
     weekOfMonth = widget.week;
+    Idmonth = DateFormat('MM').format(DateTime.now());
+    year = DateFormat('yyyy').format(DateTime.now());
+    monthname = DateFormat('dd MMM yyyy').format(DateTime.now());
+    month = DateFormat('dd MMM yyyy').format(DateTime.now());
+    finalDate = DateFormat('HH:mm').format(DateTime.now());
+    monthFinal = widget.monthdata;
+
+    _cekdata();
+
+    print(day);
+    print(widget.week);
+    print(widget.id);
+    print(monthFinal);
+    // Mengambil data dokumen dari Firestore
+  }
+
+  _cekdata() async {
     if (Dayname == 'Sunday') {
       setState(() {
         day = 'sun';
@@ -152,68 +157,73 @@ class _Edit_CosState extends State<Edit_Cos> {
         day = 'fri';
       });
     }
+    final dataq = await FirebaseFirestore.instance
+        .collection('Vsing-rsv')
+        .doc('reservation')
+        .collection('book-pax')
+        .doc(monthid)
+        .collection('Report_Weeks')
+        .doc('week_${weekOfMonth}')
+        .collection('reports')
+        .where('day', isEqualTo: day)
+        .get();
 
-    print(widget.week);
-  }
+    var dq = dataq.docs.map((e) => e.data()['pax_datas']).toList();
 
-  _updatetable() async {
-    for (int x = 0; x < widget.no_table.length; ++x) {
-      await FirebaseFirestore.instance
-          .collection('Vsing-rsv')
-          .doc(widget.todayear)
-          // .collection('month')
-          // .doc(widget.idmonth)
-          .collection('Reservation')
-          .doc(widget.date)
-          .collection('table')
-          .doc(widget.floor)
-          .collection('lantai')
-          .doc(widget.no_table[x])
-          .update({'status': 'Avail'});
+    for (int x = 0; x < dq.length; ++x) {
+      setState(() {
+        paxday = dq[x];
+        print('day = $paxday');
+      });
+    }
+    final total = await FirebaseFirestore.instance
+        .collection('Vsing-rsv')
+        .doc('reservation')
+        .collection('book-pax')
+        .doc(monthid)
+        .collection('Report_Weeks')
+        .doc('week_${weekOfMonth}')
+        .collection('reports')
+        .where('day', isEqualTo: 'total')
+        .get();
+
+    var ttl = total.docs.map((e) => e.data()['pax_total']).toList();
+
+    for (int s = 0; s < ttl.length; ++s) {
+      setState(() {
+        paxtotal = ttl[s];
+        print('ttl = $paxtotal');
+      });
+    }
+    final data = await FirebaseFirestore.instance
+        .collection('Vsing-rsv')
+        .doc('reservation')
+        .collection('user-list')
+        .where('date', isEqualTo: widget.date)
+        .get();
+    var id = data.docs.map((e) => e.id).toList();
+    for (var i = 0; i < id.length; i++) {
+      setState(() {
+        idreport = id[i];
+      });
     }
   }
 
-  // log activity
-  String Idmonth = '';
-  String year = '';
-  String month = '';
-  String finalDate = '', monthname = '';
+  _updatetable() async {
+    await FirebaseFirestore.instance
+        .collection('Vsing-rsv')
+        .doc('reservation')
+        .collection('user_data')
+        .doc(widget.id)
+        .update({
+      'table_no': [],
+      'floor': '',
+    });
+  }
 
   //
   String removeMail(String userMail) {
     return userMail.replaceAll('@mail.com', '');
-  }
-
-  _addlog() async {
-    setState(() {
-      DateFormat bulan = DateFormat('MM');
-      Idmonth = bulan.format(DateTime.now());
-
-      DateFormat tahun = DateFormat('yyyy');
-      year = tahun.format(DateTime.now());
-
-      DateFormat bulanini = DateFormat('dd MMM yyyy');
-      month = bulanini.format(DateTime.now());
-
-      DateFormat bulanin = DateFormat('dd MMM yyyy');
-      monthname = bulanin.format(DateTime.now());
-
-      DateFormat bulanok = DateFormat('HH:mm');
-      finalDate = bulanok.format(DateTime.now());
-    });
-    await FirebaseFirestore.instance
-        .collection('Vsing-rsv')
-        .doc(year)
-        // .collection('month')
-        // .doc(widget.idmonth)
-        .collection('History')
-        .doc('report_${month + finalDate}')
-        .set({
-      "id": '$monthname $year',
-      "bulan": month,
-      "time": finalDate.toString(),
-      "Log_Msg": "update data ${widget.name} by ${removeMail(user!.email!)}"
-    });
   }
 
   _searchByName() {
@@ -243,20 +253,58 @@ class _Edit_CosState extends State<Edit_Cos> {
     return data;
   }
 
+// log
+  String getFirstName(String fullName) {
+    List<String> nameParts = fullName.split(
+        " "); // Membagi string nama lengkap menjadi array berdasarkan spasi
+    return nameParts[0]; // Mengambil elemen pertama (nama pertama)
+  }
+
+  int generateRandomNumber(int min, int max) {
+    Random random = Random(); // Membuat objek Random
+    int randomNumber = min +
+        random.nextInt(max -
+            min +
+            1); // Menghasilkan angka acak antara min dan max (inklusif)
+    return randomNumber;
+  }
+
+  _addlog() async {
+    var tahun = DateFormat('yyyy').format(DateTime.now());
+    var namaBulan = DateFormat('MMMM').format(DateTime.now());
+    var months = DateFormat('d MMM yyyy').format(DateTime.now());
+    var jam = DateFormat('HH:mm').format(DateTime.now());
+    var doc = DateFormat('d_MM_yyyy_HH_mm_ss').format(DateTime.now());
+
+    // adding log
+    await FirebaseFirestore.instance
+        .collection('Vsing-rsv')
+        .doc('reservation')
+        .collection('History')
+        .doc(
+            'Report_${generateRandomNumber(1, 100)}_${doc}_${generateRandomNumber(1, 100)}')
+        .set({
+      "id": '$namaBulan $tahun',
+      "bulan": months,
+      "time": jam.toString(),
+      "Log_Msg":
+          "update data ${widget.name} by ${getFirstName(user!.displayName!)}"
+    });
+    print('add history');
+  }
+
   _savebook() async {
     await FirebaseFirestore.instance
         .collection('Vsing-rsv')
-        .doc(yeartoday)
-        // .collection('month')
-        // .doc(monthid)
-        .collection('Reservation')
-        .doc(datetime)
-        .collection('user')
-        .doc(name.text + count.toString() + datetime + number.text)
-        .set({
+        .doc('reservation')
+        .collection('user_data')
+        .doc(widget.id)
+        .update({
+      "promo": "",
+      'month': monthFinal,
       'name': name.text,
       'remark': remark.text,
-      'pax': count.toString(),
+      'pax': count,
       'date': datetime,
       'table_no': FieldValue.arrayUnion(widget.no_table),
       'dateday': Dayname == null ? widget.dateday : Dayname,
@@ -272,131 +320,18 @@ class _Edit_CosState extends State<Edit_Cos> {
       'search': FieldValue.arrayUnion(
           [..._searchByDate(), ..._searchByName(), ..._searchByNumber()]),
     });
-  }
 
-  _delete() async {
+    // add list cos
     await FirebaseFirestore.instance
         .collection('Vsing-rsv')
-        .doc(widget.todayear)
-        // .collection('month')
-        // .doc(widget.idmonth)
-        .collection('Reservation')
-        .doc(widget.date)
-        .collection('user')
+        .doc('reservation')
+        .collection('user-list')
         .doc(widget.id)
-        .delete();
-
-    await FirebaseFirestore.instance
-        .collection('Vsing-rsv')
-        .doc(widget.todayear)
-        .collection('user-list')
-        .doc(idreport)
-        .delete();
-  }
-
-  // =====================================================================\\
-  // book and pax func
-  // =====================================================================\\
-
-  var hasilpax;
-  var hasilpaxmonth;
-  _removebookpax() async {
-    hasilpax = widget.paxdata - int.parse(widget.pax);
-    hasilpaxmonth = widget.paxmonth - int.parse(widget.pax);
-
-    // month
-    await FirebaseFirestore.instance
-        .collection('Vsing-rsv')
-        .doc(yeartoday)
-        .collection('Reservation')
-        .doc(widget.date)
-        .update({'pax': hasilpax});
-    // day
-    await FirebaseFirestore.instance
-        .collection('Vsing-rsv')
-        .doc(yeartoday)
-        .collection('Book-Pax')
-        .doc(monthid)
-        .update({'pax': hasilpaxmonth});
-
-    // ========================================
-
-    await FirebaseFirestore.instance
-        .collection('Vsing-rsv')
-        .doc(yeartoday)
-        .collection('Book-Pax')
-        .doc(monthid)
-        .collection('Report_Weeks')
-        .doc('week_${weekOfMonth}')
-        .collection('reports')
-        .doc(day)
-        .update({'pax_datas': hasilpax});
-
-    await FirebaseFirestore.instance
-        .collection('Vsing-rsv')
-        .doc(yeartoday)
-        .collection('Book-Pax')
-        .doc(monthid)
-        .collection('Report_Weeks')
-        .doc('week_${weekOfMonth}')
-        .collection('reports')
-        .doc('total')
-        .update({'pax_total': hasilpaxmonth});
-  }
-
-  _addbookpax() async {
-    var paxnew = hasilpax + count;
-    var pmonthnew = hasilpaxmonth + count;
-
-    // month
-    await FirebaseFirestore.instance
-        .collection('Vsing-rsv')
-        .doc(yeartoday)
-        .collection('Reservation')
-        .doc(widget.date)
-        .update({'pax': paxnew});
-    // day
-    await FirebaseFirestore.instance
-        .collection('Vsing-rsv')
-        .doc(yeartoday)
-        .collection('Book-Pax')
-        .doc(monthid)
-        .update({'pax': pmonthnew});
-
-// ===================================================
-
-    await FirebaseFirestore.instance
-        .collection('Vsing-rsv')
-        .doc(yeartoday)
-        .collection('Book-Pax')
-        .doc(monthid)
-        .collection('Report_Weeks')
-        .doc('week_${weekOfMonth}')
-        .collection('reports')
-        .doc(day)
-        .update({'pax_datas': paxnew});
-
-    await FirebaseFirestore.instance
-        .collection('Vsing-rsv')
-        .doc(yeartoday)
-        .collection('Book-Pax')
-        .doc(monthid)
-        .collection('Report_Weeks')
-        .doc('week_${weekOfMonth}')
-        .collection('reports')
-        .doc('total')
-        .update({'pax_total': pmonthnew});
-  }
-
-  _savelistcos() async {
-    await FirebaseFirestore.instance
-        .collection('Vsing-rsv')
-        .doc(yeartoday)
-        .collection('user-list')
-        .doc()
         .set({
+      "promo": "",
+      'month': monthFinal,
       'name': name.text,
-      'pax': count.toString(),
+      'pax': count,
       'remark': remark.text,
       'datefull': '${datetime.toString()} ${Dayname}',
       'dateday': '${Dayname}',
@@ -411,6 +346,43 @@ class _Edit_CosState extends State<Edit_Cos> {
       'search': FieldValue.arrayUnion(
           [..._searchByDate(), ..._searchByName(), ..._searchByNumber()]),
     });
+  }
+
+  // =====================================================================\\
+  // book and pax func
+  // =====================================================================\\
+
+  _bookpax() async {
+    // save book_pax week_day
+    await FirebaseFirestore.instance
+        .collection('Vsing-rsv')
+        .doc('reservation')
+        .collection('book-pax')
+        .doc(monthid)
+        .collection('Report_Weeks')
+        .doc('week_${weekOfMonth}')
+        .collection('reports')
+        .doc(day)
+        .update({
+      'pax_datas': paxday - int.parse(widget.pax) + count,
+    });
+
+    // save book_pax total week_day
+    await FirebaseFirestore.instance
+        .collection('Vsing-rsv')
+        .doc('reservation')
+        .collection('book-pax')
+        .doc(monthid)
+        .collection('Report_Weeks')
+        .doc('week_${weekOfMonth}')
+        .collection('reports')
+        .doc('total')
+        .update({
+      'pax_total': paxtotal - int.parse(widget.pax) + count,
+    });
+    print('save book');
+    print(paxday - int.parse(widget.pax) + count);
+    print(paxtotal - int.parse(widget.pax) + count);
   }
 
   @override
@@ -703,6 +675,8 @@ class _Edit_CosState extends State<Edit_Cos> {
                     }
                     weekOfMonth = ((testDate.day + weekDay) / 7).ceil();
                     setState(() {
+                      monthFinal = DateFormat('MMM').format(date);
+
                       datetime = formattedDate;
                       time =
                           '${selectedTime.hour}:${_addMissingZero(selectedTime.minute)}';
@@ -733,50 +707,45 @@ class _Edit_CosState extends State<Edit_Cos> {
                 height: 50.h,
                 child: ElevatedButton(
                   onPressed: () {
-                    _updatetable();
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => Edit_Book(
-                                  todayearbfr: widget.todayear,
-                                  bookmonth: widget.bookmonth,
-                                  paxmonth: widget.paxmonth,
-                                  todayear: yeartoday,
-                                  idmonth: monthid,
-                                  idmonthbfr: widget.idmonth,
-                                  week: weekOfMonth == null
-                                      ? widget.week
-                                      : weekOfMonth,
-                                  day: Dayname == null
-                                      ? widget.dateday
-                                      : Dayname,
-                                  // data before
-                                  paxbfr: widget.pax,
-                                  bookdata: widget.bookdata,
-                                  paxdata: widget.paxdata,
-                                  id: widget.name +
-                                      widget.pax +
-                                      widget.date +
-                                      widget.phone,
-                                  // new
-                                  attendance: attend,
-                                  remark: remark.text,
-                                  floor: widget.floor,
-                                  no_table: widget.no_table,
-                                  event: onklik,
-                                  phone: number.text,
-                                  name: name.text,
-                                  date: datetime,
-                                  time: time,
-                                  pax: count.toString(),
-                                )));
+                    _savebook();
+                    Timer(const Duration(seconds: 1), () {
+                      _updatetable();
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => Edit_Book(
+                                    todayearbfr: widget.todayear,
+                                    todayear: yeartoday,
+                                    idmonth: monthid,
+                                    idmonthbfr: widget.idmonth,
+                                    week: weekOfMonth == null
+                                        ? widget.week
+                                        : weekOfMonth,
+                                    day: Dayname == null
+                                        ? widget.dateday
+                                        : Dayname,
+                                    // data before
+                                    paxbfr: widget.pax,
+                                    id: widget.id,
+                                    attendance: attend,
+                                    remark: remark.text,
+                                    floor: widget.floor,
+                                    no_table: widget.no_table,
+                                    event: onklik,
+                                    phone: number.text,
+                                    name: name.text,
+                                    date: datetime,
+                                    time: time,
+                                    pax: count.toString(),
+                                  )));
+                    });
                   },
                   style: const ButtonStyle(
                     backgroundColor: MaterialStatePropertyAll<Color>(
                       Color.fromARGB(255, 56, 43, 83),
                     ),
                   ),
-                  child: Text("CHOOSE TABLE",
+                  child: Text("Choose Slot",
                       style: TextStyle(
                         fontSize: 20.sp,
                       )),
@@ -1091,6 +1060,63 @@ class _Edit_CosState extends State<Edit_Cos> {
               ),
               // attendance
               SizedBox(height: 10.h),
+              (widget.promo == '')
+                  ? SizedBox()
+                  : Padding(
+                      padding: EdgeInsets.only(top: 20, bottom: 5),
+                      child: Text(
+                        "Promo & Detail",
+                        style: TextStyle(
+                          color: Color(primaryColor),
+                          fontSize: 20.sp,
+                          fontWeight: FontWeight.w400,
+                        ),
+                      ),
+                    ),
+              (widget.promo == '')
+                  ? SizedBox()
+                  : Padding(
+                      padding: const EdgeInsets.only(left: 20, right: 20),
+                      child: Container(
+                        width: MediaQuery.of(context).size.width * 1,
+                        height: 200.h,
+                        padding: EdgeInsets.all(10),
+                        decoration: BoxDecoration(
+                            color: Color.fromARGB(255, 255, 255, 255),
+                            borderRadius: BorderRadius.circular(20.r)),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text('Promo',
+                                style: TextStyle(
+                                  color: Color(primaryColor),
+                                  fontSize: 20.sp,
+                                  fontWeight: FontWeight.w600,
+                                )),
+                            Text(widget.promo,
+                                style: TextStyle(
+                                  color: Colors.red[700],
+                                  fontSize: 25.sp,
+                                  fontWeight: FontWeight.w500,
+                                )),
+                            Text('Detail',
+                                style: TextStyle(
+                                  color: Color(primaryColor),
+                                  fontSize: 20.sp,
+                                  fontWeight: FontWeight.w600,
+                                )),
+                            Text(widget.detailPromo,
+                                style: TextStyle(
+                                  color: Color(primaryColor),
+                                  fontSize: 25.sp,
+                                  fontWeight: FontWeight.w500,
+                                )),
+                          ],
+                        ),
+                      ),
+                    ),
+              // attendance
+              SizedBox(height: 10.h),
               Padding(
                 padding: EdgeInsets.only(top: 20, bottom: 5),
                 child: Text(
@@ -1186,12 +1212,9 @@ class _Edit_CosState extends State<Edit_Cos> {
                   height: 65.h,
                   child: ElevatedButton(
                     onPressed: () {
-                      _delete();
-                      _removebookpax();
                       _addlog();
                       _savebook();
-                      _addbookpax();
-                      _savelistcos();
+                      _bookpax();
                       Navigator.pushAndRemoveUntil(context,
                           MaterialPageRoute(builder: (BuildContext context) {
                         return splash();

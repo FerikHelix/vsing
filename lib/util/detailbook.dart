@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -10,6 +12,7 @@ import '../pages/spalsh.dart';
 
 class detail_book extends StatefulWidget {
   final name;
+  final id;
   final phone;
   final day;
   final pax;
@@ -31,6 +34,7 @@ class detail_book extends StatefulWidget {
   const detail_book({
     super.key,
     required this.name,
+    required this.id,
     required this.cekuser,
     required this.phone,
     required this.day,
@@ -67,8 +71,9 @@ class _detail_bookState extends State<detail_book> {
       day,
       bookselect,
       paxselect;
+  var user = FirebaseAuth.instance.currentUser;
 
-  cekdatas() async {
+  _cekdatas() async {
     DateFormat tahun = DateFormat('yyyy');
     todayear = tahun.format(DateTime.now());
 
@@ -102,40 +107,26 @@ class _detail_bookState extends State<detail_book> {
     }
 
     if (widget.day == 'Sunday') {
-      setState(() {
-        day = 'sun';
-      });
+      day = 'sun';
     } else if (widget.day == 'Monday') {
-      setState(() {
-        day = 'mon';
-      });
+      day = 'mon';
     } else if (widget.day == 'Tuesday') {
-      setState(() {
-        day = 'tue';
-      });
+      day = 'tue';
     } else if (widget.day == 'Wednesday') {
-      setState(() {
-        day = 'wed';
-      });
+      day = 'wed';
     } else if (widget.day == 'Thursday') {
-      setState(() {
-        day = 'thu';
-      });
+      day = 'thu';
     } else if (widget.day == 'Saturday') {
-      setState(() {
-        day = 'sat';
-      });
+      day = 'sat';
     } else if (widget.day == 'Friday') {
-      setState(() {
-        day = 'fri';
-      });
+      day = 'fri';
     }
 
     // ==============================================
     final dataq = await FirebaseFirestore.instance
         .collection('Vsing-rsv')
-        .doc(todayear)
-        .collection('Book-Pax')
+        .doc('reservation')
+        .collection('book-pax')
         .doc(idmonth)
         .collection('Report_Weeks')
         .doc('week_${widget.weekofmonth}')
@@ -144,26 +135,16 @@ class _detail_bookState extends State<detail_book> {
         .get();
 
     var dq = dataq.docs.map((e) => e.data()).toList();
-    print('\n\n\n');
-    print(todayear);
-    print(idmonth);
-    print(day);
-    print('\n\n\n');
-
     for (int x = 0; x < dq.length; ++x) {
-      setState(() {
-        bookday = dq[x]['book_datas'];
-        paxday = dq[x]['pax_datas'];
+      bookday = dq[x]['book_datas'];
+      paxday = dq[x]['pax_datas'];
 
-        print(bookday);
-        print(paxday);
-        print('===========================');
-      });
+      // print('week ${widget.weekofmonth} = $bookday , $paxday');
     }
     final total = await FirebaseFirestore.instance
         .collection('Vsing-rsv')
-        .doc(todayear)
-        .collection('Book-Pax')
+        .doc('reservation')
+        .collection('book-pax')
         .doc(idmonth)
         .collection('Report_Weeks')
         .doc('week_${widget.weekofmonth}')
@@ -174,20 +155,14 @@ class _detail_bookState extends State<detail_book> {
     var ttl = total.docs.map((e) => e.data()).toList();
 
     for (int s = 0; s < ttl.length; ++s) {
-      setState(() {
-        booktotal = ttl[s]['book_total'];
-        paxtotal = ttl[s]['pax_total'];
-
-        print(booktotal);
-        print(paxtotal);
-        print('===========================');
-      });
+      booktotal = ttl[s]['book_total'];
+      paxtotal = ttl[s]['pax_total'];
+      // print('total = $booktotal , $paxtotal');
     }
   }
 
   reportdata() async {
     // Current date and time of system
-
     // ==============================================
     var book = widget.bookdata + bookday;
     var pax = widget.paxdata + paxday;
@@ -196,40 +171,35 @@ class _detail_bookState extends State<detail_book> {
 
     await FirebaseFirestore.instance
         .collection('Vsing-rsv')
-        .doc(todayear)
-        .collection('Book-Pax')
+        .doc('reservation')
+        .collection('book-pax')
         .doc(idmonth)
         .collection('Report_Weeks')
         .doc('week_${widget.weekofmonth}')
         .collection('reports')
         .doc(day)
-        .update({'book_datas': book, 'pax_datas': pax});
+        .set({'book_datas': book, 'pax_datas': pax, 'day': day});
 
     await FirebaseFirestore.instance
         .collection('Vsing-rsv')
-        .doc(todayear)
-        .collection('Book-Pax')
+        .doc('reservation')
+        .collection('book-pax')
         .doc(idmonth)
         .collection('Report_Weeks')
         .doc('week_${widget.weekofmonth}')
         .collection('reports')
         .doc('total')
-        .update({'book_total': bmonth, 'pax_total': pmonth});
-
-    print('===========================');
-    print(book);
-    print(pax);
-    print(bmonth);
-    print(pmonth);
-    print('===========================');
+        .set({'book_total': bmonth, 'pax_total': pmonth, 'day': 'total'});
   }
 
   _cekbookpax() async {
     final data = await FirebaseFirestore.instance
         .collection('Vsing-rsv')
-        .doc(widget.todayear)
-        .collection('Reservation')
-        .where('date', isEqualTo: widget.date)
+        .doc('reservation')
+        .collection('book-pax')
+        .doc(idmonth)
+        .collection('Report_Day')
+        .where('date', isEqualTo: '${widget.date}')
         .get();
 
     var da = data.docs.map((e) => e.data()).toList();
@@ -238,16 +208,122 @@ class _detail_bookState extends State<detail_book> {
       setState(() {
         bookselect = da[x]['book'];
         paxselect = da[x]['pax'];
+
+        print(bookselect);
+        print(paxselect);
       });
-      print(bookselect);
-      print(paxselect);
-      print(widget.date);
     }
+  }
+
+  // =====================================================================\\
+  // del func
+  // =====================================================================\\
+  _deleteData() async {
+    // update table
+    for (int x = 0; x < widget.no.length; ++x) {
+      await FirebaseFirestore.instance
+          .collection('Vsing-rsv')
+          .doc('reservation')
+          .collection('table_master')
+          .doc(widget.floor)
+          .collection('lantai')
+          .doc(widget.no[x])
+          .update({'status': 'Avail'});
+    }
+
+    // delete data
+    await FirebaseFirestore.instance
+        .collection('Vsing-rsv')
+        .doc('reservation')
+        .collection('user_data')
+        .doc(widget.id)
+        .delete();
+  }
+
+  _bookpax() async {
+    // // day
+    // await FirebaseFirestore.instance
+    //     .collection('Vsing-rsv')
+    //     .doc('reservation')
+    //     .collection('book-pax')
+    //     .doc(idmonth)
+    //     .collection('Report_Day')
+    //     .doc(widget.date)
+    //     .update(
+    //         {'book': bookselect - 1, 'pax': paxselect - int.parse(widget.pax)});
+    // month
+    await FirebaseFirestore.instance
+        .collection('Vsing-rsv')
+        .doc('reservation')
+        .collection('book-pax')
+        .doc(widget.idmonth)
+        .update({
+      'book': widget.bookall - 1,
+      'pax': widget.paxall - int.parse(widget.pax)
+    });
+  }
+
+  // =====================================================================\\
+  // history log
+  // =====================================================================\\
+  String Idmonth = '';
+  String year = '';
+  String month = '';
+  String finalDate = '', monthname = '';
+
+  String removeMail(String userMail) {
+    return userMail.replaceAll('@mail.com', '');
+  }
+
+  // log
+  String getFirstName(String fullName) {
+    List<String> nameParts = fullName.split(
+        " "); // Membagi string nama lengkap menjadi array berdasarkan spasi
+    return nameParts[0]; // Mengambil elemen pertama (nama pertama)
+  }
+
+  int generateRandomNumber(int min, int max) {
+    Random random = Random(); // Membuat objek Random
+    int randomNumber = min +
+        random.nextInt(max -
+            min +
+            1); // Menghasilkan angka acak antara min dan max (inklusif)
+    return randomNumber;
+  }
+
+  _addlog() async {
+    print('add history');
+    var tahun = DateFormat('yyyy').format(DateTime.now());
+    var namaBulan = DateFormat('MMMM').format(DateTime.now());
+    var months = DateFormat('d MMM yyyy').format(DateTime.now());
+    var jam = DateFormat('HH:mm').format(DateTime.now());
+    var doc = DateFormat('d_MM_yyyy_HH_mm_ss').format(DateTime.now());
+
+    // adding log
+    await FirebaseFirestore.instance
+        .collection('Vsing-rsv')
+        .doc('reservation')
+        .collection('History')
+        .doc(
+            'Report_${generateRandomNumber(1, 100)}_${doc}_${generateRandomNumber(1, 100)}')
+        .set({
+      "id": '$namaBulan $tahun',
+      "bulan": months,
+      "time": jam.toString(),
+      "Log_Msg":
+          "booking for ${widget.name} has been delete By ${getFirstName(user!.displayName!)}"
+    });
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    _cekdatas();
   }
 
   @override
   Widget build(BuildContext context) {
-    var user = FirebaseAuth.instance.currentUser;
     // =====================================================================\\
     // variable
     // =====================================================================\\
@@ -269,7 +345,7 @@ class _detail_bookState extends State<detail_book> {
                 child: Image.asset(
                   'lib/assets/ceklis.png',
                   width: 80.w,
-                  opacity: const AlwaysStoppedAnimation(.7),
+                  opacity: const AlwaysStoppedAnimation(.5),
                 ),
               ),
             )
@@ -280,13 +356,13 @@ class _detail_bookState extends State<detail_book> {
                 child: Image.asset(
                   'lib/assets/ceklis.png',
                   width: 80.w,
-                  opacity: const AlwaysStoppedAnimation(.7),
+                  opacity: const AlwaysStoppedAnimation(.5),
                 ),
               ),
             );
     }
 
-    if (widget.event == 'Brithday') {
+    if (widget.event == 'Birthday') {
       color = Color.fromARGB(255, 189, 183, 223);
       icon = FaIcon(
         FontAwesomeIcons.cakeCandles,
@@ -314,157 +390,6 @@ class _detail_bookState extends State<detail_book> {
         color: Color.fromARGB(255, 105, 88, 214),
         size: 20.w,
       );
-    }
-
-    // =====================================================================\\
-    // del func
-    // =====================================================================\\
-    deleteData(String id) async {
-      await FirebaseFirestore.instance
-          .collection('Vsing-rsv')
-          .doc(widget.todayear)
-          .collection('Reservation')
-          .doc(widget.date)
-          .collection('user')
-          .doc(id)
-          .delete();
-    }
-
-    _updatetable() async {
-      for (int x = 0; x < widget.no.length; ++x) {
-        await FirebaseFirestore.instance
-            .collection('Vsing-rsv')
-            .doc(widget.todayear)
-            .collection('Reservation')
-            .doc(widget.date)
-            .collection('table')
-            .doc(widget.floor)
-            .collection('lantai')
-            .doc(widget.no[x])
-            .update({'status': 'Avail'});
-      }
-    }
-
-    _searchByName() {
-      var data = [];
-      for (var i = 0; i < widget.name.length; i++) {
-        var potongan = widget.name.substring(0, i + 1);
-        data.add(potongan);
-      }
-      return data;
-    }
-
-    _searchByNumber() {
-      var data = [];
-      for (var i = 0; i < widget.phone.length; i++) {
-        var potongan = widget.phone.substring(0, i + 1);
-        data.add(potongan);
-      }
-      return data;
-    }
-
-    _searchByDate() {
-      var data = [];
-      for (var i = 0; i < widget.date.length; i++) {
-        var potongan = widget.date.substring(0, i + 1);
-        data.add(potongan);
-      }
-      return data;
-    }
-
-    _bookpaxday() async {
-      var book = bookselect - 1;
-      var pax = paxselect - int.parse(widget.pax);
-
-      // day
-      await FirebaseFirestore.instance
-          .collection('Vsing-rsv')
-          .doc(widget.todayear)
-          .collection('Reservation')
-          .doc(widget.date)
-          .update({'book': book, 'pax': pax});
-    }
-
-    _bookpax() async {
-      var bmonth = widget.bookall - 1;
-      var pmonth = widget.paxall - int.parse(widget.pax);
-
-      // month
-      await FirebaseFirestore.instance
-          .collection('Vsing-rsv')
-          .doc(widget.todayear)
-          .collection('Book-Pax')
-          .doc(widget.idmonth)
-          .update({'book': bmonth, 'pax': pmonth});
-    }
-
-    // =====================================================================\\
-    //  soft
-    // =====================================================================\\
-    _log() async {
-      await FirebaseFirestore.instance
-          .collection('Vsing-rsv')
-          .doc(widget.todayear)
-          .collection('Reservation')
-          .doc(widget.date)
-          .collection('user-log')
-          .doc()
-          .set({
-        'name': widget.name,
-        'pax': widget.pax,
-        'remark': widget.remark,
-        'date': widget.date,
-        'table_no': FieldValue.arrayUnion(widget.no),
-        'event': widget.event,
-        "phone_number": widget.phone,
-        'floor': widget.floor,
-        'time': widget.time,
-        'search':
-            FieldValue.arrayUnion([..._searchByName(), ..._searchByNumber()]),
-      });
-    }
-
-    // =====================================================================\\
-    // history log
-    // =====================================================================\\
-    String Idmonth = '';
-    String year = '';
-    String month = '';
-    String finalDate = '', monthname = '';
-
-    String removeMail(String userMail) {
-      return userMail.replaceAll('@mail.com', '');
-    }
-
-    _addlog() async {
-      setState(() {
-        DateFormat bulan = DateFormat('MM');
-        Idmonth = bulan.format(DateTime.now());
-
-        DateFormat tahun = DateFormat('yyyy');
-        year = tahun.format(DateTime.now());
-
-        DateFormat bulanini = DateFormat('dd MMM yyyy');
-        month = bulanini.format(DateTime.now());
-
-        DateFormat bulanin = DateFormat('MMMM');
-        monthname = bulanin.format(DateTime.now());
-
-        DateFormat bulanok = DateFormat('HH:mm');
-        finalDate = bulanok.format(DateTime.now());
-      });
-      await FirebaseFirestore.instance
-          .collection('Vsing-rsv')
-          .doc(widget.todayear)
-          .collection('History')
-          .doc('report_${month + finalDate}')
-          .set({
-        "id": '$monthname $year',
-        "bulan": month,
-        "time": finalDate.toString(),
-        "Log_Msg":
-            "booking for ${widget.name} has been delete  By ${removeMail(user!.email!)}"
-      });
     }
 
     return Padding(
@@ -510,7 +435,7 @@ class _detail_bookState extends State<detail_book> {
                           ],
                         ),
                         Text(
-                          "Table : ${(widget.no.join(" , ").contains(RegExp(r'\b(?:U10|U11|U12|U13|U14|U15|U16|U17|U18)\b')) ? widget.no.join(" , ").replaceAll('U', 'T') : widget.no.join(","))} ${widget.floor}",
+                          "Slot : ${(widget.no.join(" , ").contains(RegExp(r'\b(?:U10|U11|U12|U13|U14|U15|U16|U17|U18)\b')) ? widget.no.join(" , ").replaceAll('U', 'T') : widget.no.join(","))} ${widget.floor}",
                           // overflow: TextOverflow.ellipsis,
                           style: TextStyle(fontSize: 17.sp),
                         ),
@@ -562,7 +487,6 @@ class _detail_bookState extends State<detail_book> {
                             width: 80.w,
                             child: IconButton(
                                 onPressed: () async {
-                                  print(widget.date);
                                   _cekbookpax();
 
                                   NAlertDialog(
@@ -588,14 +512,8 @@ class _detail_bookState extends State<detail_book> {
                                                   color: Color.fromARGB(
                                                       255, 192, 34, 23))),
                                           onPressed: () {
-                                            _bookpaxday();
-                                            _bookpax();
-                                            _updatetable();
-                                            deleteData(widget.name +
-                                                widget.pax +
-                                                widget.date +
-                                                widget.phone);
-                                            _log();
+                                            // _bookpax();
+                                            _deleteData();
                                             _addlog();
 
                                             Navigator.pushAndRemoveUntil(

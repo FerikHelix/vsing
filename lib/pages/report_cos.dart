@@ -15,98 +15,57 @@ class report_view extends StatefulWidget {
 }
 
 class _report_viewState extends State<report_view> {
-  bool load = true, cek = false;
-  List namas = [], number = [], nama = [], results = [];
-
+  bool load = true, keyword = false;
+  List namas = [], results = [];
+  var number, nama;
+  List<String> dataList = [];
   var search = '';
   String searchValue = '';
 
+  TextEditingController searchValues = TextEditingController();
+
   void _runFilter(String enteredKeyword) {
     if (enteredKeyword.isEmpty) {
-      nama.clear();
-      number.clear();
-
       getAndFilter();
-      // if the search field is empty or only contains white-space, we'll display all users
-      results = namas;
-      for (int x = 0; x < results.length; ++x) {
-        number.add(results[x].replaceAll(new RegExp(r'[^0-9]'), ''));
-        nama.add(results[x].replaceAll(new RegExp(r'[^a-zA-Z]'), ''));
-        // print('\n\n');
-        // // print(number);
-        // // print(nama);
-        // print('hasil = $results');
-        // print('\n\n');
-      }
+      setState(() {
+        keyword = false;
+        print(keyword);
+      });
     } else if (enteredKeyword.isNotEmpty) {
-      nama.clear();
-      number.clear();
-
-      getAndFilter();
-
-      results = namas
+      List exp = namas
           .where((namas) =>
               namas.toLowerCase().contains(enteredKeyword.toLowerCase()))
           .toList();
-
-      // we use the toLowerCase() method to make it case-insensitive
-
-      // Refresh the UI
-      // _foundUsers = results;
-      List exp = results.toList();
-      setState(() {
-        // number.add(hasil.replaceAll(new RegExp(r'[^0-9]'), ''));
-        // nama.add(hasil.replaceAll(new RegExp(r'[^a-zA-Z]'), ''));
-
-        for (int x = 0; x < exp.length; ++x) {
-          number.add(exp[x].replaceAll(new RegExp(r'[^0-9]'), ''));
-          nama.add(exp[x].replaceAll(new RegExp(r'[^a-zA-Z]'), ''));
-        }
-        print('\n\n');
-        print(number);
-        print(nama);
-        print('hasil = $exp');
-        print('\n\n');
-      });
+      results = exp.toList();
+      print(results);
     }
-
     setState(() {
-      cek = true;
+      keyword = true;
+      print(keyword);
     });
   }
 
   getAndFilter() async {
-    final f = FirebaseFirestore.instance;
-
-    final data = await f.collectionGroup('user-list').get();
-    var unfilteredData = [
+    // Menghapus data duplikat pada list
+    final data = await FirebaseFirestore.instance
+        .collection('Vsing-rsv')
+        .doc('reservation')
+        .collection('user-list')
+        .get();
+    var unfiltered = [
       for (final d in data.docs)
-        '${d.data()['name']} ${d.data()['phone_number']}'
+        '${d.data()['name']}' + ',' '${d.data()['phone_number']}'
     ];
 
-    var seenValues = Set();
-    var desiredData = unfilteredData.where((currentDoc) {
-      if (seenValues.contains(currentDoc)) return false;
-
-      seenValues.add(currentDoc);
-      return true;
-    });
-
-    namas = desiredData.toList();
-    setState(() {
-      for (int x = 0; x < namas.length; ++x) {
-        number.add(namas[x].replaceAll(new RegExp(r'[^0-9]'), ''));
-        nama.add(namas[x].replaceAll(new RegExp(r'[^a-zA-Z]'), ''));
-      }
-    });
+    List namaFilter = unfiltered.toSet().toList();
+    namas = namaFilter;
+    print("Data setelah dihapus duplikat: $namas");
   }
 
   @override
   void initState() {
     super.initState();
     getAndFilter();
-    // _runFilter(search);
-    // _foundUsers = namas.toList();
     Timer(const Duration(seconds: 3), () {
       setState(() {
         load = false;
@@ -150,6 +109,7 @@ class _report_viewState extends State<report_view> {
                       height: 40.h,
                       child: TextFormField(
                         onChanged: (value) => _runFilter(value),
+                        controller: searchValues,
                         style: TextStyle(
                           fontSize: 25.sp,
                           color: Color.fromARGB(255, 85, 71, 117),
@@ -175,31 +135,35 @@ class _report_viewState extends State<report_view> {
                       ),
                     ),
                     SizedBox(height: 20.h),
-                    cek == false
+                    results.isNotEmpty
                         ? Expanded(
                             child: ListView.builder(
-                                itemCount: namas.length,
+                                itemCount: results.length,
                                 itemBuilder: (context, index) {
+                                  print(searchValues.text);
                                   return InkWell(
                                     onTap: () {
                                       Navigator.push(
                                           context,
                                           MaterialPageRoute(
                                             builder: (context) => Cos_detail(
-                                              name: nama[index],
-                                              phone: number[index],
+                                              name:
+                                                  results[index].split(",")[0],
+                                              phone:
+                                                  results[index].split(",")[1],
                                             ),
                                           ));
                                     },
                                     child: Card_history(
-                                        name: nama[index],
-                                        phone: number[index]),
+                                        name: results[index].split(",")[0],
+                                        phone: results[index].split(",")[1]),
                                   );
                                 }))
-                        : Expanded(
-                            child: results.isNotEmpty
-                                ? ListView.builder(
-                                    itemCount: results.length,
+                        : searchValues.text == ''
+                            ? Expanded(
+                                child: ListView.builder(
+                                    physics: BouncingScrollPhysics(),
+                                    itemCount: namas.length,
                                     itemBuilder: (context, index) {
                                       return InkWell(
                                         onTap: () {
@@ -208,23 +172,22 @@ class _report_viewState extends State<report_view> {
                                               MaterialPageRoute(
                                                 builder: (context) =>
                                                     Cos_detail(
-                                                  name: nama[index],
-                                                  phone: number[index],
+                                                  name: namas[index]
+                                                      .split(",")[0],
+                                                  phone: namas[index]
+                                                      .split(",")[1],
                                                 ),
                                               ));
                                         },
                                         child: Card_history(
-                                            name: nama[index],
-                                            phone: number[index]),
+                                            name: namas[index].split(",")[0],
+                                            phone: namas[index].split(",")[1]),
                                       );
-                                    })
-                                : Center(
-                                    child: Text(
-                                      'No results found',
-                                      style: TextStyle(fontSize: 24.sp),
-                                    ),
-                                  ),
-                          )
+                                    }))
+                            : Expanded(
+                                child: Center(
+                                child: Text('kosong'),
+                              ))
                   ],
                 )))
         : Scaffold(

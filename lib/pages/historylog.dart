@@ -26,11 +26,9 @@ class _historyState extends State<history> {
   @override
   void initState() {
     super.initState();
-    var now = DateTime.now();
-    DateFormat month = DateFormat('MMMM');
-    monthid = month.format(now);
-
+    monthid = DateFormat('MMMM').format(DateTime.now());
     tahunnow = DateTime.now().year.toString();
+    _cekDatas();
   }
 
   String removeMail(String userMail) {
@@ -51,6 +49,22 @@ class _historyState extends State<history> {
     'November',
     'December'
   ];
+  _cekDatas() async {
+    final table = await FirebaseFirestore.instance
+        .collection('Vsing-rsv')
+        .doc('reservation')
+        .collection('History')
+        .where('id', isEqualTo: '$monthid $tahunnow')
+        .get();
+
+    var lantai = table.docs.map((e) => e.data()).toList();
+  }
+
+  String getFirstName(String fullName) {
+    List<String> nameParts = fullName.split(
+        " "); // Membagi string nama lengkap menjadi array berdasarkan spasi
+    return nameParts[0]; // Mengambil elemen pertama (nama pertama)
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -100,7 +114,7 @@ class _historyState extends State<history> {
                       width: 8.w,
                     ),
                     Text(
-                      removeMail(user!.email!),
+                      getFirstName(user!.displayName!),
                       style: TextStyle(
                         fontFamily: "nunito",
                         color: Colors.white,
@@ -175,80 +189,13 @@ class _historyState extends State<history> {
                       )
                     ],
                   ),
-                  IconButton(
-                    onPressed: () async {
-                      showModalBottomSheet(
-                        context: context,
-                        builder: (context) {
-                          return Container(
-                            height: 300.h,
-                            color: Colors.white,
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Expanded(
-                                    child: FutureBuilder(
-                                  future: FirebaseFirestore.instance
-                                      .collection('Vsing-rsv')
-                                      .get(),
-                                  builder: (context, snapshot) {
-                                    if (snapshot.connectionState ==
-                                        ConnectionState.waiting) {
-                                      return Center(
-                                        child: CircularProgressIndicator(
-                                          color:
-                                              Color.fromARGB(255, 56, 43, 83),
-                                        ),
-                                      );
-                                    }
-                                    if (snapshot.hasError) {
-                                      return Center(
-                                        child: Text("eror"),
-                                      );
-                                    }
-                                    var tahun = snapshot.data!.docs;
-                                    return ListView.builder(
-                                      itemCount: tahun.length,
-                                      itemBuilder: (context, index) {
-                                        return Center(
-                                          child: Padding(
-                                            padding: const EdgeInsets.only(
-                                                top: 10,
-                                                bottom: 10,
-                                                left: 8,
-                                                right: 8),
-                                            child: InkWell(
-                                              onTap: () {
-                                                setState(() {
-                                                  tahunnow = tahun[index]
-                                                      .data()['year'];
-                                                });
-                                              },
-                                              child: Text(
-                                                tahun[index].data()['year'],
-                                                style: TextStyle(
-                                                    fontSize: 30.sp,
-                                                    fontWeight:
-                                                        FontWeight.bold),
-                                              ),
-                                            ),
-                                          ),
-                                        );
-                                      },
-                                    );
-                                  },
-                                )),
-                              ],
-                            ),
-                          );
-                        },
-                      );
-                    },
-                    icon: Icon(
-                      Icons.calendar_month,
-                      color: Colors.black,
-                      size: 35.w,
-                    ),
+                  Icon(
+                    Icons.calendar_month,
+                    color: Colors.black,
+                    size: 35.w,
+                  ),
+                  SizedBox(
+                    width: 10.w,
                   ),
                   Column(
                     children: [
@@ -319,85 +266,79 @@ class _historyState extends State<history> {
                 padding: EdgeInsets.only(right: 35, bottom: 10),
                 width: MediaQuery.of(context).size.width,
                 height: 700.h,
-                child: ListView(
-                  // physics: BouncingScrollPhysics(),
-                  children: [
-                    StreamBuilder(
-                      stream: db
-                          .collection('Vsing-rsv')
-                          .doc(tahunnow)
-                          // .collection('month')
-                          // .doc(monthid)
-                          .collection('History')
-                          .where('id', isEqualTo: '$monthid $tahunnow')
-                          .snapshots(),
-                      builder: (context, snapshot) {
-                        if (snapshot.connectionState ==
-                            ConnectionState.waiting) {
-                          return Center(
-                            child: CircularProgressIndicator(),
-                          );
-                        }
-                        if (snapshot.hasError) {
-                          return Center(
-                            child: Text("eror"),
-                          );
-                        }
+                child: SingleChildScrollView(
+                  physics: BouncingScrollPhysics(),
+                  child: StreamBuilder(
+                    stream: db
+                        .collection('Vsing-rsv')
+                        .doc('reservation')
+                        .collection('History')
+                        .where('id', isEqualTo: '$monthid $tahunnow')
+                        .snapshots(),
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return Center(
+                          child: CircularProgressIndicator(),
+                        );
+                      }
+                      if (snapshot.hasError) {
+                        return Center(
+                          child: Text("eror"),
+                        );
+                      }
 
-                        // data
-                        var data = snapshot.data!.docs;
+                      // data
+                      var data = snapshot.data!.docs;
 
-                        return FixedTimeline.tileBuilder(
-                          builder: TimelineTileBuilder.connectedFromStyle(
-                            contentsAlign: ContentsAlign.basic,
-                            oppositeContentsBuilder: (context, index) =>
-                                Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Text(
-                                    data[index].data()['bulan'],
-                                    style: TextStyle(
-                                        fontFamily: "nunito",
-                                        fontSize: 18.sp,
-                                        fontWeight: FontWeight.bold),
-                                  ),
-                                  Text(
-                                    data[index].data()['time'].toString(),
-                                    style: TextStyle(
-                                        fontFamily: "nunito",
-                                        fontSize: 16.sp,
-                                        fontWeight: FontWeight.bold),
-                                  ),
-                                ],
-                              ),
+                      return FixedTimeline.tileBuilder(
+                        builder: TimelineTileBuilder.connectedFromStyle(
+                          contentsAlign: ContentsAlign.basic,
+                          oppositeContentsBuilder: (context, index) => Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text(
+                                  data[index].data()['bulan'],
+                                  style: TextStyle(
+                                      fontFamily: "nunito",
+                                      fontSize: 18.sp,
+                                      fontWeight: FontWeight.bold),
+                                ),
+                                Text(
+                                  data[index].data()['time'].toString(),
+                                  style: TextStyle(
+                                      fontFamily: "nunito",
+                                      fontSize: 16.sp,
+                                      fontWeight: FontWeight.bold),
+                                ),
+                              ],
                             ),
-                            contentsBuilder: (context, index) => Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Card(
-                                child: Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: Text(
-                                    data[index].data()['Log_Msg'].toString(),
-                                    style: TextStyle(
-                                        fontFamily: "nunito",
-                                        fontSize: 18.sp,
-                                        fontWeight: FontWeight.bold),
-                                  ),
+                          ),
+                          contentsBuilder: (context, index) => Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Card(
+                              child: Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Text(
+                                  data[index].data()['Log_Msg'].toString(),
+                                  style: TextStyle(
+                                      fontFamily: "nunito",
+                                      fontSize: 18.sp,
+                                      fontWeight: FontWeight.bold),
                                 ),
                               ),
                             ),
-                            connectorStyleBuilder: (context, index) =>
-                                ConnectorStyle.solidLine,
-                            indicatorStyleBuilder: (context, index) =>
-                                IndicatorStyle.dot,
-                            itemCount: data.length,
                           ),
-                        );
-                      },
-                    ),
-                  ],
+                          connectorStyleBuilder: (context, index) =>
+                              ConnectorStyle.solidLine,
+                          indicatorStyleBuilder: (context, index) =>
+                              IndicatorStyle.dot,
+                          itemCount: data.length,
+                        ),
+                      );
+                    },
+                  ),
                 )),
 
             // log

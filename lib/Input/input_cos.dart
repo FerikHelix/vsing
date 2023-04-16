@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -8,7 +10,6 @@ import 'package:m_toast/m_toast.dart';
 import 'package:vsing/style/color_constant.dart';
 import 'package:intl/intl.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-
 import '../pages/spalsh.dart';
 import '../util/notif.dart';
 
@@ -29,6 +30,8 @@ class _TableDetailsState extends State<TableDetails> {
     notifServisHariH.initNotif();
 
     var datenow = DateTime.now();
+
+    // Membuat objek DocumentReference untuk dokumen yang akan ditambahkan
   }
 
   // =====================================================================\\
@@ -38,37 +41,21 @@ class _TableDetailsState extends State<TableDetails> {
   TextEditingController number = TextEditingController();
   TextEditingController remark = TextEditingController();
   int count = 0;
-  String datetime = "";
-  String time = "";
-  String today = '';
-  String year = '';
-  String month = '';
-  String idmonth = '';
-  String bpmonth = '';
+  String datetime = "", time = "", today = '', year = '';
+  String month = '', idmonth = '', bpmonth = '', idmonthBfr = '';
 
   int bookdata = 0, paxdata = 0;
-  var bookmonth = 0,
-      paxmonth = 0,
-      datetimenow,
-      datetimebefornow,
-      second,
-      now,
-      finalDate,
-      Dayname,
-      weekOfMonth,
-      monthnama,
-      day,
-      bookday,
-      paxday,
-      booktotal,
-      paxtotal,
-      todayear,
-      brtdy = "Brithday",
+  var bookmonth = 0, paxmonth = 0, datetimenow, datetimebefornow;
+  var second, now, finalDate, Dayname, weekOfMonth;
+  var monthnama, day, bookday, paxday;
+  var booktotal, paxtotal, todayear;
+  var brtdy = "Birthday",
       aniv = "Anniversary",
       comp = "Company",
       othr = "Bachelor Night";
 
-  var onklik = '';
+  var onklik = '', color, monthFinal;
+
   bool isSameDate = false;
 
   @override
@@ -76,7 +63,7 @@ class _TableDetailsState extends State<TableDetails> {
     // =====================================================================\\
     // color cek
     // =====================================================================\\
-    var color;
+
     if (onklik == 'Brithday') {
       color = Color.fromARGB(255, 39, 83, 171);
     } else if (onklik == 'Anniversary') {
@@ -90,13 +77,11 @@ class _TableDetailsState extends State<TableDetails> {
     // =====================================================================\\
     // add table
     // =====================================================================\\
+
     _cekdatas() async {
-      DateFormat tahun = DateFormat('yyyy');
-      todayear = tahun.format(DateTime.now());
-
-      // DateFormat now = DateFormat('MMM');
-      // var monthnow = now.format(DateTime.now());
-
+      print(DateFormat('ss').format(DateTime.now()));
+      print(idmonth);
+      print(idmonthBfr);
       if (Dayname == 'Sunday') {
         setState(() {
           day = 'sun';
@@ -126,12 +111,11 @@ class _TableDetailsState extends State<TableDetails> {
           day = 'fri';
         });
       }
-
       // ==============================================
       final dataq = await FirebaseFirestore.instance
           .collection('Vsing-rsv')
-          .doc(todayear)
-          .collection('Book-Pax')
+          .doc('reservation')
+          .collection('book-pax')
           .doc(idmonth)
           .collection('Report_Weeks')
           .doc('week_${weekOfMonth}')
@@ -140,23 +124,19 @@ class _TableDetailsState extends State<TableDetails> {
           .get();
 
       var dq = dataq.docs.map((e) => e.data()).toList();
-      print('\n\n\n');
-      print(todayear);
-      print(idmonth);
-      print(' .$todayear .$idmonth .week_${weekOfMonth} .$day');
-      print(Dayname);
-      print('\n\n\n');
 
       for (int x = 0; x < dq.length; ++x) {
         setState(() {
           bookday = dq[x]['book_datas'];
           paxday = dq[x]['pax_datas'];
+
+          print('day = $bookday, $paxday');
         });
       }
       final total = await FirebaseFirestore.instance
           .collection('Vsing-rsv')
-          .doc(todayear)
-          .collection('Book-Pax')
+          .doc('reservation')
+          .collection('book-pax')
           .doc(idmonth)
           .collection('Report_Weeks')
           .doc('week_${weekOfMonth}')
@@ -165,23 +145,17 @@ class _TableDetailsState extends State<TableDetails> {
           .get();
 
       var ttl = total.docs.map((e) => e.data()).toList();
-      print(ttl);
 
       for (int s = 0; s < ttl.length; ++s) {
         setState(() {
           booktotal = ttl[s]['book_total'];
           paxtotal = ttl[s]['pax_total'];
-
-          print('===========================');
-          print(bookday);
-          print(paxday);
-          print('===========================');
-          print(booktotal);
-          print(paxtotal);
-          print('===========================');
+          print('ttl = $booktotal, $paxtotal');
         });
       }
     }
+
+    var user = FirebaseAuth.instance.currentUser;
 
     _searchByName() {
       var data = [];
@@ -211,149 +185,85 @@ class _TableDetailsState extends State<TableDetails> {
     }
 
     _bookpax() async {
-      var book = bookdata + 1;
-      var pax = paxdata + count;
-      var bmonth = bookmonth + 1;
-      var pmonth = paxmonth + count;
-
-      var books = bookdata + 1;
-      var paxs = paxdata + count;
-      var bmonths = 1 + booktotal;
-      var pmonths = count + paxtotal;
-
+      print('save book');
+      // save book_pax week_day
       await FirebaseFirestore.instance
           .collection('Vsing-rsv')
-          .doc(todayear)
-          .collection('Book-Pax')
+          .doc('reservation')
+          .collection('book-pax')
           .doc(idmonth)
           .collection('Report_Weeks')
           .doc('week_${weekOfMonth}')
           .collection('reports')
           .doc(day)
-          .update({'book_datas': books, 'pax_datas': paxs});
+          .set({
+        'book_datas': 1 + bookday,
+        'pax_datas': count + paxday,
+        'day': day
+      });
 
+      // save book_pax total week_day
       await FirebaseFirestore.instance
           .collection('Vsing-rsv')
-          .doc(todayear)
-          .collection('Book-Pax')
+          .doc('reservation')
+          .collection('book-pax')
           .doc(idmonth)
           .collection('Report_Weeks')
           .doc('week_${weekOfMonth}')
           .collection('reports')
           .doc('total')
-          .update({'book_total': bmonths, 'pax_total': pmonths});
-
-      // ==============================================
-
-      await FirebaseFirestore.instance
-          .collection('Vsing-rsv')
-          .doc(todayear)
-          // .collection('month')
-          // .doc(idmonth)
-
-          .collection('Book-Pax')
-          .doc(idmonth)
-          .update({'book': bmonth, 'pax': pmonth});
-      // day
-      await FirebaseFirestore.instance
-          .collection('Vsing-rsv')
-          .doc(todayear)
-          // .collection('month')
-          // .doc(idmonth)
-
-          .collection('Reservation')
-          .doc(datetime)
-          .update({'book': book, 'pax': pax});
-
-      print('Book report : $books , Pax report : $paxs ');
-      print('Book : $book , Pax : $pax ');
-    }
-
-    var user = FirebaseAuth.instance.currentUser;
-    String removeMail(String userMail) {
-      return userMail.replaceAll('@mail.com', '');
-    }
-
-    _addlog() async {
-      setState(() {
-        DateFormat tahun = DateFormat('yyyy');
-        year = tahun.format(DateTime.now());
-
-        DateFormat bulanini = DateFormat('dd MMM yyyy');
-        month = bulanini.format(DateTime.now());
-
-        DateFormat monthname = DateFormat('MMMM');
-        monthnama = monthname.format(DateTime.now());
-
-        DateFormat bulanok = DateFormat('HH:mm');
-        finalDate = bulanok.format(DateTime.now());
-      });
-
-      await FirebaseFirestore.instance
-          .collection('Vsing-rsv')
-          .doc(year)
-          // .collection('month')
-          // .doc(idmonth)
-
-          .collection('History')
-          .doc('report_${month + finalDate}')
           .set({
-        "id": '$monthnama $year',
-        "bulan": month,
-        "time": finalDate.toString(),
-        "Log_Msg":
-            "new booking for ${name.text}_${number.text}. Input By ${removeMail(user!.email!)}"
+        'book_total': 1 + booktotal,
+        'pax_total': count + paxtotal,
+        'day': 'total'
       });
     }
 
-    _savelistcos() async {
+    _bookpaxBfr() async {
+      print('rmv Bfr');
       await FirebaseFirestore.instance
           .collection('Vsing-rsv')
-          .doc(year)
-          .collection('user-list')
-          .doc()
-          .set({
-        'name': name.text,
-        'pax': count.toString(),
-        'remark': remark.text,
-        'datefull': '${datetime.toString()} ${Dayname}',
-        'dateday': '${Dayname}',
-        'week': weekOfMonth,
-        'date': datetime.toString(),
-        'table_no': [],
-        'event': onklik,
-        "phone_number": number.text,
-        'floor': "",
-        "attendance": 'Absent',
-        'time': time,
-        'search': FieldValue.arrayUnion(
-            [..._searchByDate(), ..._searchByName(), ..._searchByNumber()]),
-      });
+          .doc('reservation')
+          .collection('book-pax')
+          .doc(idmonthBfr)
+          .collection('Report_Weeks')
+          .doc('week_${weekOfMonth}')
+          .collection('reports')
+          .doc(day)
+          .set({'book_datas': 0, 'pax_datas': 0, 'day': day});
+      await FirebaseFirestore.instance
+          .collection('Vsing-rsv')
+          .doc('reservation')
+          .collection('book-pax')
+          .doc(idmonthBfr)
+          .collection('Report_Weeks')
+          .doc('week_${weekOfMonth}')
+          .collection('reports')
+          .doc('total')
+          .set({'book_total': 0, 'pax_total': 0, 'day': 'total'});
     }
 
     _savebook() async {
-      await FirebaseFirestore.instance
+      // Membuat objek DocumentReference untuk dokumen yang akan ditambahkan
+      CollectionReference collectionRef = FirebaseFirestore.instance
           .collection('Vsing-rsv')
-          .doc(year)
-          // .collection('month')
-          // .doc(idmonth)
+          .doc('reservation')
+          .collection('user_data');
+      DocumentReference docRef = collectionRef.doc();
 
-          .collection('Reservation')
-          .doc(datetime)
-          .set({'pax': 0, 'book': 0, 'date': datetime});
+      // Mendapatkan ID dari dokumen yang baru ditambahkan
+      String docId = docRef.id;
+
       await FirebaseFirestore.instance
           .collection('Vsing-rsv')
-          .doc(year)
-          // .collection('month')
-          // .doc(idmonth)
-          .collection('Reservation')
-          .doc(datetime)
-          .collection('user')
-          .doc(
-              '${name.text}${count.toString()}${datetime.toString()}${number.text}')
+          .doc('reservation')
+          .collection('user_data')
+          .doc(docId)
           .set({
+        'month': monthFinal,
+        'id': docId,
         'name': name.text,
-        'pax': count.toString(),
+        'pax': count,
         'remark': remark.text,
         'datefull': '${datetime.toString()} ${Dayname}',
         'dateday': '${Dayname}',
@@ -364,679 +274,79 @@ class _TableDetailsState extends State<TableDetails> {
         "phone_number": number.text,
         'floor': "",
         "attendance": 'Absent',
+        "promo": "",
+        "promo_detail": '',
+        'time': time,
+        'search': FieldValue.arrayUnion(
+            [..._searchByDate(), ..._searchByName(), ..._searchByNumber()]),
+      });
+      // save userlist
+      await FirebaseFirestore.instance
+          .collection('Vsing-rsv')
+          .doc('reservation')
+          .collection('user-list')
+          .doc(docId)
+          .set({
+        'month': monthFinal,
+        'id': docId,
+        'name': name.text,
+        'pax': count,
+        'remark': remark.text,
+        'datefull': '${datetime.toString()} ${Dayname}',
+        'dateday': '${Dayname}',
+        'week': weekOfMonth,
+        'date': datetime.toString(),
+        'table_no': [],
+        'event': onklik,
+        "phone_number": number.text,
+        'floor': "",
+        "promo": "",
+        "promo_detail0": '',
+        "attendance": 'Absent',
         'time': time,
         'search': FieldValue.arrayUnion(
             [..._searchByDate(), ..._searchByName(), ..._searchByNumber()]),
       });
     }
 
-    _addtable() async {
-      await FirebaseFirestore.instance
-          .collection('Vsing-rsv')
-          .doc(year)
-          // .collection('month')
-          // .doc(idmonth)
-          .collection('Reservation')
-          .doc(datetime)
-          .set({'date': datetime, 'book': 0, 'pax': 0, 'status': true});
-
-      await FirebaseFirestore.instance
-          .collection('Vsing-rsv')
-          .doc(year)
-          // .collection('month')
-          // .doc(idmonth)
-          .collection('Reservation')
-          .doc(datetime)
-          .collection('table')
-          .doc('floor1')
-          .set({
-        'lantai': 'floor1',
-      });
-      await FirebaseFirestore.instance
-          .collection('Vsing-rsv')
-          .doc(year)
-          // .collection('month')
-          // .doc(idmonth)
-          .collection('Reservation')
-          .doc(datetime)
-          .collection('table')
-          .doc('floor2')
-          .set({
-        'lantai': 'floor2',
-      });
-      await FirebaseFirestore.instance
-          .collection('Vsing-rsv')
-          .doc(year)
-          // .collection('month')
-          // .doc(idmonth)
-          .collection('Reservation')
-          .doc(datetime)
-          .collection('table')
-          .doc('floor1')
-          .collection('lantai')
-          .doc('S1')
-          .set({
-        'no': 'S1',
-        'status': 'Avail',
-      });
-      await FirebaseFirestore.instance
-          .collection('Vsing-rsv')
-          .doc(year)
-          // .collection('month')
-          // .doc(idmonth)
-          .collection('Reservation')
-          .doc(datetime)
-          .collection('table')
-          .doc('floor1')
-          .collection('lantai')
-          .doc('S2')
-          .set({
-        'no': 'S2',
-        'status': 'Avail',
-      });
-      await FirebaseFirestore.instance
-          .collection('Vsing-rsv')
-          .doc(year)
-          // .collection('month')
-          // .doc(idmonth)
-          .collection('Reservation')
-          .doc(datetime)
-          .collection('table')
-          .doc('floor1')
-          .collection('lantai')
-          .doc('S3')
-          .set({
-        'no': 'S3',
-        'status': 'Avail',
-      });
-      await FirebaseFirestore.instance
-          .collection('Vsing-rsv')
-          .doc(year)
-          // .collection('month')
-          // .doc(idmonth)
-          .collection('Reservation')
-          .doc(datetime)
-          .collection('table')
-          .doc('floor1')
-          .collection('lantai')
-          .doc('T1')
-          .set({
-        'no': 'T1',
-        'status': 'Avail',
-      });
-      await FirebaseFirestore.instance
-          .collection('Vsing-rsv')
-          .doc(year)
-          // .collection('month')
-          // .doc(idmonth)
-          .collection('Reservation')
-          .doc(datetime)
-          .collection('table')
-          .doc('floor1')
-          .collection('lantai')
-          .doc('T2')
-          .set({
-        'no': 'T2',
-        'status': 'Avail',
-      });
-      await FirebaseFirestore.instance
-          .collection('Vsing-rsv')
-          .doc(year)
-          // .collection('month')
-          // .doc(idmonth)
-          .collection('Reservation')
-          .doc(datetime)
-          .collection('table')
-          .doc('floor1')
-          .collection('lantai')
-          .doc('T3')
-          .set({
-        'no': 'T3',
-        'status': 'Avail',
-      });
-      await FirebaseFirestore.instance
-          .collection('Vsing-rsv')
-          .doc(year)
-          // .collection('month')
-          // .doc(idmonth)
-          .collection('Reservation')
-          .doc(datetime)
-          .collection('table')
-          .doc('floor1')
-          .collection('lantai')
-          .doc('T4')
-          .set({
-        'no': 'T4',
-        'status': 'Avail',
-      });
-      await FirebaseFirestore.instance
-          .collection('Vsing-rsv')
-          .doc(year)
-          // .collection('month')
-          // .doc(idmonth)
-          .collection('Reservation')
-          .doc(datetime)
-          .collection('table')
-          .doc('floor1')
-          .collection('lantai')
-          .doc('T5')
-          .set({
-        'no': 'T5',
-        'status': 'Avail',
-      });
-      await FirebaseFirestore.instance
-          .collection('Vsing-rsv')
-          .doc(year)
-          // .collection('month')
-          // .doc(idmonth)
-          .collection('Reservation')
-          .doc(datetime)
-          .collection('table')
-          .doc('floor1')
-          .collection('lantai')
-          .doc('T6')
-          .set({
-        'no': 'T6',
-        'status': 'Avail',
-      });
-      await FirebaseFirestore.instance
-          .collection('Vsing-rsv')
-          .doc(year)
-          // .collection('month')
-          // .doc(idmonth)
-          .collection('Reservation')
-          .doc(datetime)
-          .collection('table')
-          .doc('floor1')
-          .collection('lantai')
-          .doc('T7')
-          .set({
-        'no': 'T7',
-        'status': 'Avail',
-      });
-      await FirebaseFirestore.instance
-          .collection('Vsing-rsv')
-          .doc(year)
-          // .collection('month')
-          // .doc(idmonth)
-          .collection('Reservation')
-          .doc(datetime)
-          .collection('table')
-          .doc('floor1')
-          .collection('lantai')
-          .doc('T7')
-          .set({
-        'no': 'T7',
-        'status': 'Avail',
-      });
-      await FirebaseFirestore.instance
-          .collection('Vsing-rsv')
-          .doc(year)
-          // .collection('month')
-          // .doc(idmonth)
-          .collection('Reservation')
-          .doc(datetime)
-          .collection('table')
-          .doc('floor1')
-          .collection('lantai')
-          .doc('T8')
-          .set({
-        'no': 'T8',
-        'status': 'Avail',
-      });
-      await FirebaseFirestore.instance
-          .collection('Vsing-rsv')
-          .doc(year)
-          // .collection('month')
-          // .doc(idmonth)
-          .collection('Reservation')
-          .doc(datetime)
-          .collection('table')
-          .doc('floor1')
-          .collection('lantai')
-          .doc('T9')
-          .set({
-        'no': 'T9',
-        'status': 'Avail',
-      });
-      await FirebaseFirestore.instance
-          .collection('Vsing-rsv')
-          .doc(year)
-          // .collection('month')
-          // .doc(idmonth)
-          .collection('Reservation')
-          .doc(datetime)
-          .collection('table')
-          .doc('floor1')
-          .collection('lantai')
-          .doc('U10')
-          .set({
-        'no': 'T10',
-        'status': 'Avail',
-      });
-      await FirebaseFirestore.instance
-          .collection('Vsing-rsv')
-          .doc(year)
-          // .collection('month')
-          // .doc(idmonth)
-          .collection('Reservation')
-          .doc(datetime)
-          .collection('table')
-          .doc('floor1')
-          .collection('lantai')
-          .doc('U11')
-          .set({
-        'no': 'T11',
-        'status': 'Avail',
-      });
-      await FirebaseFirestore.instance
-          .collection('Vsing-rsv')
-          .doc(year)
-          // .collection('month')
-          // .doc(idmonth)
-          .collection('Reservation')
-          .doc(datetime)
-          .collection('table')
-          .doc('floor1')
-          .collection('lantai')
-          .doc('U12')
-          .set({
-        'no': 'T12',
-        'status': 'Avail',
-      });
-      await FirebaseFirestore.instance
-          .collection('Vsing-rsv')
-          .doc(year)
-          // .collection('month')
-          // .doc(idmonth)
-          .collection('Reservation')
-          .doc(datetime)
-          .collection('table')
-          .doc('floor1')
-          .collection('lantai')
-          .doc('U13')
-          .set({
-        'no': 'T13',
-        'status': 'Avail',
-      });
-      await FirebaseFirestore.instance
-          .collection('Vsing-rsv')
-          .doc(year)
-          // .collection('month')
-          // .doc(idmonth)
-          .collection('Reservation')
-          .doc(datetime)
-          .collection('table')
-          .doc('floor1')
-          .collection('lantai')
-          .doc('U14')
-          .set({
-        'no': 'T14',
-        'status': 'Avail',
-      });
-      await FirebaseFirestore.instance
-          .collection('Vsing-rsv')
-          .doc(year)
-          // .collection('month')
-          // .doc(idmonth)
-          .collection('Reservation')
-          .doc(datetime)
-          .collection('table')
-          .doc('floor1')
-          .collection('lantai')
-          .doc('U15')
-          .set({
-        'no': 'T15',
-        'status': 'Avail',
-      });
-      await FirebaseFirestore.instance
-          .collection('Vsing-rsv')
-          .doc(year)
-          // .collection('month')
-          // .doc(idmonth)
-          .collection('Reservation')
-          .doc(datetime)
-          .collection('table')
-          .doc('floor1')
-          .collection('lantai')
-          .doc('U16')
-          .set({
-        'no': 'T16',
-        'status': 'Avail',
-      });
-      await FirebaseFirestore.instance
-          .collection('Vsing-rsv')
-          .doc(year)
-          // .collection('month')
-          // .doc(idmonth)
-          .collection('Reservation')
-          .doc(datetime)
-          .collection('table')
-          .doc('floor1')
-          .collection('lantai')
-          .doc('U17')
-          .set({
-        'no': 'T17',
-        'status': 'Avail',
-      });
-      await FirebaseFirestore.instance
-          .collection('Vsing-rsv')
-          .doc(year)
-          // .collection('month')
-          // .doc(idmonth)
-          .collection('Reservation')
-          .doc(datetime)
-          .collection('table')
-          .doc('floor1')
-          .collection('lantai')
-          .doc('U18')
-          .set({
-        'no': 'T18',
-        'status': 'Avail',
-      });
-
-      await FirebaseFirestore.instance
-          .collection('Vsing-rsv')
-          .doc(year)
-          // .collection('month')
-          // .doc(idmonth)
-          .collection('Reservation')
-          .doc(datetime)
-          .collection('table')
-          .doc('floor2')
-          .collection('lantai')
-          .doc('VIP1')
-          .set({
-        'no': 'VIP1',
-        'status': 'Avail',
-      });
-      await FirebaseFirestore.instance
-          .collection('Vsing-rsv')
-          .doc(year)
-          // .collection('month')
-          // .doc(idmonth)
-          .collection('Reservation')
-          .doc(datetime)
-          .collection('table')
-          .doc('floor2')
-          .collection('lantai')
-          .doc('VIP2')
-          .set({
-        'no': 'VIP2',
-        'status': 'Avail',
-      });
-      await FirebaseFirestore.instance
-          .collection('Vsing-rsv')
-          .doc(year)
-          // .collection('month')
-          // .doc(idmonth)
-          .collection('Reservation')
-          .doc(datetime)
-          .collection('table')
-          .doc('floor2')
-          .collection('lantai')
-          .doc('VIP3')
-          .set({
-        'no': 'VIP3',
-        'status': 'Avail',
-      });
+    String getFirstName(String fullName) {
+      List<String> nameParts = fullName.split(
+          " "); // Membagi string nama lengkap menjadi array berdasarkan spasi
+      return nameParts[0]; // Mengambil elemen pertama (nama pertama)
     }
 
-    _addtablenew() async {
+    // log
+    int generateRandomNumber(int min, int max) {
+      Random random = Random(); // Membuat objek Random
+      int randomNumber = min +
+          random.nextInt(max -
+              min +
+              1); // Menghasilkan angka acak antara min dan max (inklusif)
+      return randomNumber;
+    }
+
+    _addlog() async {
+      print('add history');
+      var tahun = DateFormat('yyyy').format(DateTime.now());
+      var namaBulan = DateFormat('MMMM').format(DateTime.now());
+      var months = DateFormat('d MMM yyyy').format(DateTime.now());
+      var jam = DateFormat('HH:mm').format(DateTime.now());
+      var doc = DateFormat('d_MM_yyyy_HH_mm_ss').format(DateTime.now());
+
+      // adding log
       await FirebaseFirestore.instance
           .collection('Vsing-rsv')
-          .doc(year)
-          // .collection('month')
-          // .doc(idmonth)
-          .collection('Reservation')
-          .doc(datetime)
+          .doc('reservation')
+          .collection('History')
+          .doc(
+              'Report_${generateRandomNumber(1, 100)}_${doc}_${generateRandomNumber(1, 100)}')
           .set({
-        'date': datetime,
-        'book': 0,
-        'pax': 0,
+        "id": '$namaBulan $tahun',
+        "bulan": months,
+        "time": jam.toString(),
+        "Log_Msg":
+            "new booking for ${name.text}_${number.text}. Input By ${getFirstName(user!.displayName!)}"
       });
-
-      await FirebaseFirestore.instance
-          .collection('Vsing-rsv')
-          .doc(year)
-          // .collection('month')
-          // .doc(idmonth)
-          .collection('Reservation')
-          .doc(datetime)
-          .collection('table')
-          .doc()
-          .set({'no': 1, 'type': 'S', 'status': 'Avail', 'floor': 'floor1'});
-      await FirebaseFirestore.instance
-          .collection('Vsing-rsv')
-          .doc(year)
-          // .collection('month')
-          // .doc(idmonth)
-          .collection('Reservation')
-          .doc(datetime)
-          .collection('table')
-          .doc()
-          .set({'no': 2, 'type': 'S', 'status': 'Avail', 'floor': 'floor1'});
-      await FirebaseFirestore.instance
-          .collection('Vsing-rsv')
-          .doc(year)
-          // .collection('month')
-          // .doc(idmonth)
-          .collection('Reservation')
-          .doc(datetime)
-          .collection('table')
-          .doc()
-          .set({'no': 3, 'type': 'S', 'status': 'Avail', 'floor': 'floor1'});
-      await FirebaseFirestore.instance
-          .collection('Vsing-rsv')
-          .doc(year)
-          // .collection('month')
-          // .doc(idmonth)
-          .collection('Reservation')
-          .doc(datetime)
-          .collection('table')
-          .doc()
-          .set({'no': 1, 'type': 'T', 'status': 'Avail', 'floor': 'floor1'});
-      await FirebaseFirestore.instance
-          .collection('Vsing-rsv')
-          .doc(year)
-          // .collection('month')
-          // .doc(idmonth)
-          .collection('Reservation')
-          .doc(datetime)
-          .collection('table')
-          .doc()
-          .set({'no': 2, 'type': 'T', 'status': 'Avail', 'floor': 'floor1'});
-      await FirebaseFirestore.instance
-          .collection('Vsing-rsv')
-          .doc(year)
-          // .collection('month')
-          // .doc(idmonth)
-          .collection('Reservation')
-          .doc(datetime)
-          .collection('table')
-          .doc()
-          .set({'no': 3, 'type': 'T', 'status': 'Avail', 'floor': 'floor1'});
-      await FirebaseFirestore.instance
-          .collection('Vsing-rsv')
-          .doc(year)
-          // .collection('month')
-          // .doc(idmonth)
-          .collection('Reservation')
-          .doc(datetime)
-          .collection('table')
-          .doc()
-          .set({'no': 4, 'type': 'T', 'status': 'Avail', 'floor': 'floor1'});
-      await FirebaseFirestore.instance
-          .collection('Vsing-rsv')
-          .doc(year)
-          // .collection('month')
-          // .doc(idmonth)
-          .collection('Reservation')
-          .doc(datetime)
-          .collection('table')
-          .doc()
-          .set({'no': 5, 'type': 'T', 'status': 'Avail', 'floor': 'floor1'});
-      await FirebaseFirestore.instance
-          .collection('Vsing-rsv')
-          .doc(year)
-          // .collection('month')
-          // .doc(idmonth)
-          .collection('Reservation')
-          .doc(datetime)
-          .collection('table')
-          .doc()
-          .set({'no': 6, 'type': 'T', 'status': 'Avail', 'floor': 'floor1'});
-      await FirebaseFirestore.instance
-          .collection('Vsing-rsv')
-          .doc(year)
-          // .collection('month')
-          // .doc(idmonth)
-          .collection('Reservation')
-          .doc(datetime)
-          .collection('table')
-          .doc()
-          .set({'no': 7, 'type': 'T', 'status': 'Avail', 'floor': 'floor1'});
-      await FirebaseFirestore.instance
-          .collection('Vsing-rsv')
-          .doc(year)
-          // .collection('month')
-          // .doc(idmonth)
-          .collection('Reservation')
-          .doc(datetime)
-          .collection('table')
-          .doc()
-          .set({'no': 8, 'type': 'T', 'status': 'Avail', 'floor': 'floor1'});
-      await FirebaseFirestore.instance
-          .collection('Vsing-rsv')
-          .doc(year)
-          // .collection('month')
-          // .doc(idmonth)
-          .collection('Reservation')
-          .doc(datetime)
-          .collection('table')
-          .doc()
-          .set({'no': 9, 'type': 'T', 'status': 'Avail', 'floor': 'floor1'});
-      await FirebaseFirestore.instance
-          .collection('Vsing-rsv')
-          .doc(year)
-          // .collection('month')
-          // .doc(idmonth)
-          .collection('Reservation')
-          .doc(datetime)
-          .collection('table')
-          .doc()
-          .set({'no': 10, 'type': 'T', 'status': 'Avail', 'floor': 'floor1'});
-      await FirebaseFirestore.instance
-          .collection('Vsing-rsv')
-          .doc(year)
-          // .collection('month')
-          // .doc(idmonth)
-          .collection('Reservation')
-          .doc(datetime)
-          .collection('table')
-          .doc()
-          .set({'no': 11, 'type': 'T', 'status': 'Avail', 'floor': 'floor1'});
-      await FirebaseFirestore.instance
-          .collection('Vsing-rsv')
-          .doc(year)
-          // .collection('month')
-          // .doc(idmonth)
-          .collection('Reservation')
-          .doc(datetime)
-          .collection('table')
-          .doc()
-          .set({'no': 12, 'type': 'T', 'status': 'Avail', 'floor': 'floor1'});
-      await FirebaseFirestore.instance
-          .collection('Vsing-rsv')
-          .doc(year)
-          // .collection('month')
-          // .doc(idmonth)
-          .collection('Reservation')
-          .doc(datetime)
-          .collection('table')
-          .doc()
-          .set({'no': 13, 'type': 'T', 'status': 'Avail', 'floor': 'floor1'});
-      await FirebaseFirestore.instance
-          .collection('Vsing-rsv')
-          .doc(year)
-          // .collection('month')
-          // .doc(idmonth)
-          .collection('Reservation')
-          .doc(datetime)
-          .collection('table')
-          .doc()
-          .set({'no': 14, 'type': 'T', 'status': 'Avail', 'floor': 'floor1'});
-      await FirebaseFirestore.instance
-          .collection('Vsing-rsv')
-          .doc(year)
-          // .collection('month')
-          // .doc(idmonth)
-          .collection('Reservation')
-          .doc(datetime)
-          .collection('table')
-          .doc()
-          .set({'no': 15, 'type': 'T', 'status': 'Avail', 'floor': 'floor1'});
-      await FirebaseFirestore.instance
-          .collection('Vsing-rsv')
-          .doc(year)
-          // .collection('month')
-          // .doc(idmonth)
-          .collection('Reservation')
-          .doc(datetime)
-          .collection('table')
-          .doc()
-          .set({'no': 16, 'type': 'T', 'status': 'Avail', 'floor': 'floor1'});
-      await FirebaseFirestore.instance
-          .collection('Vsing-rsv')
-          .doc(year)
-          // .collection('month')
-          // .doc(idmonth)
-          .collection('Reservation')
-          .doc(datetime)
-          .collection('table')
-          .doc()
-          .set({'no': 17, 'type': 'T', 'status': 'Avail', 'floor': 'floor1'});
-      await FirebaseFirestore.instance
-          .collection('Vsing-rsv')
-          .doc(year)
-          // .collection('month')
-          // .doc(idmonth)
-          .collection('Reservation')
-          .doc(datetime)
-          .collection('table')
-          .doc()
-          .set({'no': 18, 'type': 'T', 'status': 'Avail', 'floor': 'floor1'});
-
-      await FirebaseFirestore.instance
-          .collection('Vsing-rsv')
-          .doc(year)
-          // .collection('month')
-          // .doc(idmonth)
-          .collection('Reservation')
-          .doc(datetime)
-          .collection('table')
-          .doc()
-          .set({'no': 1, 'type': 'VIP', 'status': 'Avail', 'floor': 'floor2'});
-      await FirebaseFirestore.instance
-          .collection('Vsing-rsv')
-          .doc(year)
-          // .collection('month')
-          // .doc(idmonth)
-          .collection('Reservation')
-          .doc(datetime)
-          .collection('table')
-          .doc()
-          .set({'no': 2, 'type': 'VIP', 'status': 'Avail', 'floor': 'floor2'});
-      await FirebaseFirestore.instance
-          .collection('Vsing-rsv')
-          .doc(year)
-          // .collection('month')
-          // .doc(idmonth)
-          .collection('Reservation')
-          .doc(datetime)
-          .collection('table')
-          .doc()
-          .set({'no': 3, 'type': 'VIP', 'status': 'Avail', 'floor': 'floor2'});
     }
 
     return Scaffold(
@@ -1288,28 +598,40 @@ class _TableDetailsState extends State<TableDetails> {
 
                     if (formatmonth == 'Jan') {
                       idmonth = '01';
+                      idmonthBfr = '11';
                     } else if (formatmonth == 'Feb') {
                       idmonth = '02';
+                      idmonthBfr = '12';
                     } else if (formatmonth == 'Mar') {
                       idmonth = '03';
+                      idmonthBfr = '01';
                     } else if (formatmonth == 'Apr') {
                       idmonth = '04';
+                      idmonthBfr = '02';
                     } else if (formatmonth == 'Mei') {
                       idmonth = '05';
+                      idmonthBfr = '03';
                     } else if (formatmonth == 'Jun') {
                       idmonth = '06';
+                      idmonthBfr = '04';
                     } else if (formatmonth == 'Jul') {
                       idmonth = '07';
+                      idmonthBfr = '05';
                     } else if (formatmonth == 'Agu') {
                       idmonth = '08';
+                      idmonthBfr = '06';
                     } else if (formatmonth == 'Sep') {
                       idmonth = '09';
+                      idmonthBfr = '07';
                     } else if (formatmonth == 'Okt') {
                       idmonth = '10';
+                      idmonthBfr = '08';
                     } else if (formatmonth == 'Nov') {
                       idmonth = '11';
+                      idmonthBfr = '09';
                     } else if (formatmonth == 'Des') {
                       idmonth = '12';
+                      idmonthBfr = '10';
                     }
                     datetime = formattedDate;
                     today = formattedDate;
@@ -1346,98 +668,18 @@ class _TableDetailsState extends State<TableDetails> {
 
                     setState(() {
                       bpmonth = formatmonth;
+                      finalDate = time;
                       var now = DateTime.now();
                       var notif = DateFormat('yyy MM d').format(now);
+                      monthFinal = DateFormat('MMM').format(date);
 
                       second = DateFormat('SSSS').format(now);
                       Dayname = DateFormat('EEEE').format(date);
                       datetimenow = dt3;
                       datetimebefornow = dt2;
-
-                      _cekdatas();
-
-                      print('\n\n\n');
-                      print('tes month : $bpmonth');
-                      print('tes date : $date');
-
-                      print(datetimebefornow);
-                      print(datetimenow);
-                      print(second);
-                      print(Dayname);
-                      print(weekOfMonth);
-
-                      print('\n\n\n');
                     });
 
-                    void _detectIsDateSame() async {
-                      // Detect is date selected inside there or not
-                      final data = await FirebaseFirestore.instance
-                          .collection('Vsing-rsv')
-                          .doc(year)
-                          // .collection('month')
-                          // .doc(idmonth)
-                          .collection('Reservation')
-                          .get();
-                      var tes = data.docs.map((e) => e.data()).toList();
-
-                      for (int x = 0; x <= tes.length - 1; ++x) {
-                        if (tes[x]['date'] == datetime) {
-                          setState(() {
-                            // today data
-                            bookdata = tes[x]['book'];
-                            paxdata = tes[x]['pax'];
-
-                            print("\n\n\n");
-                            print("=================================");
-                            print(bookdata);
-                            print(paxdata);
-
-                            print("=================================");
-                            print("\n\n\n");
-                          });
-                          isSameDate = true;
-                          break;
-                        } else {
-                          // today data
-                          bookdata = 0;
-                          paxdata = 0;
-
-                          isSameDate = false;
-                        }
-                      }
-
-                      print("=================================");
-                      print(isSameDate);
-                    }
-
-                    _cekmonthbookpax() async {
-                      final datamonth = await FirebaseFirestore.instance
-                          .collection('Vsing-rsv')
-                          .doc(year)
-                          .collection('Book-Pax')
-                          .get();
-                      var tesdatamonth =
-                          datamonth.docs.map((e) => e.data()).toList();
-                      for (int y = 0; y <= tesdatamonth.length - 1; ++y) {
-                        if (tesdatamonth[y]['Id'] == idmonth) {
-                          // month data
-                          bookmonth = tesdatamonth[y]['book'];
-                          paxmonth = tesdatamonth[y]['pax'];
-
-                          print("\n\n\n");
-                          print("=================================");
-                          // print(bookdata);
-                          // print(paxdata);
-                          print('book month $bookmonth');
-                          print(paxmonth);
-                          print("=================================");
-                          print("\n\n\n");
-                        }
-                      }
-                    }
-
-                    _detectIsDateSame();
-                    _cekmonthbookpax();
+                    _cekdatas();
                   },
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -1784,7 +1026,7 @@ class _TableDetailsState extends State<TableDetails> {
                     height: 65.h,
                     child: ElevatedButton(
                       onPressed: () {
-                        if (datetime == '') {
+                        if (datetime == '' || time == '') {
                           ShowMToast toast = ShowMToast();
                           toast.errorToast(context,
                               message: "Please Pick A Date",
@@ -1792,65 +1034,57 @@ class _TableDetailsState extends State<TableDetails> {
                                   Color.fromARGB(255, 239, 238, 238),
                               alignment: Alignment.center,
                               duration: 1500);
-                        } else if (datetime != '') {
-                          if (isSameDate == false) {
-                            print("=====================================");
-                            print("Executed False");
-                            _savelistcos();
-                            _addtable();
-                            _bookpax();
-                            _savebook();
-                            _addlog();
+                        } else if (name.text == '') {
+                          ShowMToast toast = ShowMToast();
+                          toast.errorToast(context,
+                              message: "Please Input Name",
+                              backgroundColor:
+                                  Color.fromARGB(255, 239, 238, 238),
+                              alignment: Alignment.center,
+                              duration: 1500);
+                        } else if (number.text == '') {
+                          ShowMToast toast = ShowMToast();
+                          toast.errorToast(context,
+                              message: "Please Input Number Phone",
+                              backgroundColor:
+                                  Color.fromARGB(255, 239, 238, 238),
+                              alignment: Alignment.center,
+                              duration: 1500);
+                        } else if (count == 0) {
+                          ShowMToast toast = ShowMToast();
+                          toast.errorToast(context,
+                              message: "Please Input Pax at Least 1 ",
+                              backgroundColor:
+                                  Color.fromARGB(255, 239, 238, 238),
+                              alignment: Alignment.center,
+                              duration: 1500);
+                        } else {
+                          _addlog();
+                          _savebook();
+                          _bookpaxBfr();
+                          _bookpax();
+                          // _bookdatasday();
 
-                            if (onklik != '' && datetime != datetimenow) {
-                              notifServis.sendNotif(
-                                  int.parse(second),
-                                  "Reminder!",
-                                  "${name.text} - ${onklik}",
-                                  datetimebefornow);
-                            } else if (datetime == datetimenow) {
-                              notifServisHariH.sendNotif(
-                                  int.parse(second),
-                                  "Reminder!",
-                                  "${name.text} - ${onklik}",
-                                  datetimenow);
-                            }
-                            Navigator.pushAndRemoveUntil(context,
-                                MaterialPageRoute(
-                                    builder: (BuildContext context) {
-                              return splash();
-                            }), (r) {
-                              return false;
-                            });
-                          } else if (isSameDate == true) {
-                            print("=====================================");
-                            print("Executed True");
-                            _savelistcos();
-                            _savebook();
-                            _bookpax();
-                            _addlog();
-
-                            if (onklik != '' && datetime != datetimenow) {
-                              notifServis.sendNotif(
-                                  int.parse(second),
-                                  "Reminder!",
-                                  "${name.text} - ${onklik}",
-                                  datetimebefornow);
-                            } else if (datetime == datetimenow) {
-                              notifServisHariH.sendNotif(
-                                  int.parse(second),
-                                  "Reminder!",
-                                  "${name.text} - ${onklik}",
-                                  datetimenow);
-                            }
-                            Navigator.pushAndRemoveUntil(context,
-                                MaterialPageRoute(
-                                    builder: (BuildContext context) {
-                              return splash();
-                            }), (r) {
-                              return false;
-                            });
+                          if (onklik != '' && datetime != datetimenow) {
+                            notifServis.sendNotif(
+                                int.parse(second),
+                                "Reminder!",
+                                "${name.text} - ${onklik}",
+                                datetimebefornow);
+                          } else if (datetime == datetimenow) {
+                            notifServisHariH.sendNotif(
+                                int.parse(second),
+                                "Reminder!",
+                                "${name.text} - ${onklik}",
+                                datetimenow);
                           }
+                          Navigator.pushAndRemoveUntil(context,
+                              MaterialPageRoute(
+                                  builder: (BuildContext context) {
+                            return splash();
+                          }), (r) {
+                            return false;
+                          });
                         }
                       },
                       style: const ButtonStyle(

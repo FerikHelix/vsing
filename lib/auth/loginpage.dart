@@ -105,18 +105,7 @@ class _LoginPageState extends State<LoginPage> {
                 child: Container(
                   width: MediaQuery.of(context).size.width,
                   decoration: BoxDecoration(
-                    // borderRadius: BorderRadius.only(
-                    //     bottomLeft: Radius.circular(20),
-                    //     bottomRight: Radius.circular(20)),
                     color: Color.fromARGB(255, 56, 43, 83),
-                    // boxShadow: [
-                    //   BoxShadow(
-                    //     color: Color.fromARGB(57, 5, 5, 5).withOpacity(0.5),
-                    //     spreadRadius: 5,
-                    //     blurRadius: 7,
-                    //     offset: Offset(0, 3), // changes position of shadow
-                    //   ),
-                    // ],
                   ),
                   child: Padding(
                     padding: const EdgeInsets.only(left: 25, right: 25),
@@ -129,7 +118,7 @@ class _LoginPageState extends State<LoginPage> {
                             borderRadius: BorderRadius.circular(20.r),
                             child: Image.asset(
                               'lib/assets/favicon.png',
-                              width: 180.w,
+                              width: 300.w,
                             ),
                           ),
                         ),
@@ -151,126 +140,126 @@ class _LoginPageState extends State<LoginPage> {
                 ),
               ),
             ),
+            SizedBox(height: 30.h),
+            Padding(
+              padding: const EdgeInsets.all(15.0),
+              child: Container(
+                width: MediaQuery.of(context).size.width,
+                height: 450.h,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(20.r),
+                  color: Color.fromARGB(255, 72, 57, 105),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.only(left: 20, right: 20, top: 20),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      SizedBox(height: 20.h),
 
-            // Text(
-            //   "Login",
-            //   style: TextStyle(
-            //     color: Colors.black,
-            //     fontSize: 30,
-            //     fontWeight: FontWeight.bold,
-            //   ),
-            // ),
-            Container(
-              width: MediaQuery.of(context).size.width,
-              height: 450.h,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(20.r),
-                    topRight: Radius.circular(20.r)),
-                color: Colors.white,
-              ),
-              child: Padding(
-                padding: const EdgeInsets.only(left: 20, right: 20, top: 20),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Padding(
-                      padding: EdgeInsets.only(bottom: 5),
-                      child: Text(
-                        "Email",
-                        style: TextStyle(
-                          color: Colors.black,
-                          fontSize: 30.sp,
-                          fontWeight: FontWeight.w400,
-                        ),
-                      ),
-                    ),
-                    Container(
-                      width: MediaQuery.of(context).size.width * 1,
-                      height: 80.h,
-                      child: TextFormField(
-                        controller: _email,
-                        textAlign: TextAlign.center,
-                        style: TextStyle(fontSize: 25.sp),
-                        decoration: InputDecoration(
-                          filled: true,
-                          fillColor: Color.fromARGB(255, 238, 238, 238),
-                          border: OutlineInputBorder(
-                              borderSide:
-                                  BorderSide(width: 0, style: BorderStyle.none),
-                              borderRadius: BorderRadius.circular(10.r)),
-                        ),
-                      ),
-                    ),
-                    Padding(
-                      padding: EdgeInsets.only(top: 10, bottom: 5),
-                      child: Text(
-                        "Password",
-                        style: TextStyle(
-                          color: Colors.black,
-                          fontSize: 30.sp,
-                          fontWeight: FontWeight.w400,
-                        ),
-                      ),
-                    ),
-                    Container(
-                      width: MediaQuery.of(context).size.width * 1,
-                      height: 80.h,
-                      child: TextFormField(
-                        controller: _pass,
-                        obscureText: obscure,
-                        textAlign: TextAlign.center,
-                        style: TextStyle(fontSize: 25.sp),
-                        decoration: InputDecoration(
-                          suffixIcon: IconButton(
-                            onPressed: () {
-                              if (obscure == true) {
-                                setState(() {
-                                  obscure = false;
-                                  obsicon = Icon(Icons.visibility_off);
-                                });
-                              } else if (obscure == false) {
-                                setState(() {
-                                  obscure = true;
-                                  obsicon = Icon(Icons.visibility);
-                                });
-                              }
-                            },
-                            icon: obsicon,
+                      Padding(
+                        padding: EdgeInsets.only(bottom: 5),
+                        child: Text(
+                          "Email",
+                          style: TextStyle(
+                            color: Color.fromARGB(255, 255, 255, 255),
+                            fontSize: 25.sp,
+                            fontWeight: FontWeight.w400,
                           ),
-                          filled: true,
-                          fillColor: Color.fromARGB(255, 238, 238, 238),
-                          border: OutlineInputBorder(
-                              borderSide:
-                                  BorderSide(width: 0, style: BorderStyle.none),
-                              borderRadius: BorderRadius.circular(10.r)),
                         ),
                       ),
-                    ),
-                    Spacer(),
-                    Padding(
-                      padding: const EdgeInsets.only(
-                        left: 20,
-                        right: 20,
-                        bottom: 20,
+                      Container(
+                        width: MediaQuery.of(context).size.width * 1,
+                        height: 70.h,
+                        child: TextFormField(
+                          controller: _email,
+                          // textAlign: TextAlign.center,
+                          style: TextStyle(fontSize: 25.sp),
+                          decoration: InputDecoration(
+                            filled: true,
+                            fillColor: Color.fromARGB(255, 238, 238, 238),
+                            border: OutlineInputBorder(
+                                borderSide: BorderSide(
+                                    width: 0, style: BorderStyle.none),
+                                borderRadius: BorderRadius.circular(10.r)),
+                          ),
+                        ),
                       ),
-                      child: Container(
-                        width: MediaQuery.of(context).size.width,
-                        height: 60.h,
-                        child: ElevatedButton(
-                          onPressed: _loginauth,
-                          style: const ButtonStyle(
-                            backgroundColor: MaterialStatePropertyAll<Color>(
-                              Color.fromARGB(255, 56, 43, 83),
+                      Padding(
+                        padding: EdgeInsets.only(top: 10, bottom: 5),
+                        child: Text(
+                          "Password",
+                          style: TextStyle(
+                            color: Color.fromARGB(255, 255, 255, 255),
+                            fontSize: 25.sp,
+                            fontWeight: FontWeight.w400,
+                          ),
+                        ),
+                      ),
+                      Container(
+                        width: MediaQuery.of(context).size.width * 1,
+                        height: 70.h,
+                        child: TextFormField(
+                          controller: _pass,
+                          obscureText: obscure,
+                          // textAlign: TextAlign.center,
+                          style: TextStyle(fontSize: 25.sp),
+                          decoration: InputDecoration(
+                            suffixIcon: IconButton(
+                              onPressed: () {
+                                if (obscure == true) {
+                                  setState(() {
+                                    obscure = false;
+                                    obsicon = Icon(Icons.visibility_off);
+                                  });
+                                } else if (obscure == false) {
+                                  setState(() {
+                                    obscure = true;
+                                    obsicon = Icon(Icons.visibility);
+                                  });
+                                }
+                              },
+                              icon: obsicon,
+                            ),
+                            filled: true,
+                            fillColor: Color.fromARGB(255, 238, 238, 238),
+                            border: OutlineInputBorder(
+                                borderSide: BorderSide(
+                                    width: 0, style: BorderStyle.none),
+                                borderRadius: BorderRadius.circular(10.r)),
+                          ),
+                        ),
+                      ),
+                      // Spacer(),
+                      SizedBox(height: 80.h),
+                      Padding(
+                        padding: const EdgeInsets.only(
+                          left: 50,
+                          right: 50,
+                          bottom: 20,
+                        ),
+                        child: Container(
+                          width: MediaQuery.of(context).size.width,
+                          height: 60.h,
+                          child: ElevatedButton(
+                            onPressed: _loginauth,
+                            style: const ButtonStyle(
+                              backgroundColor: MaterialStatePropertyAll<Color>(
+                                Color.fromARGB(255, 52, 40, 74),
+                              ),
+                            ),
+                            child: Text(
+                              "LOGIN",
+                              style: TextStyle(
+                                  fontSize: 28.sp,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white),
                             ),
                           ),
-                          child: const Text(
-                            "LOGIN",
-                          ),
                         ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
             ),
