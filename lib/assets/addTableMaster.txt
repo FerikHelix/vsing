@@ -1,0 +1,295 @@
+_addtable() async {
+    print('create table');
+    await FirebaseFirestore.instance
+        .collection('Vsing-rsv')
+        .doc('reservation')
+        .collection('table_master')
+        .doc('floor1')
+        .set({
+      'lantai': 'floor1',
+    });
+    await FirebaseFirestore.instance
+        .collection('Vsing-rsv')
+        .doc('reservation')
+        .collection('table_master')
+        .doc('floor2')
+        .set({
+      'lantai': 'floor2',
+    });
+    await FirebaseFirestore.instance
+        .collection('Vsing-rsv')
+        .doc('reservation')
+        .collection('table_master')
+        .doc('floor1')
+        .collection('lantai')
+        .doc('S1')
+        .set({
+      'no': 'S1',
+      'status': 'Avail',
+    });
+    await FirebaseFirestore.instance
+        .collection('Vsing-rsv')
+        .doc('reservation')
+        .collection('table_master')
+        .doc('floor1')
+        .collection('lantai')
+        .doc('S2')
+        .set({
+      'no': 'S2',
+      'status': 'Avail',
+    });
+    await FirebaseFirestore.instance
+        .collection('Vsing-rsv')
+        .doc('reservation')
+        .collection('table_master')
+        .doc('floor1')
+        .collection('lantai')
+        .doc('S3')
+        .set({
+      'no': 'S3',
+      'status': 'Avail',
+    });
+    await FirebaseFirestore.instance
+        .collection('Vsing-rsv')
+        .doc('reservation')
+        .collection('table_master')
+        .doc('floor1')
+        .collection('lantai')
+        .doc('T1')
+        .set({
+      'no': 'T1',
+      'status': 'Avail',
+    });
+    await FirebaseFirestore.instance
+        .collection('Vsing-rsv')
+        .doc('reservation')
+        .collection('table_master')
+        .doc('floor1')
+        .collection('lantai')
+        .doc('T2')
+        .set({
+      'no': 'T2',
+      'status': 'Avail',
+    });
+    await FirebaseFirestore.instance
+        .collection('Vsing-rsv')
+        .doc('reservation')
+        .collection('table_master')
+        .doc('floor1')
+        .collection('lantai')
+        .doc('T3')
+        .set({
+      'no': 'T3',
+      'status': 'Avail',
+    });
+    await FirebaseFirestore.instance
+        .collection('Vsing-rsv')
+        .doc('reservation')
+        .collection('table_master')
+        .doc('floor1')
+        .collection('lantai')
+        .doc('T4')
+        .set({
+      'no': 'T4',
+      'status': 'Avail',
+    });
+    await FirebaseFirestore.instance
+        .collection('Vsing-rsv')
+        .doc('reservation')
+        .collection('table_master')
+        .doc('floor1')
+        .collection('lantai')
+        .doc('T5')
+        .set({
+      'no': 'T5',
+      'status': 'Avail',
+    });
+    await FirebaseFirestore.instance
+        .collection('Vsing-rsv')
+        .doc('reservation')
+        .collection('table_master')
+        .doc('floor1')
+        .collection('lantai')
+        .doc('T6')
+        .set({
+      'no': 'T6',
+      'status': 'Avail',
+    });
+    await FirebaseFirestore.instance
+        .collection('Vsing-rsv')
+        .doc('reservation')
+        .collection('table_master')
+        .doc('floor1')
+        .collection('lantai')
+        .doc('T7')
+        .set({
+      'no': 'T7',
+      'status': 'Avail',
+    });
+    await FirebaseFirestore.instance
+        .collection('Vsing-rsv')
+        .doc('reservation')
+        .collection('table_master')
+        .doc('floor1')
+        .collection('lantai')
+        .doc('T7')
+        .set({
+      'no': 'T7',
+      'status': 'Avail',
+    });
+    await FirebaseFirestore.instance
+        .collection('Vsing-rsv')
+        .doc('reservation')
+        .collection('table_master')
+        .doc('floor1')
+        .collection('lantai')
+        .doc('T8')
+        .set({
+      'no': 'T8',
+      'status': 'Avail',
+    });
+    await FirebaseFirestore.instance
+        .collection('Vsing-rsv')
+        .doc('reservation')
+        .collection('table_master')
+        .doc('floor1')
+        .collection('lantai')
+        .doc('T9')
+        .set({
+      'no': 'T9',
+      'status': 'Avail',
+    });
+    await FirebaseFirestore.instance
+        .collection('Vsing-rsv')
+        .doc('reservation')
+        .collection('table_master')
+        .doc('floor1')
+        .collection('lantai')
+        .doc('U10')
+        .set({
+      'no': 'T10',
+      'status': 'Avail',
+    });
+    await FirebaseFirestore.instance
+        .collection('Vsing-rsv')
+        .doc('reservation')
+        .collection('table_master')
+        .doc('floor1')
+        .collection('lantai')
+        .doc('U11')
+        .set({
+      'no': 'T11',
+      'status': 'Avail',
+    });
+    await FirebaseFirestore.instance
+        .collection('Vsing-rsv')
+        .doc('reservation')
+        .collection('table_master')
+        .doc('floor1')
+        .collection('lantai')
+        .doc('U12')
+        .set({
+      'no': 'T12',
+      'status': 'Avail',
+    });
+    await FirebaseFirestore.instance
+        .collection('Vsing-rsv')
+        .doc('reservation')
+        .collection('table_master')
+        .doc('floor1')
+        .collection('lantai')
+        .doc('U13')
+        .set({
+      'no': 'T13',
+      'status': 'Avail',
+    });
+    await FirebaseFirestore.instance
+        .collection('Vsing-rsv')
+        .doc('reservation')
+        .collection('table_master')
+        .doc('floor1')
+        .collection('lantai')
+        .doc('U14')
+        .set({
+      'no': 'T14',
+      'status': 'Avail',
+    });
+    await FirebaseFirestore.instance
+        .collection('Vsing-rsv')
+        .doc('reservation')
+        .collection('table_master')
+        .doc('floor1')
+        .collection('lantai')
+        .doc('U15')
+        .set({
+      'no': 'T15',
+      'status': 'Avail',
+    });
+    await FirebaseFirestore.instance
+        .collection('Vsing-rsv')
+        .doc('reservation')
+        .collection('table_master')
+        .doc('floor1')
+        .collection('lantai')
+        .doc('U16')
+        .set({
+      'no': 'T16',
+      'status': 'Avail',
+    });
+    await FirebaseFirestore.instance
+        .collection('Vsing-rsv')
+        .doc('reservation')
+        .collection('table_master')
+        .doc('floor1')
+        .collection('lantai')
+        .doc('U17')
+        .set({
+      'no': 'T17',
+      'status': 'Avail',
+    });
+    await FirebaseFirestore.instance
+        .collection('Vsing-rsv')
+        .doc('reservation')
+        .collection('table_master')
+        .doc('floor1')
+        .collection('lantai')
+        .doc('U18')
+        .set({
+      'no': 'T18',
+      'status': 'Avail',
+    });
+
+    await FirebaseFirestore.instance
+        .collection('Vsing-rsv')
+        .doc('reservation')
+        .collection('table_master')
+        .doc('floor2')
+        .collection('lantai')
+        .doc('VIP1')
+        .set({
+      'no': 'VIP1',
+      'status': 'Avail',
+    });
+    await FirebaseFirestore.instance
+        .collection('Vsing-rsv')
+        .doc('reservation')
+        .collection('table_master')
+        .doc('floor2')
+        .collection('lantai')
+        .doc('VIP2')
+        .set({
+      'no': 'VIP2',
+      'status': 'Avail',
+    });
+    await FirebaseFirestore.instance
+        .collection('Vsing-rsv')
+        .doc('reservation')
+        .collection('table_master')
+        .doc('floor2')
+        .collection('lantai')
+        .doc('VIP3')
+        .set({
+      'no': 'VIP3',
+      'status': 'Avail',
+    });
+  }

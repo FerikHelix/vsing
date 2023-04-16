@@ -17,10 +17,7 @@ import 'package:flutter/foundation.dart'
 class DefaultFirebaseOptions {
   static FirebaseOptions get currentPlatform {
     if (kIsWeb) {
-      throw UnsupportedError(
-        'DefaultFirebaseOptions have not been configured for web - '
-        'you can reconfigure this by running the FlutterFire CLI again.',
-      );
+      return web;
     }
     switch (defaultTargetPlatform) {
       case TargetPlatform.android:
@@ -28,10 +25,7 @@ class DefaultFirebaseOptions {
       case TargetPlatform.iOS:
         return ios;
       case TargetPlatform.macOS:
-        throw UnsupportedError(
-          'DefaultFirebaseOptions have not been configured for macos - '
-          'you can reconfigure this by running the FlutterFire CLI again.',
-        );
+        return macos;
       case TargetPlatform.windows:
         throw UnsupportedError(
           'DefaultFirebaseOptions have not been configured for windows - '
@@ -49,22 +43,40 @@ class DefaultFirebaseOptions {
     }
   }
 
+  static const FirebaseOptions web = FirebaseOptions(
+    apiKey: 'AIzaSyBAG0MtLdeMKL14EgvAcjy6_iYUS5uccAk',
+    appId: '1:593046029438:web:c97a9c5c9119f4d6a4c42f',
+    messagingSenderId: '593046029438',
+    projectId: 'vsing-database',
+    authDomain: 'vsing-database.firebaseapp.com',
+    storageBucket: 'vsing-database.appspot.com',
+  );
+
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyC2m5iyClLw_de9Iz_Dy77sALzJPtvPeR4',
-    appId: '1:707797100512:android:17e531fab1d49eb0022d85',
-    messagingSenderId: '707797100512',
-    projectId: 'vsingrsv',
-    storageBucket: 'vsingrsv.appspot.com',
+    apiKey: 'AIzaSyCx51IAXd9_gtaDK7Y9tcQLJamRSm9eJTo',
+    appId: '1:593046029438:android:fbade147226438f3a4c42f',
+    messagingSenderId: '593046029438',
+    projectId: 'vsing-database',
+    storageBucket: 'vsing-database.appspot.com',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyCAavcQA_JPqCHvtGnrwOGMsmUOsqYUOfU',
-    appId: '1:707797100512:ios:e66054b58bd64af5022d85',
-    messagingSenderId: '707797100512',
-    projectId: 'vsingrsv',
-    storageBucket: 'vsingrsv.appspot.com',
-    iosClientId:
-        '707797100512-fqenumn051srdent9lfahjcohus4hq4c.apps.googleusercontent.com',
-    iosBundleId: 'com.innotia.vsingrsv',
+    apiKey: 'AIzaSyAHLgYvqQ9KwiHOlpLO9h-u0r_UoPBWHd4',
+    appId: '1:593046029438:ios:a6c90f62cc73bb88a4c42f',
+    messagingSenderId: '593046029438',
+    projectId: 'vsing-database',
+    storageBucket: 'vsing-database.appspot.com',
+    iosClientId: '593046029438-l27p3eugfmq5n9ietp4nofuqsiqqua3a.apps.googleusercontent.com',
+    iosBundleId: '.In.rsv.op',
+  );
+
+  static const FirebaseOptions macos = FirebaseOptions(
+    apiKey: 'AIzaSyAHLgYvqQ9KwiHOlpLO9h-u0r_UoPBWHd4',
+    appId: '1:593046029438:ios:a6c90f62cc73bb88a4c42f',
+    messagingSenderId: '593046029438',
+    projectId: 'vsing-database',
+    storageBucket: 'vsing-database.appspot.com',
+    iosClientId: '593046029438-l27p3eugfmq5n9ietp4nofuqsiqqua3a.apps.googleusercontent.com',
+    iosBundleId: '.In.rsv.op',
   );
 }

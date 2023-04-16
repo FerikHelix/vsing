@@ -1,0 +1,75 @@
+  // creat
+  _addalldata() async {
+    db
+        .collection('Vsing-rsv')
+        .doc('reservation')
+        .collection('book-pax')
+        .doc('01')
+        .set({"bulan": "Jan", 'Id': '01', 'book': 0, 'pax': 0});
+    db
+        .collection('Vsing-rsv')
+        .doc('reservation')
+        .collection('book-pax')
+        .doc('02')
+        .set({"bulan": "Feb", 'Id': '02', 'book': 0, 'pax': 0});
+    db
+        .collection('Vsing-rsv')
+        .doc('reservation')
+        .collection('book-pax')
+        .doc('03')
+        .set({"bulan": "Mar", 'Id': '03', 'book': 0, 'pax': 0});
+    db
+        .collection('Vsing-rsv')
+        .doc('reservation')
+        .collection('book-pax')
+        .doc('04')
+        .set({"bulan": "Apr", 'Id': '04', 'book': 0, 'pax': 0});
+    db
+        .collection('Vsing-rsv')
+        .doc('reservation')
+        .collection('book-pax')
+        .doc('05')
+        .set({"bulan": "May", 'Id': '05', 'book': 0, 'pax': 0});
+    db
+        .collection('Vsing-rsv')
+        .doc('reservation')
+        .collection('book-pax')
+        .doc('06')
+        .set({"bulan": "Jun", 'Id': '06', 'book': 0, 'pax': 0});
+    db
+        .collection('Vsing-rsv')
+        .doc('reservation')
+        .collection('book-pax')
+        .doc('07')
+        .set({"bulan": "Jul", 'Id': '07', 'book': 0, 'pax': 0});
+    db
+        .collection('Vsing-rsv')
+        .doc('reservation')
+        .collection('book-pax')
+        .doc('08')
+        .set({"bulan": "Ags", 'Id': '08', 'book': 0, 'pax': 0});
+    db
+        .collection('Vsing-rsv')
+        .doc('reservation')
+        .collection('book-pax')
+        .doc('09')
+        .set({"bulan": "Sep", 'Id': '09', 'book': 0, 'pax': 0});
+    db
+        .collection('Vsing-rsv')
+        .doc('reservation')
+        .collection('book-pax')
+        .doc('10')
+        .set({"bulan": "Okt", 'Id': '10', 'book': 0, 'pax': 0});
+    db
+        .collection('Vsing-rsv')
+        .doc('reservation')
+        .collection('book-pax')
+        .doc('11')
+        .set({"bulan": "Nov", 'Id': '11', 'book': 0, 'pax': 0});
+    db
+        .collection('Vsing-rsv')
+        .doc('reservation')
+        .collection('book-pax')
+        .doc('12')
+        .set({"bulan": "Des", 'Id': '12', 'book': 0, 'pax': 0});
+  }
